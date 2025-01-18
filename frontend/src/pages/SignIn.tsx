@@ -91,7 +91,7 @@ function SignIn() {
                                 <p>Forgot password?</p>
                             </div>
                         </div>
-                        <Button type="submit" className="w-full bg-[#7BDFF2] min-h-[51px]">
+                        <Button type="submit" className="w-full bg-[#7BDFF2] min-h-[51px] rounded-[5px]">
                             <p className="text-md font-bold text-[#4E4E53]">Sign In</p>
                         </Button>
                         <div className="flex justify-center mt-8">
