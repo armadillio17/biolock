@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-3b-vu&@5w2+fh=+0+#5e42&idta+*%ud+wf*aqra!1hintr(97
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '::1']
 
 
 # Application definition
@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users'
+    'user'
 ]
 
 MIDDLEWARE = [
@@ -76,8 +76,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'biolockdatabase',
+        'USER': 'root',
+        'PASSWORD': 'Latayada!233',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
