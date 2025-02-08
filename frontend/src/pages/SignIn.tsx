@@ -34,24 +34,24 @@ function SignIn() {
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center SignIn">
+        <div className="flex items-center justify-center w-full min-h-screen SignIn">
             {/* Animated container */}
             <motion.div
-                className="min-w-[540px] min-h-[540px] bg-[#CCE5FE] rounded-xl shadow-md p-8 flex flex-col items-center gap-8"
+                className="md:min-w-[540px] min-h-[540px] bg-[#CCE5FE] rounded-xl shadow-md p-8 flex flex-col items-center gap-8"
                 initial="hidden"
                 animate="visible"
                 variants={containerVariants}
             >
                 <img src={Logo} alt="Logo" className="max-h-[62px] max-w-[61px]" />
                 <div>
-                    <h1 className="text-2xl font-bold mb-2">Lorem Ipsum dolor Emet</h1>
-                    <p className="text-sm mb-4">Lorem ipsum dolor sit amet,</p>
+                    <h1 className="mb-2 text-2xl font-bold">Lorem Ipsum dolor Emet</h1>
+                    <p className="mb-4 text-sm">Lorem ipsum dolor sit amet,</p>
                     <form onSubmit={handleSubmit} className="min-w-[300px] flex flex-col gap-4">
                         <div className="relative w-full">
                             <User
                                 size="18"
                                 color="#7582FA"
-                                className="absolute left-3 top-1/2 transform -translate-y-1/2"
+                                className="absolute transform -translate-y-1/2 left-3 top-1/2"
                             />
                             <Input
                                 className="pl-9 h-[51px] bg-white rounded-[5px] placeholder:text-md placeholder:text-[#4E4E53] border-[#000000]"
@@ -68,7 +68,7 @@ function SignIn() {
                                 <Lock1
                                     size="18"
                                     color="#FABA6C"
-                                    className="absolute left-3 top-1/2 transform -translate-y-1/2"
+                                    className="absolute transform -translate-y-1/2 left-3 top-1/2"
                                 />
                                 <Input
                                     type="password"
@@ -83,7 +83,7 @@ function SignIn() {
                             </div>
                         </div>
                         <div className="flex justify-between text-sm">
-                            <div className="flex gap-2 items-center">
+                            <div className="flex items-center gap-2">
                                 <Checkbox className="rounded-[4px]" />
                                 <p>Remember Me</p>
                             </div>
@@ -96,7 +96,7 @@ function SignIn() {
                         </Button>
                         <div className="flex justify-center mt-8">
                             <p>Don't have an account?</p>
-                            <a href="#" className="text-[#1600DD]">
+                            <a href="/sign-up" className="text-[#1600DD]">
                                 Create an account
                             </a>
                         </div>
