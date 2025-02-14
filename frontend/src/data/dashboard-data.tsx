@@ -39,3 +39,15 @@ export const sidebarProfile: SidebarProfile = {
     position: "Senior Developer",
     img: dummyPic, // Corrected path
 };
+
+// Admin Dashboard array
+export const Admincards = [
+    { title: "New User", count: 1, color: "#9E8AFC" },
+    { title: "Users", count: 1, color: "#54CEEE" },
+    { title: "Request", count: 1, color: "#E26D5C" },
+    { title: "Absent", count: 1, color: "#FF9F1C" },
+    { title: "Working", count: 1, color: "#FFAAC3" },
+    { title: "On Break", count: 1, color: "#52F76B" },
+    { title: "Day Off", count: 1, color: "#BA6E7B" },
+    { title: "On Leave", count: 1, color: "#FABA6C" },
+];
