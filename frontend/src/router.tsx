@@ -6,11 +6,11 @@ import Dashboard from './pages/Dashboard';
 export const router = createBrowserRouter([
     {
         path: '/',
-        element: <Dashboard />,
+        element: <SignIn />,
     },
     {
-        path: '/sign-in',
-        element: <SignIn />,
+        path: '/dashboard',
+        element: <Dashboard />,
     },
     {
         path: '/sign-up',

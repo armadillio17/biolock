@@ -39,7 +39,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                     <p className="text-[#504E53]">Log-out</p>
                 </button>
             </aside>
-            <main className="flex-grow p-5">{children}</main>
+            <main className="flex-grow p-5 max-h-screen overflow-auto">{children}</main>
         </div>
     );
 };
