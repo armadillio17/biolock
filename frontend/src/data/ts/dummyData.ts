@@ -1,3 +1,7 @@
+import Image1 from '@/assets/images/1.png';
+import Image2 from '@/assets/images/2.png';
+import Image3 from '@/assets/images/3.png';
+
 export interface dummyUser {
     id: number;
     role: "admin" | "user";
@@ -9,7 +13,9 @@ export interface dummyImage {
     id: number;
     date: string;
     src: string;
+    title: string;
     description: string;
+    status: string,
 }
 
 export interface dummyTable {
@@ -26,6 +32,7 @@ export interface dummyNotif {
     id: number;
     date: string;
     message: string;
+    status: string;
 }
 
 export const dummyData: dummyUser[] = [
@@ -47,20 +54,26 @@ export const imgData: dummyImage[] = [
     {
         id: 1,
         date: "March 25, 2025",
-        src: "/frontend/src/assets/images/1.png",
-        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In pellentesque posuere leo non porta.Cras eget scelerisque magna. Nulla ultricies eget turpis sit amet interdum. Aenean egestas ac metus eu vehicula. Integer fringilla malesuada ultricies. Proin lobortis mattis feugiat. Cras posuere ultricies ligula, laoreet venenatis lorem bibendum vitae. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In pellentesque posuere leo non porta."
+        src: Image1,
+        title: "Lorem ipsum",
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In pellentesque posuere leo non porta.Cras eget scelerisque magna. Nulla ultricies eget turpis sit amet interdum. Aenean egestas ac metus eu vehicula. Integer fringilla malesuada ultricies. Proin lobortis mattis feugiat. Cras posuere ultricies ligula, laoreet venenatis lorem bibendum vitae. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In pellentesque posuere leo non porta. ",
+        status: "published",
     },
     {
         id: 2,
         date: "March 25, 2025",
-        src: "/frontend/src/assets/images/2.png",
-        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In pellentesque posuere leo non porta.Cras eget scelerisque magna. Nulla ultricies eget turpis sit amet interdum. Aenean egestas ac metus eu vehicula. Integer fringilla malesuada ultricies. Proin lobortis mattis feugiat. Cras posuere ultricies ligula, laoreet venenatis lorem bibendum vitae. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In pellentesque posuere leo non porta."
+        src: Image2,
+        title: "Lorem ipsum",
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In pellentesque posuere leo non porta.Cras eget scelerisque magna. Nulla ultricies eget turpis sit amet interdum. Aenean egestas ac metus eu vehicula. Integer fringilla malesuada ultricies. Proin lobortis mattis feugiat. Cras posuere ultricies ligula, laoreet venenatis lorem bibendum vitae. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In pellentesque posuere leo non porta.",
+        status: "published",
     },
     {
         id: 3,
         date: "March 25, 2025",
-        src: "/frontend/src/assets/images/3.png",
-        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In pellentesque posuere leo non porta.Cras eget scelerisque magna. Nulla ultricies eget turpis sit amet interdum. Aenean egestas ac metus eu vehicula. Integer fringilla malesuada ultricies. Proin lobortis mattis feugiat. Cras posuere ultricies ligula, laoreet venenatis lorem bibendum vitae. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In pellentesque posuere leo non porta."
+        src: Image3,
+        title: "Lorem ipsum",
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In pellentesque posuere leo non porta.Cras eget scelerisque magna. Nulla ultricies eget turpis sit amet interdum. Aenean egestas ac metus eu vehicula. Integer fringilla malesuada ultricies. Proin lobortis mattis feugiat. Cras posuere ultricies ligula, laoreet venenatis lorem bibendum vitae. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In pellentesque posuere leo non porta.",
+        status: "published",
     }
 ];
 
@@ -147,7 +160,6 @@ export const table: dummyTable[] = [
         totalHours: "8 hours",
         overtime: "5 hours",
     },
-
     {
         id: 10,
         date: "March 25, 2025",
@@ -157,6 +169,106 @@ export const table: dummyTable[] = [
         totalHours: "8 hours",
         overtime: "5 hours",
     },
+    {
+        id: 11,
+        date: "March 25, 2025",
+        clockIn: "8:00 AM",
+        clockOut: "5:00 PM",
+        status: "Working",
+        totalHours: "8 hours",
+        overtime: "5 hours",
+    },
+    {
+        id: 11,
+        date: "March 25, 2025",
+        clockIn: "8:00 AM",
+        clockOut: "5:00 PM",
+        status: "Working",
+        totalHours: "8 hours",
+        overtime: "5 hours",
+    },
+    {
+        id: 11,
+        date: "March 25, 2025",
+        clockIn: "8:00 AM",
+        clockOut: "5:00 PM",
+        status: "Working",
+        totalHours: "8 hours",
+        overtime: "5 hours",
+    },
+    {
+        id: 11,
+        date: "March 25, 2025",
+        clockIn: "8:00 AM",
+        clockOut: "5:00 PM",
+        status: "Working",
+        totalHours: "8 hours",
+        overtime: "5 hours",
+    },
+    {
+        id: 11,
+        date: "March 25, 2025",
+        clockIn: "8:00 AM",
+        clockOut: "5:00 PM",
+        status: "Working",
+        totalHours: "8 hours",
+        overtime: "5 hours",
+    },
+    {
+        id: 11,
+        date: "March 25, 2025",
+        clockIn: "8:00 AM",
+        clockOut: "5:00 PM",
+        status: "Working",
+        totalHours: "8 hours",
+        overtime: "5 hours",
+    },
+    {
+        id: 11,
+        date: "March 25, 2025",
+        clockIn: "8:00 AM",
+        clockOut: "5:00 PM",
+        status: "Working",
+        totalHours: "8 hours",
+        overtime: "5 hours",
+    },
+    {
+        id: 11,
+        date: "March 25, 2025",
+        clockIn: "8:00 AM",
+        clockOut: "5:00 PM",
+        status: "Working",
+        totalHours: "8 hours",
+        overtime: "5 hours",
+    },
+    {
+        id: 11,
+        date: "March 25, 2025",
+        clockIn: "8:00 AM",
+        clockOut: "5:00 PM",
+        status: "Working",
+        totalHours: "8 hours",
+        overtime: "5 hours",
+    },
+    {
+        id: 11,
+        date: "March 25, 2025",
+        clockIn: "8:00 AM",
+        clockOut: "5:00 PM",
+        status: "Working",
+        totalHours: "8 hours",
+        overtime: "5 hours",
+    },
+    {
+        id: 11,
+        date: "March 25, 2025",
+        clockIn: "8:00 AM",
+        clockOut: "5:00 PM",
+        status: "Working",
+        totalHours: "8 hours",
+        overtime: "5 hours",
+    },
+    
 ];
 
 
@@ -165,51 +277,61 @@ export const notif: dummyNotif[] = [
         id: 1,
         date: "March 25, 2025",
         message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+        status: "success",
     },
     {
         id: 2,
         date: "March 25, 2025",
         message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+        status: "success",
     },
     {
         id: 3,
         date: "March 25, 2025",
         message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+        status: "process",
     },
     {
         id: 4,
         date: "March 25, 2025",
         message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+        status: "process",
     },
     {
         id: 5,
         date: "March 25, 2025",
         message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+        status: "success",
     },
     {
         id: 6,
         date: "March 25, 2025",
         message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+        status: "success",
     },
     {
         id: 7,
         date: "March 25, 2025",
         message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+        status: "success",
     },
     {
         id: 8,
         date: "March 25, 2025",
         message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+        status: "success",
     },
     {
         id: 9,
         date: "March 25, 2025",
         message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+        status: "success",
     },
     {
         id: 10,
         date: "March 25, 2025",
         message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+        status: "success",
     },
-    
+
 ];

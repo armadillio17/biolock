@@ -62,16 +62,16 @@ export const userCards = [
     {
         group: "Clock In Group",
         items: [
-            { title: "Clock In", count: 1, color: "#D9D9D9" },
-            { title: "Clock Out", count: 1, color: "#D9D9D9" },
+            { title: "Clock In", count: 1, color: "#52F76B" },
+            { title: "Clock Out", count: 1, color: "#7A8EF7" },
         ],
     },
     {
         group: "Daily Metrics",
         items: [
-            { title: "Daily Hours", count: 1, color: "#D9D9D9" },
-            { title: "Daily Overtime", count: 1, color: "#D9D9D9" },
-            { title: "Daily Break", count: 1, color: "#D9D9D9" },
+            { title: "Daily Hours", count: 1, color: "#D1F8FF" },
+            { title: "Daily Overtime", count: 1, color: "#D1F8FF" },
+            { title: "Daily Break", count: 1, color: "#D1F8FF" },
         ],
     },
 ];
