@@ -6,16 +6,38 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { User, Lock1 } from 'iconsax-react';
+import { dummyData } from '@/data/ts/dummyData';
+import { useNavigate } from "react-router-dom"; // For redirection
 
 function SignIn() {
     const [formData, setFormData] = useState({
         username: '',
         password: '',
     });
+    // const [error, setError] = useState("");
+    const navigate = useNavigate(); // Initialize navigation
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         // Handle sign in logic here
+
+        const foundUser = dummyData.find(
+            (user) => user.email === formData.username && user.password === formData.password
+
+        );
+
+        if (foundUser) {
+            console.log("Login successful:", foundUser);
+    
+            // Save role in localStorage or state
+            localStorage.setItem("userRole", foundUser.role);
+    
+            // Redirect to dashboard
+            navigate("/dashboard");
+        } else {
+            alert("Invalid email or password");
+        }
+
         console.log('Sign in attempt:', formData);
     };
 

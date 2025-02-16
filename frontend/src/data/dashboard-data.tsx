@@ -41,7 +41,7 @@ export const sidebarProfile: SidebarProfile = {
 };
 
 // Admin Dashboard array
-export const Admincards = [
+export const adminCards = [
     { title: "New User", count: 1, color: "#9E8AFC" },
     { title: "Users", count: 1, color: "#54CEEE" },
     { title: "Request", count: 1, color: "#E26D5C" },
@@ -50,4 +50,28 @@ export const Admincards = [
     { title: "On Break", count: 1, color: "#52F76B" },
     { title: "Day Off", count: 1, color: "#BA6E7B" },
     { title: "On Leave", count: 1, color: "#FABA6C" },
+];
+
+
+export const Activitylogs= [
+    {  },
+];
+
+
+export const userCards = [
+    {
+        group: "Clock In Group",
+        items: [
+            { title: "Clock In", count: 1, color: "#52F76B" },
+            { title: "Clock Out", count: 1, color: "#7A8EF7" },
+        ],
+    },
+    {
+        group: "Daily Metrics",
+        items: [
+            { title: "Daily Hours", count: 1, color: "#D1F8FF" },
+            { title: "Daily Overtime", count: 1, color: "#D1F8FF" },
+            { title: "Daily Break", count: 1, color: "#D1F8FF" },
+        ],
+    },
 ];

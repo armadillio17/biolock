@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import UserDashboard from "@/components/UserDashboard";
-import AdminDashboard from "@/components/AdminDashboard";
+import UserViewEvent from "@/components/UserViewEvent";
+import AdminViewEvent from "@/components/AdminViewEvent";
 
-export default function Dashboard() {
+export default function ViewEvents() {
   // const admin = true;
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -13,6 +13,6 @@ export default function Dashboard() {
 
   }, []);
 
-  return isAdmin ? <AdminDashboard /> : <UserDashboard />
+  return isAdmin ? <AdminViewEvent /> : <UserViewEvent />
   // return admin ? <AdminDashboard /> : <UserDashboard />;
 }
