@@ -1,18 +1,68 @@
 from django.db import models
 from django.utils.timezone import now
+from django.contrib.auth.models import User  # Import Django's built-in User model
+
 
 # Create your models here.
 
 class Role(models.Model):
-    role_name = models.CharField(max_length=100)
+    ROLE_CHOICES = [
+        ('admin', 'Admin'),
+        ('user', 'User'),
+    ]
+
+    role_name = models.CharField(max_length=50, choices=ROLE_CHOICES, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(null=True, blank=True)
+    deleted_at = models.DateTimeField(blank=True, null=True)
 
-    def delete(self, *args, **kwargs):
+    def delete(self):
+        """Soft delete by setting the deleted_at field."""
         self.deleted_at = now()
         self.save()
 
     @property
     def is_deleted(self):
+        """Check if the role is soft-deleted."""
+        return self.deleted_at is not None
+
+    def __str__(self):
+        return self.role_name
+    
+
+
+class Attendance(models.Model):
+    STATUS_CHOICES = [
+        ('working', 'Working'),
+        ('absent', 'Absent'),
+        ('late', 'Late'),
+        ('half_day', 'Half Day'),
+    ]
+
+    #Uncomment the foreignkeys if already have User and Holiday models
+    # user = models.ForeignKey(User, on_delete=models.CASCADE)  # Replace 'auth.User' with your custom user model if available
+    # holiday = models.ForeignKey('Holiday', on_delete=models.SET_NULL, null=True, blank=True)
+
+    user_id = models.IntegerField() #dummy column
+    holiday_id = models.IntegerField(null=True, blank=True) #dummy column
+    date = models.DateField()
+    clock_in = models.DateTimeField(null=True, blank=True)
+    clock_out = models.DateTimeField(null=True, blank=True)
+    working_hours = models.IntegerField(default=0)
+    overtime_hours = models.IntegerField(default=0)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    scheduled_start = models.DateTimeField()
+    scheduled_end = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
+
+    def delete(self, *args, **kwargs):
+        """Soft delete by setting the deleted_at field."""
+        self.deleted_at = now()
+        self.save()
+
+    @property
+    def is_deleted(self):
+        """Check if the record is soft-deleted."""
         return self.deleted_at is not None
