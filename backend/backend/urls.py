@@ -16,7 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from user.views import AttendanceListCreateView, AttendanceDetailUpdateDeleteView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('attendance/', AttendanceListCreateView.as_view(), name='attendance-list'),
+    path('attendance/<int:pk>/', AttendanceDetailUpdateDeleteView.as_view(), name='attendance-detail'),
 ]
