@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.utils.timezone import now
-from user.models import Attendance
+from user.models.attendance import Attendance
 from user.serializers import AttendanceSerializer
 
 class AttendanceListCreateView(APIView):

@@ -33,3 +33,7 @@ coverage.xml
 # Static files
 /staticfiles/
 /media/
+
+# Python
+migrations
+db.sqlite
