@@ -64,18 +64,35 @@ class UserAttendanceView(APIView):
         serializer = AttendanceSerializer(attendances, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+# class UserClockInView(APIView):
+#     def post(self, request):
+#         """Create a new clock-in record"""
+#         # attendances = Attendance.objects.filter(deleted_at__isnull=True)
+#         # serializer = ClockInSerializer(attendances, data=request.data, partial=True)
+#         # serializer = ClockOutSerializer(attendances, data=request.data, partial=True)
+#         serializer = ClockInSerializer(data=request.data, partial=True)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+#         print("Validation Errors:", serializer.errors)  # Log validation errors
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class UserClockInView(APIView):
     def post(self, request):
         """Create a new clock-in record"""
-        attendances = Attendance.objects.filter(user_id=request.user.id, deleted_at__isnull=True)
-        serializer = ClockInSerializer(attendances, data=request.data)
-        # serializer = ClockOutSerializer(attendance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-        print("Validation Errors:", serializer.errors)  # Log validation errors
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serializer = ClockInSerializer(data=request.data)  # `partial=True` not needed for POST
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            print("Validation Errors:", serializer.errors)  # Log validation errors
+            return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            print(f"Unexpected Error: {str(e)}")  # Log unexpected errors
+            return Response({"error": "An unexpected error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 class UserClockOutView(APIView):
     def post(self, request):
