@@ -1,10 +1,14 @@
-from .users import UserCreateView, UserUpdateDeleteView
-from .attendance import AttendanceListCreateView, AttendanceDetailUpdateDeleteView
+from .users import UserCreateView, UserUpdateDeleteView, UserAuthenticationView
+from .attendance import AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView
 
 
 __all__ = [
     "UserCreateView",
     "UserUpdateDeleteView",
+    "UserAuthenticationView",
     "AttendanceListCreateView", 
-    "AttendanceDetailUpdateDeleteView"
+    "AttendanceDetailUpdateDeleteView",
+    "UserAttendanceView",
+    "UserClockInView",
+    "UserClockOutView",
     ]

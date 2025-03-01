@@ -17,13 +17,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from user.views import (
-    UserCreateView, UserUpdateDeleteView,
-    AttendanceListCreateView, AttendanceDetailUpdateDeleteView)
+    UserCreateView, UserUpdateDeleteView, UserAuthenticationView,
+    AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/', UserCreateView.as_view(), name='user-create'),
     path('users/<int:pk>/', UserUpdateDeleteView.as_view(), name='user-update-delete'),
+    path('login/', UserAuthenticationView.as_view(), name='login'),
     path('attendance/', AttendanceListCreateView.as_view(), name='attendance-list'),
     path('attendance/<int:pk>/', AttendanceDetailUpdateDeleteView.as_view(), name='attendance-detail'),
+    path('clock-in/', UserClockInView.as_view(), name='user-clock-in'),
+    path('clock-out/', UserClockOutView.as_view(), name='user-clock-out'),
+    path('user-attendance/', UserAttendanceView.as_view(), name='user-attendance-detail'),
 ]

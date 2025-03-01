@@ -1,8 +1,94 @@
 "use client";
 
 import { userCards  } from "@/data/dashboard-data.tsx"
+import { base_url } from '@/config';
 
 export const Metrics = () => {
+
+    const clockIn = async () => {
+        try {
+            const userId = localStorage.getItem("userId");
+            const id = Number(userId);
+
+            console.log("userId", userId);
+            
+            const response = await fetch(`${base_url}/clock-in/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    user_id: id,
+                }),
+            });
+    
+            if (!response.ok) {
+                console.log("response", response);
+                
+                throw new Error(`Clock In Failed: ${response.status}`);
+            }
+    
+            const data = await response.json();
+            console.log();
+            
+            alert("Clock In Successful!");
+            console.log(data);
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Clock In Failed!");
+        }
+    };
+
+
+    const clockOut = async () => {
+        try {
+            const response = await fetch(`${base_url}/clock-out/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    user_id: localStorage.getItem("userId"),
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Clock Out Failed: ${response.status}`);
+            }
+
+            const data = await response.json();
+            alert("Clock Out Successful!");
+            console.log(data);
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Clock Out Failed!");
+        }
+    };
+
+    const fetchDailyData = async () => {
+        try {
+            const response = await fetch(`${base_url}/user-attendance/`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                },
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Fetch Data Failed: ${response.status}`);
+            }
+    
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
+    fetchDailyData();
+
+
   return (
 
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 my-5 w-full">
@@ -24,6 +110,7 @@ export const Metrics = () => {
                     style={{ 
                         backgroundColor: card.color
                     }}
+                    onClick={card.title === "Clock In" ? clockIn : clockOut}
                     > <h2 className={` m-3`}> {card.title} </h2>
                     </div>
                     ))}

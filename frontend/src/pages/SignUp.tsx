@@ -5,8 +5,11 @@ import Logo from '@/assets/logo.webp';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { User, Lock1, Sms, UserEdit } from 'iconsax-react';
+import { base_url } from '@/config'
+import { useNavigate } from 'react-router-dom';
 
 function SignUp() {
+    const navigate =  useNavigate();
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -15,10 +18,31 @@ function SignUp() {
         password: '',
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle sign up logic here
+        
+
+        const response = await fetch(`${base_url}/user/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                first_name: formData.firstName,
+                last_name: formData.lastName,
+                username: formData.username,
+                email: formData.email,
+                password: formData.password,
+            }),
+        });
+
+        if (!response) {
+            const error = response;
+            throw new Error(error || "Sign Up Failed");
+        }
+
         console.log('Sign up attempt:', formData);
+        navigate('/');
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
