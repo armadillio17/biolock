@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.timezone import now
-from django.contrib.auth.models import User  # Import Django's built-in User model
+# from django.contrib.auth.models import User  # Import Django's built-in User model
 
 
 # Create own models per table.
@@ -13,7 +13,7 @@ class User(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     phone_number = models.CharField(null=True, max_length=20, unique=True)
-    email = models.EmailField(max_length=255, default='temp@example.com')
+    email = models.EmailField(max_length=255, default='temp@example.com', unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)

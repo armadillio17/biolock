@@ -6,40 +6,49 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { User, Lock1 } from 'iconsax-react';
-import { dummyData } from '@/data/ts/dummyData';
-import { useNavigate } from "react-router-dom"; // For redirection
+import { base_url } from '@/config'
+import { useNavigate } from 'react-router-dom';
 
 function SignIn() {
+    const navigate =  useNavigate();
     const [formData, setFormData] = useState({
         username: '',
         password: '',
     });
     // const [error, setError] = useState("");
-    const navigate = useNavigate(); // Initialize navigation
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         // Handle sign in logic here
 
-        const foundUser = dummyData.find(
-            (user) => user.email === formData.username && user.password === formData.password
+         const response = await fetch(`${base_url}/login/`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        username: formData.username,
+                        password: formData.password,
+                    }),
 
-        );
+                });
 
-        if (foundUser) {
-            console.log("Login successful:", foundUser);
-    
-            // Save role in localStorage or state
-            localStorage.setItem("userRole", foundUser.role);
-    
-            // Redirect to dashboard
-            navigate("/dashboard");
-        } else {
-            alert("Invalid email or password");
-        }
+                const data = await response.json();
 
-        console.log('Sign in attempt:', formData);
-    };
+                console.log("data", data);    
+        
+                if (data.error) {
+                    // const error = response;
+                    throw new Error(data.error || "Sign In Failed");
+                }
+        
+                // console.log('Sign In Attempt:', formData);
+
+                console.log('Sign up attempt:', formData);
+                localStorage.setItem("userRole", data.role);
+                localStorage.setItem("userId", data.user_id);
+                navigate('/dashboard');
+        };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
