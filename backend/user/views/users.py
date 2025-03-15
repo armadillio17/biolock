@@ -3,15 +3,16 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.utils.timezone import now
-from user.models.users import User
+from user.models.users import CustomUser
 from user.models.roles import Role
 from user.serializers import UserSerializer
 from rest_framework.authtoken.models import Token
+# from django.contrib.auth.models import User
 
 class UserCreateView(APIView):
     def get(self, request):
         """Retrieve all non-deleted user records"""
-        user = User.objects.filter(deleted_at__isnull=True)
+        user = CustomUser.objects.filter(deleted_at__isnull=True)
         serializer = UserSerializer(user, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -35,8 +36,8 @@ class UserUpdateDeleteView(APIView):
     def get_object(self, pk):
         """Helper method to get an object or return 404"""
         try:
-            return User.objects.get(pk=pk, deleted_at__isnull=True)
-        except User.DoesNotExist:
+            return CustomUser.objects.get(pk=pk, deleted_at__isnull=True)
+        except CustomUser.DoesNotExist:
             return None
 
     def get(self, request, pk):
@@ -82,8 +83,8 @@ class UserAuthenticationView(APIView):
             return Response({"error": "Password is required"}, status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            user = User.objects.get(username=username, deleted_at__isnull=True)
-            
+            user = CustomUser.objects.get(username=username, deleted_at__isnull=True)
+
             # Compare hashed password
             if not bcrypt.checkpw(password.encode(), user.password.encode()):
                 return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
@@ -91,9 +92,9 @@ class UserAuthenticationView(APIView):
             role_id = user.role_id
             role = Role.objects.get(id=role_id)
             
-            # token, created = Token.objects.get_or_create(user=username)
+            token, created = Token.objects.get_or_create(user=user)
             
             return Response({ "user_id": user.id, "role": role.role_name }, status=status.HTTP_200_OK)
             
-        except User.DoesNotExist:
+        except CustomUser.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
