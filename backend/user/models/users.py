@@ -1,10 +1,11 @@
 from django.db import models
 from django.utils.timezone import now
 # from django.contrib.auth.models import User  # Import Django's built-in User model
+from django.contrib.auth.models import AbstractUser
 
 
 # Create own models per table.
-class User(models.Model):
+class CustomUser(AbstractUser):
     role_id = models.IntegerField(null=True, blank=True)
     department_id = models.IntegerField(null=True, blank=True)
     position_id = models.IntegerField(null=True, blank=True)

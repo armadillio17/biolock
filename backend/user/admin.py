@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import User, Role, Attendance
+from .models import CustomUser, Role, Attendance
 
 # Register Role with customization
 @admin.register(Role)
