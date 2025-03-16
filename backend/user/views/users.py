@@ -7,6 +7,8 @@ from user.models.users import CustomUser
 from user.models.roles import Role
 from user.serializers import UserSerializer
 from rest_framework.authtoken.models import Token
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
+
 # from django.contrib.auth.models import User
 
 class UserCreateView(APIView):
@@ -69,7 +71,16 @@ class UserUpdateDeleteView(APIView):
         user.delete()
         return Response({"message": "User record soft deleted"}, status=status.HTTP_204_NO_CONTENT)
 
+
+## ----------- User Authentication with DRF Throttling ----------- ##
+class LoginThrottle(AnonRateThrottle):
+    scope = 'login'
+
 class UserAuthenticationView(APIView):
+    """User authentication with DRF throttling"""
+
+    throttle_classes = [LoginThrottle]
+    
     def post(self, request):
         """User authentication"""
         
