@@ -19,38 +19,44 @@ function SignIn() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle sign in logic here
-
-         const response = await fetch(`${base_url}/login/`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        username: formData.username,
-                        password: formData.password,
-                    }),
-
-                });
-
-                const data = await response.json();
-
-                console.log("data", data);    
-        
-                if (data.error) {
-                    // const error = response;
-                    throw new Error(data.error || "Sign In Failed");
-                }
-        
-                // console.log('Sign In Attempt:', formData);
-
-                console.log('Sign up attempt:', formData);
-                localStorage.setItem("userRole", data.role);
-                localStorage.setItem("userId", data.user_id);
-                // console.log("data.user_id", data.user_id);
-                
-                navigate('/dashboard');
-        };
+    
+        try {
+            const response = await fetch(`${base_url}/login/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username: formData.username,
+                    password: formData.password,
+                }),
+            });
+    
+            if (response.status === 429) {
+                alert("Too many failed login attempts. Please wait and try again.");
+                return;
+            }
+    
+            const data = await response.json();
+    
+            if (!response.ok) {
+                throw new Error(data.error || "Sign In Failed");
+            }
+    
+            console.log("Sign in successful:", data);
+    
+            localStorage.setItem("userRole", data.role);
+            localStorage.setItem("userId", data.user_id);
+            navigate("/dashboard");
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                alert(error.message);
+            } else {
+                alert("An unknown error occurred.");
+            }
+            console.error("Login error:", error);
+        }
+    }; 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;

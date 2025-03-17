@@ -53,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'user.middleware.AutoLogoutMiddleware' # Custom middleware to logout user after 30 minutes of inactivity
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -156,3 +157,19 @@ CORS_ALLOW_METHODS = [
 
 #Custom User Model
 AUTH_USER_MODEL = 'user.CustomUser'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',  # Limits anonymous users
+        'rest_framework.throttling.UserRateThrottle',  # Limits authenticated users (Note: Use this if needed right now its not used)
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'login': '5/min'  # Limit 5 login attempts per minute
+    }
+}
+
+# Session expires after 30 minutes of inactivity
+SESSION_COOKIE_AGE = 1800  # 1800 seconds = 30 minutes
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Logs out user when they close the browser
+SESSION_SAVE_EVERY_REQUEST = True  # Refresh session on each request
