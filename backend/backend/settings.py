@@ -165,6 +165,8 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle',  # Limits authenticated users (Note: Use this if needed right now its not used)
     ],
     'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/hour',  # Set rate for anonymous users
+        'user': '1000/day',  # Set rate for authenticated users
         'login': '5/min'  # Limit 5 login attempts per minute
     }
 }
