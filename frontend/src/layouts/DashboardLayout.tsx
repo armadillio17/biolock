@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ReactNode } from "react";
 import { sidebarMenu,  sidebarMenuUser, sidebarProfile } from "@/data/dashboard-data.tsx"
 import { LogoutCurve } from "iconsax-react";
+import { base_url } from '@/config';
 interface DashboardLayoutProps {
     children: ReactNode;
 }
@@ -10,18 +11,56 @@ interface DashboardLayoutProps {
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       // const admin = true;
     const [isAdmin, setIsAdmin] = useState(false);
+    const [userId, setUserId] = useState<string | null>(null); // Use state to persist userId
 
     useEffect(() => {
 
         const userRole = localStorage.getItem("userRole");
+        const storedUserId = localStorage.getItem("userId");
+
         setIsAdmin(userRole === "admin")
+        setUserId(storedUserId)
+
+        console.log("storedUserId", storedUserId)
+
 
     }, []);
 
     const handleLogout = () => {
         localStorage.removeItem("userRole"); // Remove user role from localStorage
+        localStorage.removeItem("token"); // Remove user role from localStorage
+        localStorage.removeItem("userId"); // Remove user role from localStorage
         window.location.href = "/"; // Redirect to Sign In page
     }
+
+    useEffect(() => {
+        if (!userId) return; // Prevent fetch if userId is null
+
+        const fetchUser = async () => {
+            console.log("Fetching user for ID:", userId);
+
+            try {
+                const response = await fetch(`${base_url}/users/${userId}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(response.statusText || "No Data Found");
+                }
+
+                const data = await response.json();
+                console.log("User data:", data);
+            } catch (err) {
+                console.error("Fetch error:", err instanceof Error ? err.message : err);
+            }
+        };
+
+        fetchUser();
+    }, [userId]); // Runs only when userId changes
 
     const menuItems = isAdmin ? sidebarMenu : sidebarMenuUser; // Choose menu based on role
 

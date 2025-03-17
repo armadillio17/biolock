@@ -47,6 +47,8 @@ function SignIn() {
                 console.log('Sign up attempt:', formData);
                 localStorage.setItem("userRole", data.role);
                 localStorage.setItem("userId", data.user_id);
+                // console.log("data.user_id", data.user_id);
+                
                 navigate('/dashboard');
         };
 

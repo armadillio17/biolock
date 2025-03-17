@@ -1,5 +1,8 @@
+import { useState } from 'react';
 import DashboardLayout from "@/layouts/DashboardLayout"
 import { Button } from "./ui/button"
+import { Calendar } from "./CalendarComponent"
+import { }
 
 export default function OvertimeRequest() {
   return (
@@ -14,6 +17,8 @@ export default function OvertimeRequest() {
           Request Overtime
         </Button>
         </div>
+        
+        <Calendar />
       </div>
     </DashboardLayout>
   )
