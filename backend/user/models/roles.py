@@ -3,7 +3,7 @@ from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 
 class Role(models.Model):
-    PREDEFINED_ROLES = ['admin', 'user']  # Predefined roles
+    PREDEFINED_ROLES = ['superadmin', 'admin', 'user']  # Predefined roles
 
     role_name = models.CharField(max_length=50, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
