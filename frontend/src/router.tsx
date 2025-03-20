@@ -7,6 +7,7 @@ import Timesheet from './pages/Timesheet';
 import OvertimeRequest from './components/UserOvertimeRequest';
 import ViewEvents from './pages/ViewEvents';
 import AdminEventList from './pages/AdminEvent';
+import AdminActivityLog from './components/AdminActivityLog';
 
 export const router = createBrowserRouter([
     {
@@ -51,6 +52,7 @@ export const router = createBrowserRouter([
     },
     {
         path: '/activity-logs',
-        // element: <Events />,
+
+        element: <AdminActivityLog />,
     },
 ]);

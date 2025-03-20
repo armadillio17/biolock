@@ -9,7 +9,7 @@ export default function AdminEvent() {
       <div className="flex flex-col">
         {/* Greetings and time */}
         <div className="flex flex-col text-[#4E4E53]">
-          <p className="text-2xl font-bold">Timesheet</p>
+          <p className="text-2xl font-bold">Events</p>
         </div>
         <div className="flex flex-col text-[#4E4E53]">
         <Button
@@ -27,7 +27,7 @@ export default function AdminEvent() {
                   <th className="p-3 text-center w-1/6">Date</th>
                   <th className="p-3 text-center w-1/6">Title</th>
                   <th className="p-3 text-center w-1/6">Status</th>
-                  <th className="p-3 text-center w-1/6"></th>
+                  <th> </th>
                   </tr>
               </thead>
             </table>

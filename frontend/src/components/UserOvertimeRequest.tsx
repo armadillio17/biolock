@@ -2,7 +2,7 @@ import { useState } from 'react';
 import DashboardLayout from "@/layouts/DashboardLayout"
 import { Button } from "./ui/button"
 import { Calendar } from "./CalendarComponent"
-import OvertimeRequestModal  from "./UserPrompt/OvertimeRequestPrompt";
+import OvertimeRequestModal from "./UserPrompt/OvertimeRequestPrompt";
 
 export default function OvertimeRequest() {
   const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
@@ -21,17 +21,17 @@ export default function OvertimeRequest() {
         <div className="flex flex-col-2 gap-4 items-center text-[#4E4E53]">
           <p className="text-2xl font-bold">Overtime</p>
           <Button
-          className="w-auto h-auto my-2 border-[1px] border-[#028090] rounded-xl text-[12px] font-meduim"
-          onClick={handleOpenModal} // Open modal on button click
-        >
-          Request Overtime
-        </Button>
+            className="w-auto h-auto my-2 border-[1px] border-[#028090] rounded-xl text-[12px] font-meduim"
+            onClick={handleOpenModal} // Open modal on button click
+          >
+            Request Overtime
+          </Button>
         </div>
-        
+
         <Calendar />
       </div>
-       {/* Table for Leave Requests */}
-        <div className="mt-6 overflow-x-auto">
+      {/* Table for Leave Requests */}
+      <div className="mt-6 overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
@@ -48,7 +48,7 @@ export default function OvertimeRequest() {
               <td className="py-3 px-6">Dave Franciscos</td>
               <td className="py-3 px-6">8 Hours</td>
               <td className="py-3 px-6">Pending</td>
-            {/* <td className="py-3 px-6">Flu</td> */}
+              {/* <td className="py-3 px-6">Flu</td> */}
               {/* <td className="py-3 px-6">Approved</td> */}
             </tr>
             {/* Add more rows as needed */}
@@ -66,4 +66,3 @@ export default function OvertimeRequest() {
     </DashboardLayout>
   )
 }
-  
