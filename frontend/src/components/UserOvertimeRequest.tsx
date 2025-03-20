@@ -45,7 +45,7 @@ export default function OvertimeRequest() {
             {/* Sample Data Row */}
             <tr className="border-b border-gray-300 hover:bg-gray-100">
               <td className="py-3 px-6">2024-10-29</td>
-              <td className="py-3 px-6">Dave Francisco</td>
+              <td className="py-3 px-6">Dave Franciscos</td>
               <td className="py-3 px-6">8 Hours</td>
               <td className="py-3 px-6">Pending</td>
             {/* <td className="py-3 px-6">Flu</td> */}
