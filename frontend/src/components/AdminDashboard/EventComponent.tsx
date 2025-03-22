@@ -8,34 +8,36 @@ export const EventList = () => {
 
   const handleView = (id: number) => {
     navigate(`/events/${id}`);
-  }
+  };
 
   return (
-    <table className="w-full border-collapse">
+    <table className="w-full border-collapse"> 
       <tbody className="text-gray-700">
         {imgData.map((row, index) => (
           <tr
             key={row.id}
-            className={`flex w-full border-b ${
-              index % 2 === 0 ? "bg-gray-100" : "bg-white"
-            } font-normal text-[12px]`}
+            className={`border-b ${
+              index % 2 === 0 ? "bg-[#E6F0FA]" : "bg-white"
+            } text-[14px]`}
           >
-            <td className="p-4 text-center w-1/5 text-black">{row.date}</td>
-            <td className="p-4 text-center w-1/5 text-black">{row.title}</td>
-            <td className="p-4 text-center w-1/5 text-black">{row.status}</td>
-            <td className="p-4 text-center w-2/5 flex justify-center gap-8">
-              <button 
-                className="border border-[#CCE5FE] px-5 py-1 rounded-xl text-black hover:bg-blue-100"
-                onClick={() => handleView(row.id)}
-              >
-                View
-              </button>
-              <button className="border border-[#CCE5FE] px-5 py-1 rounded-xl text-black hover:bg-blue-100">
-                Update
-              </button>
-              <button className="border border-[#CCE5FE] px-5 py-1 rounded-xl text-black hover:bg-blue-100">
-                Delete
-              </button>
+            <td className="p-3 text-center w-1/5 text-black">{row.date}</td>
+            <td className="p-3 text-center w-1/5 text-black">{row.title}</td>
+            <td className="p-3 text-center w-1/5 text-green-500">{row.status}</td>
+            <td className="p-3 text-center w-2/5">
+              <div className="flex justify-center gap-4">
+                <button 
+                  className="bg-[#77DD77] text-white px-5 py-2 rounded-md hover:bg-[#66CC66] w-24"
+                  onClick={() => handleView(row.id)}
+                >
+                  View
+                </button>
+                <button className="bg-[#FDFD96] text-black px-5 py-2 rounded-md hover:bg-[#FCF75E] w-24">
+                  Update
+                </button>
+                <button className="bg-[#FF6961] text-white px-5 py-2 rounded-md hover:bg-[#E74C3C] w-24">
+                  Delete
+                </button>
+              </div>
             </td>
           </tr>
         ))}
