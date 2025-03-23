@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from user.models.department import Department, DepartmentUser
-from user.serializers import DepartmentSerializer, AssignUserSerializer
+from user.serializers import DepartmentSerializer, AssignUserDepartmentSerializer
 
 
 class DepartmentListCreateView(APIView):
@@ -67,9 +67,11 @@ class AssignUserToDepartmentView(APIView):
 
     def post(self, request, department_id):
         """Assign a user to a department"""
-        user_id = request.data.get("user_id")
-        if not user_id:
-            return Response({"error": "User ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = AssignUserDepartmentSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        user_id = serializer.validated_data['user_id']
 
         try:
             department = Department.objects.get(id=department_id, deleted_at__isnull=True)
