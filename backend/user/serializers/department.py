@@ -10,14 +10,17 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
-    users = UserSerializer(many=True, read_only=True, source='departmentuser_set')
+    users = serializers.SerializerMethodField()
 
     class Meta:
         model = Department
-        fields = ['id', 'name', 'created_at', 'updated_at', 'deleted_at', 'users']
+        fields = ['id', 'department_name', 'created_at', 'updated_at', 'deleted_at', 'users']
 
+    def get_users(self, obj):
+        users = User.objects.filter(departmentuser__department=obj)
+        return UserSerializer(users, many=True).data
 
-class AssignUserSerializer(serializers.ModelSerializer):
+class AssignUserDepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = DepartmentUser
         fields = ['id', 'department', 'user', 'assigned_at']

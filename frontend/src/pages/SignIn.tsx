@@ -17,9 +17,9 @@ function SignIn() {
     });
     // const [error, setError] = useState("");
 
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-    
         try {
             const response = await fetch(`${base_url}/login/`, {
                 method: "POST",
@@ -56,7 +56,7 @@ function SignIn() {
             }
             console.error("Login error:", error);
         }
-    };    
+    }; 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;

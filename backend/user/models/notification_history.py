@@ -3,8 +3,10 @@ from django.contrib.auth.models import User  # Assuming you use Django's built-i
 from django.utils.timezone import now
 
 
-class Department(models.Model):
-    department_name = models.CharField(max_length=255)
+class NotificationHistory(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    type = models.CharField(max_length=255)
+    data = models.JSONField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
@@ -20,16 +22,6 @@ class Department(models.Model):
         return self.deleted_at is not None
 
     def __str__(self):
-        return self.department_name
+        return f"Notification #{self.id}"
 
 
-class DepartmentUser(models.Model):  # Pivot table
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    assigned_at = models.DateTimeField(auto_now_add=True)  # Track when assigned
-
-    class Meta:
-        unique_together = ('department', 'user')  # Prevent duplicate assignments
-
-    def __str__(self):
-        return f"{self.user.username} in {self.department.department_name}"
