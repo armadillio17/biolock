@@ -6,57 +6,30 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { User, Lock1 } from 'iconsax-react';
-import { base_url } from '@/config'
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/store/authStore'; // Update path as needed
 
 function SignIn() {
-    const navigate =  useNavigate();
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: '',
         password: '',
     });
-    // const [error, setError] = useState("");
 
+    // Get authentication state and actions from the auth store
+    const { login, loginError, isLoading } = useAuthStore();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        try {
-            const response = await fetch(`${base_url}/login/`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    username: formData.username,
-                    password: formData.password,
-                }),
-            });
-    
-            if (response.status === 429) {
-                alert("Too many failed login attempts. Please wait and try again.");
-                return;
-            }
-    
-            const data = await response.json();
-    
-            if (!response.ok) {
-                throw new Error(data.error || "Sign In Failed");
-            }
-    
-            console.log("Sign in successful:", data);
-    
-            localStorage.setItem("userRole", data.role);
-            localStorage.setItem("userId", data.user_id);
+
+        const success = await login(formData.username, formData.password);
+
+        if (success) {
             navigate("/dashboard");
-        } catch (error: unknown) {
-            if (error instanceof Error) {
-                alert(error.message);
-            } else {
-                alert("An unknown error occurred.");
-            }
-            console.error("Login error:", error);
+        } else if (loginError) {
+            alert(loginError);
         }
-    }; 
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -130,8 +103,14 @@ function SignIn() {
                                 <p>Forgot password?</p>
                             </div>
                         </div>
-                        <Button type="submit" className="w-full bg-[#7BDFF2] min-h-[51px] rounded-[5px]">
-                            <p className="text-md font-bold text-[#4E4E53]">Sign In</p>
+                        <Button
+                            type="submit"
+                            className="w-full bg-[#7BDFF2] min-h-[51px] rounded-[5px]"
+                            disabled={isLoading}
+                        >
+                            <p className="text-md font-bold text-[#4E4E53]">
+                                {isLoading ? "Signing In..." : "Sign In"}
+                            </p>
                         </Button>
                         <div className="flex justify-center mt-8">
                             <p>Don't have an account?</p>

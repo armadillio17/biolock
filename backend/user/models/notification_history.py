@@ -1,10 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User  # Assuming you use Django's built-in User model
 from django.utils.timezone import now
-
+from django.conf import settings
 
 class NotificationHistory(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     type = models.CharField(max_length=255)
     data = models.JSONField()
     created_at = models.DateTimeField(auto_now_add=True)

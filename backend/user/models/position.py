@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User  # Assuming you use Django's built-in User model
 from user.models.department import Department  # Replace `myapp` with the actual app name
 from django.utils.timezone import now
-
+from django.conf import settings
 
 class Position(models.Model):
     position_name = models.CharField(max_length=255)
@@ -26,7 +26,7 @@ class Position(models.Model):
 
 class PositionUser(models.Model):  # Pivot table
     position = models.ForeignKey(Position, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     assigned_at = models.DateTimeField(auto_now_add=True)  # Track when assigned
 
     class Meta:

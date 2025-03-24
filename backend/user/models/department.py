@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User  # Assuming you use Django's built-in User model
 from django.utils.timezone import now
-
+from django.conf import settings
 
 class Department(models.Model):
     department_name = models.CharField(max_length=255)
@@ -25,7 +25,7 @@ class Department(models.Model):
 
 class DepartmentUser(models.Model):  # Pivot table
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     assigned_at = models.DateTimeField(auto_now_add=True)  # Track when assigned
 
     class Meta:

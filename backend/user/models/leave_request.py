@@ -7,7 +7,7 @@ class LeaveRequest(models.Model):
     date = models.DateField()
     type = models.CharField(max_length=255)
     details = models.TextField()
-    status = models.enums.EnumField(choices=['pending', 'approved', 'rejected'], default='pending')
+    # status = models.enums.EnumField(choices=['pending', 'approved', 'rejected'], default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)

@@ -18,7 +18,8 @@ from django.contrib import admin
 from django.urls import path
 from user.views import (
     UserCreateView, UserUpdateDeleteView, UserAuthenticationView,
-    AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView )
+    AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView, GetUserRoleView, LogoutView
+) 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,4 +31,6 @@ urlpatterns = [
     path('clock-in/', UserClockInView.as_view(), name='user-clock-in'),
     path('clock-out/', UserClockOutView.as_view(), name='user-clock-out'),
     path('user-attendance/', UserAttendanceView.as_view(), name='user-attendance-detail'),
+    path('<int:user_id>/role/', GetUserRoleView.as_view(), name='get-user-role'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 ]
