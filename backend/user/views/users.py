@@ -100,12 +100,52 @@ class UserAuthenticationView(APIView):
             if not bcrypt.checkpw(password.encode(), user.password.encode()):
                 return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
             
-            role_id = user.role_id
-            role = Role.objects.get(id=role_id)
-            
+            # Create or get authentication token
             token, created = Token.objects.get_or_create(user=user)
             
-            return Response({ "user_id": user.id, "role": role.role_name }, status=status.HTTP_200_OK)
+            # Create response object
+            response = Response({
+                "user_id": user.id, 
+                "success": True
+            }, status=status.HTTP_200_OK)
+            
+            # Set token in HTTP-only cookie
+            response.set_cookie(
+                'auth_token',
+                token.key,
+                httponly=True,
+                # secure=True,  
+                # samesite='Strict',
+                max_age=86400 * 30  # 30 days or adjust as needed
+            )
+            
+            return response
             
         except CustomUser.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+class LogoutView(APIView):
+            def post(self, request):
+                response = Response({"success": True})
+                response.delete_cookie('auth_token')
+                return response
+            
+            
+class GetUserRoleView(APIView):
+    """Get the role of a user via user ID"""
+
+    def get(self, request, user_id):
+        try:
+            user = CustomUser.objects.get(id=user_id, deleted_at__isnull=True)
+            role = Role.objects.get(id=user.role_id)
+
+            return Response({
+                "user_id": user.id,
+                "role_id": role.id,
+                "role_name": role.role_name
+            }, status=status.HTTP_200_OK)
+
+        except CustomUser.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Role.DoesNotExist:
+            return Response({"error": "Role not found for user"}, status=status.HTTP_404_NOT_FOUND)

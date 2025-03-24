@@ -1,4 +1,4 @@
-from .users import UserCreateView, UserUpdateDeleteView, UserAuthenticationView
+from .users import UserCreateView, UserUpdateDeleteView, UserAuthenticationView, GetUserRoleView, LogoutView
 from .attendance import AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView
 from .department import DepartmentListCreateView, DepartmentDetailView, AssignUserToDepartmentView, RemoveUserFromDepartmentView
 from .leave_request import LeaveRequestListCreateView, LeaveRequestDetailView
@@ -9,6 +9,8 @@ __all__ = [
     "UserCreateView",
     "UserUpdateDeleteView",
     "UserAuthenticationView",
+    "GetUserRoleView",
+    "LogoutView",
     "AttendanceListCreateView", 
     "AttendanceDetailUpdateDeleteView",
     "UserAttendanceView",
