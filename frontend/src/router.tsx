@@ -11,6 +11,7 @@ import AdminActivityLog from './components/AdminActivityLog';
 import UserList from './pages/UserList';
 import AdminReport from './pages/AdminReport';
 
+
 export const router = createBrowserRouter([
     {
         path: '/',
@@ -47,6 +48,9 @@ export const router = createBrowserRouter([
     {
         path: '/reports',
         element: <AdminReport />,
+
+
+
     },
     {
         path: '/users',

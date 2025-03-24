@@ -82,5 +82,7 @@ export default function AdminEvent() {
         </div>
       </div>
     </DashboardLayout>
+    
   );
 }
+
