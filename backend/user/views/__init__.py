@@ -4,6 +4,11 @@ from .department import DepartmentListCreateView, DepartmentDetailView, AssignUs
 from .leave_request import LeaveRequestListCreateView, LeaveRequestDetailView
 from .notification_history import NotificationHistoryListCreateView, NotificationHistoryDetailView
 from .report import ReportListCreateView, ReportDetailView
+from .holiday import HolidayListCreateView, HolidayDetailView
+from .attendance_adjustments import AttendanceAdjustmentsListCreateView, AttendanceAdjustmentsDetailView
+from .position import PositionListCreateView, PositionDetailView, AssignUserToPositionView, RemoveUserFromPositionView
+from .logs import LogsListCreateView, LogsDetailView
+from .attendance_summary import AttendanceSummaryListCreateView, AttendanceSummaryDetailView
 
 __all__ = [
     "UserCreateView",
@@ -26,4 +31,16 @@ __all__ = [
     "NotificationHistoryDetailView",
     "ReportListCreateView",
     "ReportDetailView",
+    "HolidayListCreateView",
+    "HolidayDetailView",
+    "AttendanceAdjustmentsListCreateView",
+    "AttendanceAdjustmentsDetailView",
+    "PositionListCreateView",
+    "PositionDetailView",
+    "AssignUserToPositionView",
+    "RemoveUserFromPositionView",
+    "LogsListCreateView",
+    "LogsDetailView",
+    "AttendanceSummaryListCreateView",
+    "AttendanceSummaryDetailView",
     ]
