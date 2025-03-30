@@ -39,3 +39,5 @@ migrations
 db.sqlite
 
 .devbrc
+db.sqlite3
+backup.sql
