@@ -80,7 +80,7 @@ export const useAuthStore = create<AuthState>()(
         } catch (err) {
           console.error("Failed to fetch role", err);
         }
-      },
+      }, 
 
       logout: () => {
         authAxios.post(`${base_url}/logout/`, {}, { 

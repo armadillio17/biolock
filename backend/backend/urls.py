@@ -20,6 +20,33 @@ from user.views import (
     UserCreateView, UserUpdateDeleteView, UserAuthenticationView,
     AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView, GetUserRoleView, LogoutView
 ) 
+from user.views.leave_request import LeaveRequestListCreateView, LeaveRequestDetailView  # Import the views
+from user.views.department import (
+    DepartmentListCreateView, DepartmentDetailView, 
+    AssignUserToDepartmentView, RemoveUserFromDepartmentView
+)
+from user.views.position import (
+    PositionListCreateView, PositionDetailView, 
+    AssignUserToPositionView, RemoveUserFromPositionView
+)
+from user.views.notification_history import (
+    NotificationHistoryListCreateView, NotificationHistoryDetailView
+)
+from user.views.report import (
+    ReportListCreateView, ReportDetailView
+)
+from user.views.holiday import (
+    HolidayListCreateView, HolidayDetailView
+)
+from user.views.attendance_adjustments import (
+    AttendanceAdjustmentsListCreateView, AttendanceAdjustmentsDetailView
+)
+from user.views.logs import (
+    LogsListCreateView, LogsDetailView
+)
+from user.views.attendance_summary import (
+    AttendanceSummaryListCreateView, AttendanceSummaryDetailView
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,4 +60,46 @@ urlpatterns = [
     path('user-attendance/', UserAttendanceView.as_view(), name='user-attendance-detail'),
     path('<int:user_id>/role/', GetUserRoleView.as_view(), name='get-user-role'),
     path('logout/', LogoutView.as_view(), name='logout'),
+
+    # Leave Request Endpoints
+    path('leave-requests/', LeaveRequestListCreateView.as_view(), name='leave-request-list'),
+    path('leave-requests/<int:pk>/', LeaveRequestDetailView.as_view(), name='leave-request-detail'),
+
+    # Department Endpoints
+    path('departments/', DepartmentListCreateView.as_view(), name='department-list'),
+    path('departments/<int:pk>/', DepartmentDetailView.as_view(), name='department-detail'),
+    path('departments/<int:department_id>/assign-user/', AssignUserToDepartmentView.as_view(), name='assign-user-to-department'),
+    path('departments/<int:department_id>/remove-user/', RemoveUserFromDepartmentView.as_view(), name='remove-user-from-department'),
+
+    # Position Endpoints
+    path('positions/', PositionListCreateView.as_view(), name='position-list'),
+    path('positions/<int:pk>/', PositionDetailView.as_view(), name='position-detail'),
+    
+    # Assign/Remove Users to/from Positions
+    path('departments/<int:department_id>/positions/<int:position_id>/assign-user/', AssignUserToPositionView.as_view(), name='assign-user-to-position'),
+    path('departments/<int:department_id>/positions/<int:position_id>/remove-user/', RemoveUserFromPositionView.as_view(), name='remove-user-from-position'),
+
+    # Notification History Endpoints
+    path('notifications/', NotificationHistoryListCreateView.as_view(), name='notification-list'),
+    path('notifications/<int:pk>/', NotificationHistoryDetailView.as_view(), name='notification-detail'),
+
+    # Report Endpoints
+    path('reports/', ReportListCreateView.as_view(), name='report-list'),
+    path('reports/<int:pk>/', ReportDetailView.as_view(), name='report-detail'),
+
+    # Holiday Endpoints
+    path('holidays/', HolidayListCreateView.as_view(), name='holiday-list-create'),
+    path('holidays/<int:pk>/', HolidayDetailView.as_view(), name='holiday-detail'),
+
+    # Attendance Adjustments Endpoints
+    path('attendance-adjustments/', AttendanceAdjustmentsListCreateView.as_view(), name='attendance-adjustments-list-create'),
+    path('attendance-adjustments/<int:pk>/', AttendanceAdjustmentsDetailView.as_view(), name='attendance-adjustments-detail'),
+
+    # Logs Endpoint
+    path('logs/', LogsListCreateView.as_view(), name='logs-list-create'),
+    path('logs/<int:pk>/', LogsDetailView.as_view(), name='logs-detail'),
+
+    # Attendance Summary Endpoints
+    path('attendance-summary/', AttendanceSummaryListCreateView.as_view(), name='attendance-summary-list-create'),
+    path('attendance-summary/<int:pk>/', AttendanceSummaryDetailView.as_view(), name='attendance-summary-detail'),
 ]
