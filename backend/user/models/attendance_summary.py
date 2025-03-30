@@ -5,7 +5,8 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class AttendanceSummary(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendances")  
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendance_summaries")
+    # user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendances")  
     period_start = models.DateField()
     period_end = models.DateField()
     total_working_hours = models.IntegerField(default=0)

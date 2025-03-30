@@ -13,7 +13,8 @@ class Attendance(models.Model):
         ('half_day', 'Half Day'),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendances")  
+    # user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendances") 
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendances") 
     holiday = models.ForeignKey(Holiday, on_delete=models.SET_NULL, null=True, blank=True, related_name="attendances") 
 
     date = models.DateField()

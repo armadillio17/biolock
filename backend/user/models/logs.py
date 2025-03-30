@@ -5,7 +5,8 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class Logs(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendances")  
+    # user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendances") 
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_logs") 
     action = models.CharField(max_length=255)
     details = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
