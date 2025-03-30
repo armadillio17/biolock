@@ -12,6 +12,7 @@ import UserList from './pages/UserList';
 import AdminReport from './pages/AdminReport';
 import { ProtectedRoute } from './ProtectedRoutes';
 
+
 export const router = createBrowserRouter([
     {
         path: '/',
@@ -47,7 +48,13 @@ export const router = createBrowserRouter([
     },
     {
         path: '/reports',
+
+        element: <AdminReport />,
+
+
+
         element: <ProtectedRoute element={<AdminReport />} requiredRole="admin" />,
+
     },
     {
         path: '/users',
