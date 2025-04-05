@@ -1,13 +1,25 @@
 from django.db import models
 from django.utils.timezone import now
 from user.models.attendance import Attendance
+from django.contrib.auth import get_user_model  # To handle custom user models
+
+User = get_user_model()
 
 class LeaveRequest(models.Model):
-    attendance_id = models.ForeignKey(Attendance, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='leave_requests'  # Optional: allows user.leave_requests.all()
+    )
+    attendance_id = models.ForeignKey(
+        Attendance, 
+        on_delete=models.CASCADE, 
+        null=True,
+        blank=True
+    )
     date = models.DateField()
     type = models.CharField(max_length=255)
     details = models.TextField()
-    # status = models.enums.EnumField(choices=['pending', 'approved', 'rejected'], default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
@@ -23,4 +35,4 @@ class LeaveRequest(models.Model):
         return self.deleted_at is not None
 
     def __str__(self):
-        return f"Leave Request #{self.id}"
+        return f"Leave Request #{self.id} for {self.user_id}"
