@@ -29,7 +29,6 @@ class LeaveRequest(models.Model):
         self.deleted_at = now()
         self.save()
 
-    @property
     def is_deleted(self):
         """Check if the record is soft-deleted."""
         return self.deleted_at is not None
