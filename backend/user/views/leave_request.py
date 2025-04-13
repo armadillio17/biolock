@@ -17,7 +17,7 @@ class LeaveRequestListCreateView(APIView):
 
     def post(self, request):
         """Create a new leave request and log a notification"""
-        user_id = request.data.get('user_id')  # Get the user_id from the request
+        user_id = request.data.get('user_id')
         if not user_id:
             return Response({'error': 'User ID is required'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -30,7 +30,7 @@ class LeaveRequestListCreateView(APIView):
         # Now you can create a leave request with the user_id
         serializer = LeaveRequestSerializer(data=request.data)
         if serializer.is_valid():
-            leave_request = serializer.save(user=user)  # Save the leave request with the user
+            leave_request = serializer.save(user=user)
 
             # Log a notification for the created leave request
             log_notification(

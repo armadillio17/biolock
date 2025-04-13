@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.timezone import now
 from user.models.attendance import Attendance
-from django.contrib.auth import get_user_model  # To handle custom user models
+from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
