@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from user.models.leave_request import LeaveRequest
+from user.models.users import CustomUser  # Import the User model
 from user.serializers import LeaveRequestSerializer
 from user.utils.notification_history import log_notification  # Import the helper function
 
@@ -16,13 +17,24 @@ class LeaveRequestListCreateView(APIView):
 
     def post(self, request):
         """Create a new leave request and log a notification"""
+        user_id = request.data.get('user_id')  # Get the user_id from the request
+        if not user_id:
+            return Response({'error': 'User ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Optionally, you can check if the user exists, but it's not strictly necessary unless you want to validate:
+        try:
+            user = CustomUser.objects.get(id=user_id)
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Now you can create a leave request with the user_id
         serializer = LeaveRequestSerializer(data=request.data)
         if serializer.is_valid():
-            leave_request = serializer.save()
+            leave_request = serializer.save(user=user)  # Save the leave request with the user
 
             # Log a notification for the created leave request
             log_notification(
-                user_id=leave_request.attendance_id.user_id,  # The user associated with the leave request
+                user_id=user.id,  # The user associated with the leave request
                 notification_type="leave_request",
                 data={
                     "leave_request_id": leave_request.id,
@@ -33,7 +45,6 @@ class LeaveRequestListCreateView(APIView):
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class LeaveRequestDetailView(APIView):
     """Retrieve, update, or delete a specific leave request"""
