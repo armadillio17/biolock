@@ -41,4 +41,4 @@ db.sqlite
 .devbrc
 db.sqlite3
 backup.sql
-/backend/db.sqlite3
+backend/db.sqlite3
