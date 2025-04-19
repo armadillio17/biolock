@@ -6,3 +6,17 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = '__all__'
+        
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = [
+            'role_id',
+            'department_id',
+            'position_id',
+            'first_name', 
+            'last_name',
+            'phone_number',
+            'email',
+            'created_at',
+            ]

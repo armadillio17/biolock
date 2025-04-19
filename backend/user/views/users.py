@@ -5,7 +5,7 @@ from rest_framework import status
 from django.utils.timezone import now
 from user.models.users import CustomUser
 from user.models.roles import Role
-from user.serializers import UserSerializer
+from user.serializers import UserSerializer, UserProfileSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
@@ -47,7 +47,7 @@ class UserUpdateDeleteView(APIView):
         user = self.get_object(pk)
         if user is None:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-        serializer = UserSerializer(user)
+        serializer = UserProfileSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
