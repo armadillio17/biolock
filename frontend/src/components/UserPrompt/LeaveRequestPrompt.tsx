@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { leaveRequestStore } from '@/store/leaveRequestStore';
 
 interface LeaveRequestModalProps {
   isOpen: boolean;
@@ -6,47 +7,56 @@ interface LeaveRequestModalProps {
 }
 
 const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({ isOpen, onClose }) => {
-  const [name, setName] = useState('');
-  const [leaveType, setLeaveType] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [reason, setReason] = useState('');
+  const [formData, setFormData] = useState({
+    leaveType: '',
+    startDate: '',
+    endDate: '',
+    reason: '',
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { createLeaveRequest } = leaveRequestStore();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  // Mark handleSubmit as async so that we can use 'await' inside it
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log({
-      name,
-      leaveType,
-      startDate,
-      endDate,
-      reason,
-    });
-    onClose(); // Close the modal after submission
+
+    try {
+      await createLeaveRequest(
+        formData.startDate,
+        formData.endDate,
+        formData.leaveType,
+        formData.reason,
+        'pending' // assuming default status is "pending"
+      );
+
+      onClose(); // Close the modal after submission
+    } catch (error) {
+      console.error('Failed to submit leave request:', error);
+      // Handle the error accordingly (e.g., show an error message)
+    }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg p-6 shadow-lg w-96">
         <h2 className="text-xl font-bold mb-4">Leave Request Form</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              required
-            />
-          </div>
-          <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Leave Type</label>
             <select
-              value={leaveType}
-              onChange={(e) => setLeaveType(e.target.value)}
+              name="leaveType"
+              value={formData.leaveType}
+              onChange={handleChange}
               className="mt-1 block w-full border border-gray-300 rounded-md p-2"
               required
             >
@@ -61,8 +71,9 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({ isOpen, onClose }
             <label className="block text-sm font-medium text-gray-700">Start Date</label>
             <input
               type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              name="startDate"
+              value={formData.startDate}
+              onChange={handleChange}
               className="mt-1 block w-full border border-gray-300 rounded-md p-2"
               required
             />
@@ -71,8 +82,9 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({ isOpen, onClose }
             <label className="block text-sm font-medium text-gray-700">End Date</label>
             <input
               type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
+              name="endDate"
+              value={formData.endDate}
+              onChange={handleChange}
               className="mt-1 block w-full border border-gray-300 rounded-md p-2"
               required
             />
@@ -80,8 +92,9 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({ isOpen, onClose }
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Reason for Leave</label>
             <textarea
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
+              name="reason"
+              value={formData.reason}
+              onChange={handleChange}
               className="mt-1 block w-full border border-gray-300 rounded-md p-2"
               rows={4}
               required
