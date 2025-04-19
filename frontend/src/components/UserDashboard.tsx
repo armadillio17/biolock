@@ -4,6 +4,8 @@ import { EventCarousel }  from "@/components/UserDashboardComponent/EventCarouse
 import { Timesheet }  from "@/components/UserDashboardComponent/TimesheetComponent"
 import { Notification }  from "@/components/UserDashboardComponent/NotificationComponent"
 
+// import { useAuthStore  } from "@/store/authStore"
+
 const FormattedDate = () => {
   const today = new Date();
   const formattedDate = new Intl.DateTimeFormat("en-US", {
@@ -17,8 +19,10 @@ const FormattedDate = () => {
 
 function UserDashboard() {
   const currentdate = FormattedDate();
+
   return (
     <DashboardLayout>
+      
       <div className="flex flex-col">
         {/* Greetings and time */}
         <div className="flex flex-col text-[#4E4E53]">

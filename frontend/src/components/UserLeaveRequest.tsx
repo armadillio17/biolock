@@ -1,10 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DashboardLayout from "@/layouts/DashboardLayout"
 import { Button } from "./ui/button"
 import { Calendar } from "./CalendarComponent"
 import LeaveRequestModal from "./UserPrompt/LeaveRequestPrompt";
+import { leaveRequestStore } from '@/store/leaveRequestStore';
 
 export default function LeaveRequest() {
+
+  const { leaveRequest, fetchLeaveRequest, updateLeaveRequest } = leaveRequestStore();
+
+  useEffect(() => {
+    fetchLeaveRequest();
+  }, [fetchLeaveRequest]);
 
   const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
 
@@ -40,33 +47,60 @@ export default function LeaveRequest() {
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-              <th className="py-3 px-6 text-left">Name</th>
-              <th className="py-3 px-6 text-left">Leave Type</th>
-              <th className="py-3 px-6 text-left">Start Date</th>
-              <th className="py-3 px-6 text-left">End Date</th>
-              <th className="py-3 px-6 text-left">Reason</th>
-              <th className="py-3 px-6 text-left">Status</th>
+              <th className="py-3 px-6 text-center">Name</th>
+              <th className="py-3 px-6 text-center">Leave Type</th>
+              <th className="py-3 px-6 text-center">Start Date</th>
+              <th className="py-3 px-6 text-center">End Date</th>
+              <th className="py-3 px-6 text-center">Reason</th>
+              <th className="py-3 px-6 text-center"></th>
             </tr>
           </thead>
           <tbody className="text-gray-600 text-sm font-light">
-            {/* Sample Data Row */}
-            <tr className="border-b border-gray-300 hover:bg-gray-100">
-              <td className="py-3 px-6">John Doe</td>
-              <td className="py-3 px-6">Sick Leave</td>
-              <td className="py-3 px-6">2023-10-01</td>
-              <td className="py-3 px-6">2023-10-05</td>
-              <td className="py-3 px-6">Flu</td>
-              <td className="py-3 px-6">Approved</td>
-            </tr>
-            {/* Add more rows as needed */}
-            <tr className="border-b border-gray-300 hover:bg-gray-100">
-              <td className="py-3 px-6">Jane Smith</td>
-              <td className="py-3 px-6">Vacation Leave</td>
-              <td className="py-3 px-6">2023-11-10</td>
-              <td className="py-3 px-6">2023-11-15</td>
-              <td className="py-3 px-6">Family Trip</td>
-              <td className="py-3 px-6">Pending</td>
-            </tr>
+            {leaveRequest && leaveRequest.length > 0 ? (
+              leaveRequest.map((leave, index) => (
+                <tr key={index} className="border-b border-gray-300 hover:bg-gray-100">
+                  <td className="py-3 px-6 text-center">{leave.id}</td>
+                  <td className="py-3 px-6 text-center">{leave.type}</td>
+                  <td className="py-3 px-6 text-center">{leave.start_date}</td>
+                  <td className="py-3 px-6 text-center">{leave.end_date}</td>
+                  <td className="py-3 px-6 text-center">{leave.details}</td>
+
+                  {leave.status === 'pending' ? (
+                    <td className="py-3 px-6 text-center">
+                      <Button 
+                        className="bg-green-500 text-white px-4 py-1 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() => updateLeaveRequest("approved", leave.id)}
+                      >
+                        Approve
+                      </Button>
+                      <Button 
+                        className="bg-red-500 text-white px-4 py-1 rounded ml-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() => updateLeaveRequest("declined", leave.id)}
+                      >
+                        Decline
+                      </Button>
+                    </td>
+                  ) : (
+                    <td className="py-3 px-6 text-center">
+                      <span className={`px-4 py-2 rounded-full text-[14px] font-medium ${
+                        leave.status === 'approved' 
+                          ? 'bg-green-100 text-green-800' 
+                          : leave.status === 'declined'
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {leave.status}
+                      </span>
+                    </td>
+                  )}
+
+                </tr>
+              ))
+            ) : (
+              <tr className="border-b border-gray-300 hover:bg-gray-100">
+                <td className="py-3 px-6" colSpan={7}>No Leave Request Found.</td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
