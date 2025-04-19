@@ -13,7 +13,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     const isAdmin = user.role === "admin";
 
     const menuItems = isAdmin ? sidebarMenu : sidebarMenuUser; // Choose menu based on role
+    
+    const capitalize = (str: string): string =>
+        str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
+    
     return (
         <div className="flex min-h-screen">
             <aside className="min-w-[340px] p-7  bg-[#CCE5FE] flex flex-col justify-between">
@@ -26,7 +30,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                             <img src={sidebarProfile.img} alt="Profile" className="object-cover w-full h-full" />
                         </div>
                         <div className="flex flex-col justify-center text-lg text-[#4E4E53]">
-                            <p>{sidebarProfile.name}</p>
+                            <p>
+                                {user.first_name ? capitalize(user.first_name) : ''}{" "}
+                                {user.last_name ? capitalize(user.last_name) : ''}
+                            </p>
                             <p>{sidebarProfile.position}</p>
                         </div>
                     </div>
