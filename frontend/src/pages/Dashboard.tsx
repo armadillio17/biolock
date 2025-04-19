@@ -16,7 +16,7 @@ export default function Dashboard() {
 
   const { user } = useAuthStore();
 
-  console.log("user.role", user.role);
+  // console.log("user.role", user.role);
   
 
   return user.role === "admin" ? <AdminDashboard /> : <UserDashboard />
