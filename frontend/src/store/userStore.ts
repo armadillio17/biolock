@@ -18,7 +18,7 @@ interface AttendanceState {
     // Attendance actions
     fetchAttendance: (userId: number) => Promise<void>;
 }
-  
+
 // Create Attendance Store
 export const useAttendanceStore = create<AttendanceState>((set) => ({
   attendance: [],

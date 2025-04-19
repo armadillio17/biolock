@@ -4,6 +4,8 @@ import { base_url } from '../config';
 import { authAxios } from "@/lib/secured-axios-instance";
 interface UserData {
     userId: string | null;
+    first_name: string | null;
+    last_name: string | null;
     isAuthenticated: boolean;
     role: string | null; // Add role here
 }
@@ -16,6 +18,7 @@ interface AuthState {
     login: (username: string, password: string) => Promise<boolean>;
     logout: () => void;
     fetchUserRole: (userId: string) => Promise<void>; // New method
+    fetchUser: (userId: string) => Promise<void>; // New method
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -23,6 +26,8 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       user: {
         userId: null,
+        first_name: null,
+        last_name: null,
         isAuthenticated: false,
         role: null
       },
@@ -56,6 +61,7 @@ export const useAuthStore = create<AuthState>()(
 
           // Fetch role right after login
           await get().fetchUserRole(userId);
+          await get().fetchUser(userId);
 
           return true;
         } catch (error) {
@@ -82,6 +88,26 @@ export const useAuthStore = create<AuthState>()(
         }
       }, 
 
+      fetchUser: async (userId: string) => {
+        try {
+          const user = await authAxios.get(`${base_url}/users/${userId}/`, {
+            // withCredentials: true
+          });
+
+          console.log("user.users", user);
+
+          set((state) => ({
+            user: {
+              ...state.user,
+              first_name: user.data.first_name,
+              last_name: user.data.last_name,
+            }
+          }));
+        } catch (err) {
+          console.error("Failed to fetch role", err);
+        }
+      }, 
+
       logout: () => {
         authAxios.post(`${base_url}/logout/`, {}, { 
           withCredentials: true 
@@ -89,6 +115,8 @@ export const useAuthStore = create<AuthState>()(
           set({
             user: {
               userId: null,
+              first_name: null,
+              last_name: null,
               isAuthenticated: false,
               role: null
             }
@@ -102,6 +130,8 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => ({
         user: {
           userId: state.user.userId,
+          first_name: state.user.first_name,
+          last_name: state.user.last_name,
           isAuthenticated: state.user.isAuthenticated,
           role: state.user.role
         }
