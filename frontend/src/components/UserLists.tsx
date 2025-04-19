@@ -1,8 +1,17 @@
-import { useState } from 'react';
 import DashboardLayout from "@/layouts/DashboardLayout"
 import { Button } from "./ui/button"
+import { useUserStore  } from "@/store/userlistStore";
+import { useEffect } from 'react';
 
 export default function UserLists() {
+
+  const { userList, fetchUserList } = useUserStore();
+  
+  useEffect(() => {
+    fetchUserList();
+  }, [fetchUserList]);
+
+  // console.log("userList", userList);
 
   return (
     <DashboardLayout>
@@ -52,14 +61,20 @@ export default function UserLists() {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-gray-300">
-                <td className="py-2 px-4">09-18-2025</td>
-                <td className="py-2 px-4">Lorem Ipsum</td>
-              </tr>
-              <tr className="border-b border-gray-300">
-                <td className="py-2 px-4">09-18-2025</td>
-                <td className="py-2 px-4">Lorem Ipsum</td>
-              </tr>
+              {userList && userList.length > 0 ? (
+                userList.map((user) => (
+                  <tr key={user.id} className="border-b border-gray-300">
+                    <td className="py-2 px-4">{new Date(user.created_at).toLocaleDateString()}</td>
+                    <td className="py-2 px-4">{user.first_name} {user.last_name}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr className="border-b border-gray-300">
+                  <td colSpan={2} className="py-2 px-4 text-center">
+                    {userList ? "No users found" : "Loading users..."}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
