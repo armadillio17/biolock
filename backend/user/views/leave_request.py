@@ -76,7 +76,7 @@ class LeaveRequestDetailView(APIView):
 
             # Log a notification for the updated leave request
             log_notification(
-                user_id=updated_leave_request.attendance_id.user_id,  # The user associated with the leave request
+                user_id=updated_leave_request.user_id,  # The user associated with the leave request
                 notification_type="leave_request",
                 data={
                     "leave_request_id": updated_leave_request.id,
