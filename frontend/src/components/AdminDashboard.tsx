@@ -21,7 +21,7 @@ function AdminDashboard() {
 
   const fetchUserCount = useDashboardStore((state) => state.fetchUserCount);
   const fetchLeaveCount = useDashboardStore((state) => state.fetchLeaveCount);
-  const fetchAbsentCount = useDashboardStore((state) => state.fetchAbsentCount);
+  const fetchStatusCount = useDashboardStore((state) => state.fetchStatusCount);
   const userCount = useDashboardStore((state) => state.userCount);
   const approvedLeave = useDashboardStore((state) => state.approvedLeave);
   const status = useDashboardStore((state) => state.status);
@@ -31,8 +31,8 @@ function AdminDashboard() {
   useEffect(() => {
     fetchUserCount();
     fetchLeaveCount(); // ✅ Fetch on mount
-    fetchAbsentCount(); // ✅ Fetch on mount
-  }, [fetchUserCount, fetchLeaveCount, fetchAbsentCount]);
+    fetchStatusCount(); // ✅ Fetch on mount
+  }, [fetchUserCount, fetchLeaveCount, fetchStatusCount]);
 
   console.log("userCount", status);
 
