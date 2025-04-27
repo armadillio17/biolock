@@ -5,28 +5,22 @@ import { useEffect, useState } from 'react';
 
 export default function AdminReport() {
 
-  const [isGenerating, setIsGenerating] = useState(false);
-
   const typeMapping = {
     "daily_attendance": "Daily Attendance",
     // Add other types here as needed
   };
   
-  const { reportList, fetchReportList, generateDailyReport } = useReportStore();
+  const { reportList, fetchReportList, generateDailyReport, isLoading } = useReportStore();
 
   useEffect(() => {
     fetchReportList();
   }, [fetchReportList]);
 
-  const handleGenerateReport = () => {
-    if (!isGenerating) {  // Check if report is already being generated
-      setIsGenerating(true); // Set the flag to true when starting the generation
-      generateDailyReport(); // Trigger the report generation
-      // fetchReportList();
+  const handleGenerateReport = async () => {
+    if (!isLoading) {
+      await generateDailyReport();
     }
   };
-
-
   return (
     <DashboardLayout>
       <div className="flex flex-col">
@@ -65,7 +59,7 @@ export default function AdminReport() {
                       <td className="py-3 px-6 text-center">
                         <Button 
                           className="bg-green-500 text-white px-4 py-1 rounded"
-                          // onClick={() => updateLeaveRequest("approved", leave.id)}
+                          // onClick={() => handleViewReport(report)}
                         >
                           View
                         </Button>

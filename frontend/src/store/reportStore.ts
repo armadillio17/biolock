@@ -1,13 +1,12 @@
 import { create } from "zustand";
 import axios from "axios";
 import { base_url } from '../config.ts';
-import { useAuthStore } from './authStore.ts';
 
 interface ReportData {
   type: string;
   details: string;
   status: string;
-  date: string; 
+  date: string;
 }
 
 interface DailyReportData {
@@ -18,7 +17,7 @@ interface DailyReportData {
 interface ReportState {
   reportList: ReportData[];
   createDailyReport: DailyReportData[];
-  createMonthlyReport: DailyReportData[]
+  createMonthlyReport: DailyReportData[];
   isLoading: boolean;
   error: string | null;
 
@@ -38,34 +37,23 @@ export const useReportStore = create<ReportState>((set) => ({
     set({ isLoading: true, error: null });
 
     try {
-      
-      // // const token = useAuthStore.getState().getAuthToken();
-      
-      // if (!token) {
-      //   throw new Error("Authentication token not found");
-      // }
-
       const response = await axios.get(`${base_url}/reports/`, {
         headers: {
           "Content-Type": "application/json",
-          // "Authorization": `Bearer ${token}`,
         },
       });
 
       const reports = response.data;
 
-      console.log("reports", reports);
-      
-  
-      set({ 
-        reportList: reports, 
-        isLoading: false 
+      set({
+        reportList: reports,
+        isLoading: false,
       });
     } catch (error: unknown) {
       console.error("Error fetching attendance:", error);
-      set({ 
+      set({
         error: error instanceof Error ? error.message : "Failed to fetch attendance data",
-        isLoading: false 
+        isLoading: false,
       });
     }
   },
@@ -74,68 +62,50 @@ export const useReportStore = create<ReportState>((set) => ({
     set({ isLoading: true, error: null });
 
     try {
-      
-      // // const token = useAuthStore.getState().getAuthToken();
-      
-      // if (!token) {
-      //   throw new Error("Authentication token not found");
-      // }
-
-      const response = await axios.get(`${base_url}/reports/monthly-report/`, {
+      const response = await axios.get(`${base_url}/reports/daily-report/`, {
         headers: {
           "Content-Type": "application/json",
-          // "Authorization": `Bearer ${token}`,
         },
       });
 
       const reports = response.data;
-  
-      set({ 
-        createDailyReport: reports, 
-        isLoading: false 
+
+      set({
+        createDailyReport: reports,
+        isLoading: false,
       });
     } catch (error: unknown) {
-      console.error("Error fetching attendance:", error);
-      set({ 
-        error: error instanceof Error ? error.message : "Failed to fetch attendance data",
-        isLoading: false 
+      console.error("Error fetching daily report:", error);
+      set({
+        error: error instanceof Error ? error.message : "Failed to fetch daily report",
+        isLoading: false,
       });
     }
   },
-
 
   generateMonthlyReport: async () => {
     set({ isLoading: true, error: null });
 
     try {
-      
-      // // const token = useAuthStore.getState().getAuthToken();
-      
-      // if (!token) {
-      //   throw new Error("Authentication token not found");
-      // }
-
       const response = await axios.get(`${base_url}/reports/monthly-report/`, {
         headers: {
           "Content-Type": "application/json",
-          // "Authorization": `Bearer ${token}`,
         },
       });
 
       const reports = response.data;
-  
-      set({ 
-        createMonthlyReport: reports, 
-        isLoading: false 
+
+      set({
+        createMonthlyReport: reports,
+        isLoading: false,
       });
     } catch (error: unknown) {
-      console.error("Error fetching attendance:", error);
-      set({ 
-        error: error instanceof Error ? error.message : "Failed to fetch attendance data",
-        isLoading: false 
+      console.error("Error fetching monthly report:", error);
+      set({
+        error: error instanceof Error ? error.message : "Failed to fetch monthly report",
+        isLoading: false,
       });
     }
   },
-
 
 }));
