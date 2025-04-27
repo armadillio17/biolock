@@ -11,6 +11,9 @@ class Attendance(models.Model):
         ('absent', 'Absent'),
         ('late', 'Late'),
         ('half_day', 'Half Day'),
+        ('on_leave', 'Leave'),
+        ('on_break', 'Break'),
+        ('day_off', 'Day Off'),
     ]
 
     # user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendances") 

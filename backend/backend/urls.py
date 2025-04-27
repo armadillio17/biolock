@@ -18,9 +18,9 @@ from django.contrib import admin
 from django.urls import path
 from user.views import (
     UserCreateView, UserUpdateDeleteView, UserAuthenticationView,
-    AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView, GetUserRoleView, LogoutView
+    AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView, GetUserRoleView, LogoutView, UserCountView, DailyAttendanceCountView
 ) 
-from user.views.leave_request import LeaveRequestListCreateView, LeaveRequestDetailView  # Import the views
+from user.views.leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView
 from user.views.department import (
     DepartmentListCreateView, DepartmentDetailView, 
     AssignUserToDepartmentView, RemoveUserFromDepartmentView
@@ -49,14 +49,28 @@ from user.views.attendance_summary import (
 )
 
 urlpatterns = [
+    
     path('admin/', admin.site.urls),
+    
+    # Auth
+    path('login/', UserAuthenticationView.as_view(), name='login'),
+    
+    # Users
     path('user/', UserCreateView.as_view(), name='user-create'),
     path('users/<int:pk>/', UserUpdateDeleteView.as_view(), name='user-update-delete'),
-    path('login/', UserAuthenticationView.as_view(), name='login'),
+    path('users/user-count/', UserCountView.as_view(), name='user-count'),
+    
+    
+    # Attendance
     path('attendance/', AttendanceListCreateView.as_view(), name='attendance-list'),
     path('attendance/<int:pk>/', AttendanceDetailUpdateDeleteView.as_view(), name='attendance-detail'),
+    path('attendance/absent-count/', DailyAttendanceCountView.as_view(), name='attendance-detail'),
+    
+    # User Clock In
     path('clock-in/', UserClockInView.as_view(), name='user-clock-in'),
     path('clock-out/', UserClockOutView.as_view(), name='user-clock-out'),
+    
+    
     path('user-attendance/', UserAttendanceView.as_view(), name='user-attendance-detail'),
     path('<int:user_id>/role/', GetUserRoleView.as_view(), name='get-user-role'),
     path('logout/', LogoutView.as_view(), name='logout'),
@@ -64,6 +78,7 @@ urlpatterns = [
     # Leave Request Endpoints
     path('leave-requests/', LeaveRequestListCreateView.as_view(), name='leave-request-list'),
     path('leave-requests/<int:pk>/', LeaveRequestDetailView.as_view(), name='leave-request-detail'),
+    path('leave-requests/count/', LeaveRequestCountView.as_view(), name='leave-request-detail'),
 
     # Department Endpoints
     path('departments/', DepartmentListCreateView.as_view(), name='department-list'),

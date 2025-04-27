@@ -149,3 +149,17 @@ class GetUserRoleView(APIView):
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         except Role.DoesNotExist:
             return Response({"error": "Role not found for user"}, status=status.HTTP_404_NOT_FOUND)
+        
+class UserCountView(APIView):
+    def get(self, request):
+        """ User Total Count"""
+        user = CustomUser.objects.filter(deleted_at__isnull=True)
+        user_count = user.values('id').distinct().count()
+        approved_count = user.filter(is_approved=True).values('id').distinct().count()
+        newly_registered_user_count = user.filter(is_approved=False).values('id').distinct().count()
+        
+        return Response({
+            "count": user_count,
+            "approvedUsers": approved_count,
+            "newlyRegisteredUsers": newly_registered_user_count,
+            }, status=status.HTTP_200_OK)

@@ -108,3 +108,16 @@ class LeaveRequestDetailView(APIView):
         )
 
         return Response({"message": "Leave request deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+    
+class LeaveRequestCountView(APIView):
+    """Count all Leave Request not approved"""
+
+    def get(self, request):
+        """Retrieve all leave requests (excluding soft-deleted ones)"""
+        leave_requests = LeaveRequest.objects.filter(deleted_at__isnull=True)
+        # serializer = LeaveRequestSerializer(leave_requests, many=True)
+        approved_count = leave_requests.filter(status="pending").values('id').distinct().count()
+        
+        return Response({
+            "approvedLeaveCount": approved_count
+            }, status=status.HTTP_200_OK)
