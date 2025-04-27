@@ -3,17 +3,48 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from user.models.leave_request import LeaveRequest
 from user.models.users import CustomUser  # Import the User model
-from user.serializers import LeaveRequestSerializer
+from user.serializers import LeaveRequestSerializer, UserProfileSerializer
 from user.utils.notification_history import log_notification  # Import the helper function
+from datetime import datetime
 
 class LeaveRequestListCreateView(APIView):
     """List all leave requests or create a new one"""
 
+    # def get(self, request):
+    #     """Retrieve all leave requests (excluding soft-deleted ones)"""
+    #     leave_requests = LeaveRequest.objects.filter(deleted_at__isnull=True)
+    #     user_data = []
+        
+    #     for leave_request in leave_requests:
+    #         user_serializer = UserProfileSerializer(leave_request.user_id)
+    #         user_data = user_serializer.data
+            
+    #         leave_request_data = LeaveRequestSerializer(leave_request).data
+    #         leave_request_data['user'] = user_data
+            
+    #         user_data.append(leave_request_data)
+    #     serializer = LeaveRequestSerializer(leave_requests, many=True)
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
     def get(self, request):
         """Retrieve all leave requests (excluding soft-deleted ones)"""
         leave_requests = LeaveRequest.objects.filter(deleted_at__isnull=True)
-        serializer = LeaveRequestSerializer(leave_requests, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        leave_data = []  # Store the leave request data here
+        
+        for leave_request in leave_requests:
+            # Serialize user data (first and last name)
+            user_serializer = UserProfileSerializer(leave_request.user)
+            user_data = user_serializer.data
+            
+            # Serialize the leave request data
+            leave_request_data = LeaveRequestSerializer(leave_request).data
+            
+            # Add the user data to the leave request data
+            leave_request_data['user'] = user_data
+            
+            # Append the complete leave request data to the leave_data list
+            leave_data.append(leave_request_data)
+
+        return Response(leave_data, status=status.HTTP_200_OK)
 
     def post(self, request):
         """Create a new leave request and log a notification"""
@@ -56,12 +87,20 @@ class LeaveRequestDetailView(APIView):
         except LeaveRequest.DoesNotExist:
             return None
 
-    def get(self, request, pk):
+    def get(self, request, pk, date):
         """Retrieve a single leave request"""
-        leave_request = self.get_object(pk)
+        # leave_request = self.get_object(pk)
+        
+        try:
+            formatted_date = datetime.strptime(date, '%Y-%m-%d')
+        except ValueError:
+            return Response({"error": "Invalid date format. Use YYYY-MM-DD."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        leave_request = LeaveRequest.objects.filter(user_id=pk, start_date__lte=formatted_date, deleted_at__isnull=True)
         if not leave_request:
             return Response({"error": "Leave request not found"}, status=status.HTTP_404_NOT_FOUND)
-        serializer = LeaveRequestSerializer(leave_request)
+        serializer = LeaveRequestSerializer(leave_request, many=True)
+        # return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
