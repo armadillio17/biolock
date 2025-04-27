@@ -18,7 +18,7 @@ export interface SidebarProfile {
 // Sidebar Menu Array
 export const sidebarMenu: SidebarMenuItem[] = [
     { name: "Dashboard", icon: <Element4 size="27" color= "#0F217D" />, path: "/dashboard" },
-    { name: "Events", icon: <CalendarTick size="27" color= "#E26D5C" />, path: "/events" },
+    // { name: "Events", icon: <CalendarTick size="27" color= "#E26D5C" />, path: "/events" },
     { name: "Leave Request", icon: <CalendarAdd size="27" color= "#F988AA" />, path: "/leave-request" },
     { name: "Overtime", icon: <CalendarEdit size="27" color= "#53CDED" />, path: "/overtime" },
     { name: "Reports", icon: <DocumentText1 size="27" color= "#13A89E" />, path: "/reports" },

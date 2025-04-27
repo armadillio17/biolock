@@ -5,7 +5,7 @@ import Dashboard from './pages/Dashboard';
 import LeaveRequests from './pages/LeaveRequest';
 import Timesheet from './pages/Timesheet';
 import OvertimeRequest from './components/UserOvertimeRequest';
-import ViewEvents from './pages/ViewEvents';
+// import ViewEvents from './pages/ViewEvents';
 import AdminEventList from './pages/AdminEvent';
 import AdminActivityLog from './components/AdminActivityLog';
 import UserList from './pages/UserList';
@@ -30,10 +30,10 @@ export const router = createBrowserRouter([
         path: '/events',
         element: <ProtectedRoute element={<AdminEventList />} requiredRole="admin" />,
     },
-    {
-        path: '/events/:id',
-        element: <ProtectedRoute element={<ViewEvents />} />,
-    },
+    // {
+    //     path: '/events/:id',
+    //     element: <ProtectedRoute element={<ViewEvents />} />,
+    // },
     {
         path: '/leave-request',
         element: <ProtectedRoute element={<LeaveRequests />} />,
