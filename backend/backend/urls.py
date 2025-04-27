@@ -33,7 +33,7 @@ from user.views.notification_history import (
     NotificationHistoryListCreateView, NotificationHistoryDetailView
 )
 from user.views.report import (
-    ReportListCreateView, ReportDetailView
+    ReportListCreateView, ReportDetailView, GenerateDailyReport
 )
 from user.views.holiday import (
     HolidayListCreateView, HolidayDetailView
@@ -54,26 +54,23 @@ urlpatterns = [
     
     # Auth
     path('login/', UserAuthenticationView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
     
     # Users
     path('user/', UserCreateView.as_view(), name='user-create'),
     path('users/<int:pk>/', UserUpdateDeleteView.as_view(), name='user-update-delete'),
     path('users/user-count/', UserCountView.as_view(), name='user-count'),
-    
+    path('<int:user_id>/role/', GetUserRoleView.as_view(), name='get-user-role'),
     
     # Attendance
     path('attendance/', AttendanceListCreateView.as_view(), name='attendance-list'),
     path('attendance/<int:pk>/', AttendanceDetailUpdateDeleteView.as_view(), name='attendance-detail'),
     path('attendance/absent-count/', DailyAttendanceCountView.as_view(), name='attendance-detail'),
+    path('user-attendance/', UserAttendanceView.as_view(), name='user-attendance-detail'),
     
     # User Clock In
     path('clock-in/', UserClockInView.as_view(), name='user-clock-in'),
     path('clock-out/', UserClockOutView.as_view(), name='user-clock-out'),
-    
-    
-    path('user-attendance/', UserAttendanceView.as_view(), name='user-attendance-detail'),
-    path('<int:user_id>/role/', GetUserRoleView.as_view(), name='get-user-role'),
-    path('logout/', LogoutView.as_view(), name='logout'),
 
     # Leave Request Endpoints
     path('leave-requests/', LeaveRequestListCreateView.as_view(), name='leave-request-list'),
@@ -101,6 +98,7 @@ urlpatterns = [
     # Report Endpoints
     path('reports/', ReportListCreateView.as_view(), name='report-list'),
     path('reports/<int:pk>/', ReportDetailView.as_view(), name='report-detail'),
+    path('reports/daily-report/', GenerateDailyReport.as_view(), name='report-detail'),
 
     # Holiday Endpoints
     path('holidays/', HolidayListCreateView.as_view(), name='holiday-list-create'),

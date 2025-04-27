@@ -3,7 +3,7 @@ from django.utils.timezone import now
 from user.models.attendance import Attendance
 
 class Report(models.Model):
-    attendance_id = models.ForeignKey(Attendance, on_delete=models.CASCADE)
+    # attendance_id = models.ForeignKey(Attendance, on_delete=models.CASCADE)
     type = models.CharField(max_length=255)
     data = models.JSONField()
     created_at = models.DateTimeField(auto_now_add=True)
