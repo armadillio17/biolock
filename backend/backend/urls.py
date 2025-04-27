@@ -77,7 +77,7 @@ urlpatterns = [
 
     # Leave Request Endpoints
     path('leave-requests/', LeaveRequestListCreateView.as_view(), name='leave-request-list'),
-    path('leave-requests/<int:pk>/', LeaveRequestDetailView.as_view(), name='leave-request-detail'),
+    path('leave-requests/<int:pk>/<str:date>', LeaveRequestDetailView.as_view(), name='leave-request-detail'),
     path('leave-requests/count/', LeaveRequestCountView.as_view(), name='leave-request-detail'),
 
     # Department Endpoints
