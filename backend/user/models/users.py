@@ -16,6 +16,7 @@ class CustomUser(AbstractUser):
     phone_number = models.CharField(null=True, max_length=20, unique=True)
     email = models.EmailField(max_length=255, unique=True)
     is_approved = models.BooleanField(default=False)
+    is_accepted = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
