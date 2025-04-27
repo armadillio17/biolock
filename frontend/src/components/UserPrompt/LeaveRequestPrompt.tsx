@@ -12,7 +12,8 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({ isOpen, onClose }
     startDate: '',
     endDate: '',
     reason: '',
-  });
+  }
+);
 
   const { createLeaveRequest } = leaveRequestStore();
 
@@ -36,12 +37,23 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({ isOpen, onClose }
         formData.reason,
         'pending' // assuming default status is "pending"
       );
-
+      
       onClose(); // Close the modal after submission
+      handleCancel();
     } catch (error) {
       console.error('Failed to submit leave request:', error);
       // Handle the error accordingly (e.g., show an error message)
     }
+  };
+
+  const handleCancel = () => {
+    setFormData({
+      leaveType: '',
+      startDate: '',
+      endDate: '',
+      reason: '',
+    });
+    onClose(); // Close the modal
   };
 
   if (!isOpen) return null;
@@ -103,7 +115,7 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({ isOpen, onClose }
           <div className="flex justify-end">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleCancel}
               className="mr-2 bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded"
             >
               Cancel
