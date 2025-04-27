@@ -1,7 +1,9 @@
 import DashboardLayout from "@/layouts/DashboardLayout";
-import { adminCards } from "@/data/dashboard-data.tsx";
+// import { adminCards } from "@/data/dashboard-data.tsx";
 import Chart from "@/components/AdminDashboard/Chart.tsx";
 import ActivityLog from "./ActivityLog";
+import { useDashboardStore } from "@/store/dashboardStore"; // ✅ Import store
+import { useEffect } from "react";
 
 const FormattedDate = () => {
   const today = new Date();
@@ -15,6 +17,36 @@ const FormattedDate = () => {
 };
 
 function AdminDashboard() {
+  // const { userCount, fetchUserCount } = useDashboardStore();
+
+  const fetchUserCount = useDashboardStore((state) => state.fetchUserCount);
+  const fetchLeaveCount = useDashboardStore((state) => state.fetchLeaveCount);
+  const fetchAbsentCount = useDashboardStore((state) => state.fetchAbsentCount);
+  const userCount = useDashboardStore((state) => state.userCount);
+  const approvedLeave = useDashboardStore((state) => state.approvedLeave);
+  const status = useDashboardStore((state) => state.status);
+
+  // const requestCount = approvedLeave;
+
+  useEffect(() => {
+    fetchUserCount();
+    fetchLeaveCount(); // ✅ Fetch on mount
+    fetchAbsentCount(); // ✅ Fetch on mount
+  }, [fetchUserCount, fetchLeaveCount, fetchAbsentCount]);
+
+  console.log("userCount", status);
+
+  const adminCards = [
+    { title: "New User", count: userCount.newlyRegisteredUsers , color: "#9E8AFC" },
+    { title: "Users", count: userCount.approvedUsers, color: "#54CEEE" },
+    { title: "Request", count: approvedLeave.approvedLeaveCount, color: "#E26D5C" },
+    { title: "Absent", count: status.absentCount, color: "#FF9F1C" },
+    { title: "Working", count: status.workingCount, color: "#FFAAC3" },
+    { title: "On Break", count: status.onBreakCount , color: "#52F76B" },
+    { title: "Day Off", count: status.dayOffCount, color: "#BA6E7B" },
+    { title: "On Leave", count: status.onLeaveCount, color: "#FABA6C" },
+];
+
   return (
     <DashboardLayout>
       <div className="flex flex-col">
