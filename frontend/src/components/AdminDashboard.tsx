@@ -34,8 +34,6 @@ function AdminDashboard() {
     fetchStatusCount(); // ✅ Fetch on mount
   }, [fetchUserCount, fetchLeaveCount, fetchStatusCount]);
 
-  console.log("userCount", status);
-
   const adminCards = [
     { title: "New User", count: userCount.newlyRegisteredUsers , color: "#9E8AFC" },
     { title: "Users", count: userCount.approvedUsers, color: "#54CEEE" },
@@ -76,10 +74,10 @@ function AdminDashboard() {
           {/* Graph & Activity Log */}
           <div className="flex gap-8 w-full">
             {/* Graph Section */}
-            <div className="flex flex-col justify-center items-center bg-[#A4DDED] rounded-2xl p-5 w-1/2 text-center gap-5 shadow-lg border border-black">
+            {/* <div className="flex flex-col justify-center items-center bg-[#A4DDED] rounded-2xl p-5 w-1/2 text-center gap-5 shadow-lg border border-black">
               <h4 className="text-[24px] font-bold">Lorem Ipsum</h4>
               <Chart />
-            </div>
+            </div> */}
 
             {/* Activity Log Section */}
             <div className="w-1/2 min-h-[250px] rounded-2xl bg-[#A4DDED] p-5 border border-black shadow-lg">

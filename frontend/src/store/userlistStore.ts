@@ -14,15 +14,23 @@ interface UserData {
 }
 
 interface UserStore {
-    userList: UserData[]; // Store all users
-    fetchUserList: () => Promise<void>; // Function to fetch users
+    userList: UserData[]; 
+    newRegisteredUser: UserData[]; 
+    approvedUser: UserData[]; 
+
+    fetchUserList: () => Promise<void>; 
+    fetchNewUserList: () => Promise<void>; 
+    fetchApprovedUserList: () => Promise<void>; 
+    approvedRegisteredUser: (userId: number, is_accepted:boolean) => Promise<void>;
+    
 }
 
 export const useUserStore = create<UserStore>((set) => ({
-    userList: [], // Stores the fetched user data
+    userList: [],
+    newRegisteredUser: [],
+    approvedUser: [],
 
     fetchUserList: async () => {
-        console.log("fetchUserList() called!"); // Check if this function runs
         try {
             const response = await authAxios.get(`${base_url}/user/`, {
                 withCredentials: true
@@ -32,5 +40,44 @@ export const useUserStore = create<UserStore>((set) => ({
         } catch (error) {
             console.error("Error fetching users:", error);
         }
-    }
+    },
+
+    fetchNewUserList: async () => {
+        try {
+            const response = await authAxios.get(`${base_url}/users/new-registered/`, {
+                withCredentials: true
+            });
+
+            set(() => ({ newRegisteredUser: response.data })); 
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
+    },
+
+    fetchApprovedUserList: async () => {
+        try {
+            const response = await authAxios.get(`${base_url}/users/list/`, {
+                withCredentials: true
+            });
+
+            set(() => ({ approvedUser: response.data }));
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
+    },
+
+    approvedRegisteredUser: async (userId: number, is_accepted:boolean) => {
+        try {
+            const response = await authAxios.put(`${base_url}/users/${userId}/`,{
+                is_accepted: is_accepted
+            },{
+                withCredentials: true
+            });
+
+            set(() => ({ approvedUser: response.data }));
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
+    },
+
 }));

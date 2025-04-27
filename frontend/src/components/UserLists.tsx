@@ -70,26 +70,6 @@ export default function UserLists() {
     fetchUsers();
   }, []);
 
-  const handleApprove = async (id: number) => {
-    try {
-      await authAxios.put(`${base_url}/registration-requests/${id}/approve/`);
-      setRegistrationRequests(registrationRequests.filter(request => request.id !== id));
-      // Optionally add the approved user to the users list
-      // You might want to refetch users instead
-    } catch (err) {
-      setError(prev => ({ ...prev, requests: (err as Error).message }));
-    }
-  };
-
-  const handleDecline = async (id: number) => {
-    try {
-      await authAxios.put(`${base_url}/registration-requests/${id}/decline/`);
-      setRegistrationRequests(registrationRequests.filter(request => request.id !== id));
-    } catch (err) {
-      setError(prev => ({ ...prev, requests: (err as Error).message }));
-    }
-  };
-
   const formatDate = (dateString: string) => {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
@@ -100,12 +80,24 @@ export default function UserLists() {
     }).replace(/\//g, '-');
   };
 
-  const { userList, fetchUserList } = useUserStore();
-  
-  useEffect(() => {
-    fetchUserList();
-  }, [fetchUserList]);
+  const { newRegisteredUser, approvedUser, fetchNewUserList, fetchApprovedUserList, approvedRegisteredUser} = useUserStore();
 
+  useEffect(() => {
+    fetchNewUserList();
+    fetchApprovedUserList();
+  }, [fetchNewUserList, fetchApprovedUserList]);
+
+  const handleApprove = async (userId: number) => {
+    await approvedRegisteredUser(userId, true);
+    await fetchNewUserList();
+    await fetchApprovedUserList();
+  };
+  
+  const handleDecline = async (userId: number) => {
+    await approvedRegisteredUser(userId, false);
+    await fetchNewUserList();
+    await fetchApprovedUserList();
+  };
   // console.log("userList", userList);
 
   return (
@@ -126,16 +118,20 @@ export default function UserLists() {
                 <tr className="border-b border-gray-300 bg-gray-100">
                   <th className="py-2 px-4">Date</th>
                   <th className="py-2 px-4">Users</th>
+                  <th className="py-2 px-4">Email</th>
                   <th className="py-2 px-4 w-1/3">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {registrationRequests.length > 0 ? (
-                  registrationRequests.map(request => (
+                {newRegisteredUser.length > 0 ? (
+                  newRegisteredUser.map(request => (
                     <tr key={request.id} className="border-b border-gray-300">
                       <td className="py-2 px-4">{formatDate(request.created_at)}</td>
                       <td className="py-2 px-4">
-                        {request.user?.name || request.email || 'N/A'}
+                        {request.first_name} {request.last_name}
+                      </td>
+                      <td className="py-2 px-4">
+                        {request.email}
                       </td>
                       <td className="py-2 px-4 w-1/3">
                         <Button 
@@ -171,17 +167,27 @@ export default function UserLists() {
               <tr className="border-b border-gray-300 bg-gray-100">
                 <th className="py-2 px-4">Date</th>
                 <th className="py-2 px-4">Users</th>
+                <th className="py-2 px-4">Email</th>
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-gray-300">
-                <td className="py-2 px-4">09-18-2025</td>
-                <td className="py-2 px-4">Lorem Ipsum</td>
-              </tr>
-              <tr className="border-b border-gray-300">
-                <td className="py-2 px-4">09-18-2025</td>
-                <td className="py-2 px-4">Lorem Ipsum</td>
-              </tr>
+            {approvedUser.length > 0 ? (
+                  approvedUser.map(request => (
+                    <tr key={request.id} className="border-b border-gray-300">
+                      <td className="py-2 px-4">{formatDate(request.created_at)}</td>
+                      <td className="py-2 px-4">
+                        {request.first_name} {request.last_name}
+                      </td>
+                      <td className="py-2 px-4">
+                        {request.email}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={3} className="py-4 text-center">No Approved Users</td>
+                  </tr>
+                )}
             </tbody>
           </table>
         </div>

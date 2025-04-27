@@ -1,7 +1,7 @@
 import DashboardLayout from "@/layouts/DashboardLayout";
 import { Button } from "./ui/button";
 import { useReportStore } from '@/store/reportStore.ts';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export default function AdminReport() {
 

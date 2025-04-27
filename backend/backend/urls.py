@@ -18,7 +18,8 @@ from django.contrib import admin
 from django.urls import path
 from user.views import (
     UserCreateView, UserUpdateDeleteView, UserAuthenticationView,
-    AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView, GetUserRoleView, LogoutView, UserCountView, DailyAttendanceCountView
+    AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView, GetUserRoleView, LogoutView, UserCountView, DailyAttendanceCountView,
+    NewRegistrationRegisteredList, AcceptedUserList,
 ) 
 from user.views.leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView
 from user.views.department import (
@@ -59,7 +60,9 @@ urlpatterns = [
     # Users
     path('user/', UserCreateView.as_view(), name='user-create'),
     path('users/<int:pk>/', UserUpdateDeleteView.as_view(), name='user-update-delete'),
-    path('users/user-count/', UserCountView.as_view(), name='user-count'),
+    path('users/new-registered/', NewRegistrationRegisteredList.as_view(), name='user-count'), # List of Newly Registered Account
+    path('users/list/', AcceptedUserList.as_view(), name='user-count'), # List of All Approved Account
+    path('users/user-count/', UserCountView.as_view(), name='user-count'), # User Count
     path('<int:user_id>/role/', GetUserRoleView.as_view(), name='get-user-role'),
     
     # Attendance

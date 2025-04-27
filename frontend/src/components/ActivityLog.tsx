@@ -97,35 +97,50 @@ export default function ActivityLog() {
         };
         fetchActivities();
     }, []);
-
+    
+    console.log("activities", activities);
+    
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
 
     return (
         <div className="flex flex-col">
-            <div className="flex flex-col text-[#4E4E53]">
-                <p className="text-2xl font-bold">Activity Logs</p>
+            <div className="flex flex-col text-[#333]">
+                <p className="text-2xl font-bold mb-2">Activity Logs</p>
             </div>
-            <div className="flex flex-col text-[#4E4E53] mt-5">
-                <div className="mt-6 overflow-x-auto">
-                    <table className="min-w-full bg-white border border-gray-300">
-                        <thead>
-                            <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                                <th className="py-3 px-6 text-left">Date</th>
+
+                <div className="overflow-x-auto">
+                    <table className="min-w-full text-sm text-gray-700">
+                        <thead className="text-gray-600 uppercase text-xs">
+                            <tr className="bg-black from-indigo-500 to-purple-600 text-white">
+                                <th className="py-3 px-6 text-left rounded-tl-2xl">Date</th>
                                 <th className="py-3 px-6 text-left">Action</th>
-                                <th className="py-3 px-6 text-left">Details</th>
+                                <th className="py-3 px-6 text-left rounded-tr-2xl">Details</th>
                             </tr>
                         </thead>
-                        <tbody className="text-gray-600 text-sm font-light">
+                        <tbody>
                             {activities.map((activity) => (
-                                <tr key={activity.id} className="border-b border-gray-300 hover:bg-gray-100">
-                                    <td className="py-3 px-6">
-                                        {new Date(activity.created_at).toLocaleString()}
-                                    </td>
-                                    <td className="py-3 px-6">{formatType(activity.type)}</td>
-                                    <td className="py-3 px-6">
-                                        <div className="flex flex-col">
-                                            {activity.data ? renderDetails(activity.data) : 'N/A'}
+                                <tr key={activity.id} className="bg-white ">
+                                    <td className="py-4 px-6 whitespace-nowrap">{new Date(activity.created_at).toLocaleString()}</td>
+                                    <td className="py-4 px-6 whitespace-nowrap font-medium">{formatType(activity.type)}</td>
+                                    <td className="py-4 px-6">
+                                        <div className="flex flex-col gap-1">
+                                            {activity.data ? (
+                                                <>
+                                                    <p><span className="font-semibold">Leave Request Id:</span> {activity.data.leave_request_id}</p>
+                                                    <p className="flex items-center gap-2">
+                                                        <span className="font-semibold">Status:</span>
+                                                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                                            activity.data.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
+                                                            activity.data.status === 'Approved' ? 'bg-green-100 text-green-700' :
+                                                            'bg-red-100 text-red-700'
+                                                        }`}>
+                                                            {activity.data.status}
+                                                        </span>
+                                                    </p>
+                                                    <p><span className="font-semibold">Details:</span> {activity.data.details}</p>
+                                                </>
+                                            ) : 'N/A'}
                                         </div>
                                     </td>
                                 </tr>
@@ -133,7 +148,8 @@ export default function ActivityLog() {
                         </tbody>
                     </table>
                 </div>
-            </div>
         </div>
+
+
     );
 }

@@ -95,10 +95,13 @@ class UserAuthenticationView(APIView):
         
         try:
             user = CustomUser.objects.get(username=username, deleted_at__isnull=True)
-
+            
             # Compare hashed password
             if not bcrypt.checkpw(password.encode(), user.password.encode()):
                 return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+            
+            if not user.is_accepted:
+                return Response({"error": "Your account is not approved yet. Please contact support or try again later."}, status=status.HTTP_403_FORBIDDEN)
             
             # Create or get authentication token
             token, created = Token.objects.get_or_create(user=user)
@@ -155,11 +158,27 @@ class UserCountView(APIView):
         """ User Total Count"""
         user = CustomUser.objects.filter(deleted_at__isnull=True)
         user_count = user.values('id').distinct().count()
-        approved_count = user.filter(is_approved=True).values('id').distinct().count()
-        newly_registered_user_count = user.filter(is_approved=False).values('id').distinct().count()
+        approved_count = user.filter(is_accepted=True).values('id').distinct().count()
+        newly_registered_user_count = user.filter(is_accepted=False).values('id').distinct().count()
         
         return Response({
             "count": user_count,
             "approvedUsers": approved_count,
             "newlyRegisteredUsers": newly_registered_user_count,
             }, status=status.HTTP_200_OK)
+        
+class NewRegistrationRegisteredList(APIView):
+    def get(self, request):
+        """ Get Newly Registered User Need for Approval"""
+        
+        user = CustomUser.objects.filter(is_accepted=False, deleted_at__isnull=True)
+        serializer = UserSerializer(user, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class AcceptedUserList(APIView):
+    def get(self, request):
+        """ Get Newly Registered User Need for Approval"""
+        
+        user = CustomUser.objects.filter(is_accepted=True, deleted_at__isnull=True)
+        serializer = UserSerializer(user, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

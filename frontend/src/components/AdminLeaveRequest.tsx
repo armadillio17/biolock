@@ -45,7 +45,6 @@ export default function LeaveRequest() {
     )
   : []; // If not an array yet, just return an empty list
 
-
   return (
     <DashboardLayout>
       <div className="flex flex-col">
