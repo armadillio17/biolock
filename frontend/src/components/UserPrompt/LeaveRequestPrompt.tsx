@@ -1,20 +1,25 @@
 import React, { useState } from 'react';
 import { leaveRequestStore } from '@/store/leaveRequestStore';
+import { base_url } from '../../config';
+import { authAxios } from "@/lib/secured-axios-instance";
+import { useAuthStore } from '../../store/authStore';
 
 interface LeaveRequestModalProps {
   isOpen: boolean;
   onClose: () => void;
+  userId: number;
 }
 
 const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
+    name: '',
     leaveType: '',
     startDate: '',
     endDate: '',
     reason: '',
-  }
-);
+  });
 
+  const { user } = useAuthStore();
   const { createLeaveRequest } = leaveRequestStore();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -25,35 +30,51 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({ isOpen, onClose }
     }));
   };
 
-  // Mark handleSubmit as async so that we can use 'await' inside it
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
+      // Option 1: Using the store method
       await createLeaveRequest(
         formData.startDate,
         formData.endDate,
         formData.leaveType,
         formData.reason,
-        'pending' // assuming default status is "pending"
+        'pending'
       );
-      
-      onClose(); // Close the modal after submission
+
+      // Option 2: Using direct API call
+      await authAxios.post(`${base_url}/leave-requests/`, {
+        user_id: user?.userId,
+        name: formData.name,
+        type: formData.leaveType,
+        start_date: formData.startDate,
+        end_date: formData.endDate,
+        details: formData.reason
+      }, {
+        headers: {
+          "Content-Type": "application/json"
+        },
+        withCredentials: true
+      });
+
+      alert('Leave request submitted successfully!');
       handleCancel();
     } catch (error) {
       console.error('Failed to submit leave request:', error);
-      // Handle the error accordingly (e.g., show an error message)
+      alert('Failed to submit leave request');
     }
   };
 
   const handleCancel = () => {
     setFormData({
+      name: '',
       leaveType: '',
       startDate: '',
       endDate: '',
       reason: '',
     });
-    onClose(); // Close the modal
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -63,6 +84,17 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({ isOpen, onClose }
       <div className="bg-white rounded-lg p-6 shadow-lg w-96">
         <h2 className="text-xl font-bold mb-4">Leave Request Form</h2>
         <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Name</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+              required
+            />
+          </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Leave Type</label>
             <select
