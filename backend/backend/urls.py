@@ -33,8 +33,11 @@ from user.views.position import (
 from user.views.notification_history import (
     NotificationHistoryListCreateView, NotificationHistoryDetailView
 )
-from user.views.report import (
+from user.views.report.report import (
     ReportListCreateView, ReportDetailView, GenerateDailyReport
+)
+from user.views.report.download_report import (
+    DownloadAttendancePDF
 )
 from user.views.holiday import (
     HolidayListCreateView, HolidayDetailView
@@ -102,6 +105,7 @@ urlpatterns = [
     path('reports/', ReportListCreateView.as_view(), name='report-list'),
     path('reports/<int:pk>/', ReportDetailView.as_view(), name='report-detail'),
     path('reports/daily-report/', GenerateDailyReport.as_view(), name='report-detail'),
+    path('reports/download-pdf/<int:report_id>/', DownloadAttendancePDF.as_view(), name='download-report'),
 
     # Holiday Endpoints
     path('holidays/', HolidayListCreateView.as_view(), name='holiday-list-create'),
