@@ -1,8 +1,11 @@
 import DashboardLayout from "@/layouts/DashboardLayout"
 import { Metrics }  from "@/components/UserDashboardComponent/MetricsComponent"
-import { EventCarousel }  from "@/components/UserDashboardComponent/EventCarouselComponent"
+// import { EventCarousel }  from "@/components/UserDashboardComponent/EventCarouselComponent"
 import { Timesheet }  from "@/components/UserDashboardComponent/TimesheetComponent"
 import { Notification }  from "@/components/UserDashboardComponent/NotificationComponent"
+
+
+// import { useAuthStore  } from "@/store/authStore"
 
 const FormattedDate = () => {
   const today = new Date();
@@ -17,8 +20,10 @@ const FormattedDate = () => {
 
 function UserDashboard() {
   const currentdate = FormattedDate();
+
   return (
     <DashboardLayout>
+      
       <div className="flex flex-col">
         {/* Greetings and time */}
         <div className="flex flex-col text-[#4E4E53]">
@@ -27,7 +32,7 @@ function UserDashboard() {
         </div>
 
         <Metrics />
-        <EventCarousel />
+        {/* <EventCarousel /> */}
         
         <div className="grid grid-cols-[2fr_1fr] gap-4 my-5 w-full h-max-[100px]">
           <div className="w-full h-auto">

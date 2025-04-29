@@ -5,11 +5,13 @@ import Dashboard from './pages/Dashboard';
 import LeaveRequests from './pages/LeaveRequest';
 import Timesheet from './pages/Timesheet';
 import OvertimeRequest from './components/UserOvertimeRequest';
-import ViewEvents from './pages/ViewEvents';
+// import ViewEvents from './pages/ViewEvents';
 import AdminEventList from './pages/AdminEvent';
 import AdminActivityLog from './components/AdminActivityLog';
 import UserList from './pages/UserList';
 import AdminReport from './pages/AdminReport';
+import { ProtectedRoute } from './ProtectedRoutes';
+
 
 export const router = createBrowserRouter([
     {
@@ -22,38 +24,38 @@ export const router = createBrowserRouter([
     },
     {
         path: '/dashboard',
-        element: <Dashboard />,
+        element: <ProtectedRoute element={<Dashboard />} />,
     },
     {
         path: '/events',
-        element: <AdminEventList />,
+        element: <ProtectedRoute element={<AdminEventList />} requiredRole="admin" />,
     },
-    {
-        path: '/events/:id',
-        element: <ViewEvents />,
-    },
+    // {
+    //     path: '/events/:id',
+    //     element: <ProtectedRoute element={<ViewEvents />} />,
+    // },
     {
         path: '/leave-request',
-        element: <LeaveRequests />,
+        element: <ProtectedRoute element={<LeaveRequests />} />,
     },
     {
         path: '/timesheet',
-        element: <Timesheet />,
+        element: <ProtectedRoute element={<Timesheet />} />,
     },
     {
         path: '/overtime',
-        element: <OvertimeRequest />,
+        element: <ProtectedRoute element={<OvertimeRequest />} />,
     },
     {
         path: '/reports',
-        element: <AdminReport />,
+        element: <ProtectedRoute element={<AdminReport />} requiredRole="admin" />,
     },
     {
         path: '/users',
-        element: <UserList />,
+        element: <ProtectedRoute element={<UserList />} requiredRole="admin" />,
     },
     {
         path: '/activity-logs',
-        element: <AdminActivityLog />,
+        element: <ProtectedRoute element={<AdminActivityLog />} requiredRole="admin" />,
     },
 ]);

@@ -95,7 +95,7 @@ class UserClockInView(APIView):
             return Response({"error": "An unexpected error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 class UserClockOutView(APIView):
-    def post(self, request):
+    def put(self, request):
         """Update clock out based on the clock-in record"""
         
         today = now().date()
@@ -122,3 +122,26 @@ class DailyAttendanceView(APIView):
         attendances = Attendance.objects.filter(date=date, deleted_at__isnull=True)
         serializer = AttendanceSerializer(attendances, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class DailyAttendanceCountView(APIView):
+    def get(self, request):
+        """Retrieve all non-deleted attendance records for a specific user"""
+        # user = request.user_id
+        date = now().date()
+        
+        attendances = Attendance.objects.filter(date=date, deleted_at__isnull=True)
+        # serializer = AttendanceSerializer(attendances, many=True)
+        absent_count = attendances.filter(status='absent').values('id').distinct().count()
+        working_count = attendances.filter(status='working').values('id').distinct().count()
+        on_leave_count = attendances.filter(status='on_leave').values('id').distinct().count()
+        on_break_count = attendances.filter(status='on_break').values('id').distinct().count()
+        day_off_count = attendances.filter(status='day_off').values('id').distinct().count()
+        return Response({
+            "absentCount": absent_count,
+            "workingCount": working_count,
+            "onLeaveCount": on_leave_count,
+            "onBreakCount": on_break_count,
+            "dayOffCount": day_off_count,
+            }, status=status.HTTP_200_OK)
+
+        

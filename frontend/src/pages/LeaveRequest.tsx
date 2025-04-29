@@ -1,17 +1,10 @@
-import LeaveRequest from "@/components/UserLeaveRequest";
+import UserLeaveRequest from "@/components/UserLeaveRequest";
+import AdminLeaveRequest from "@/components/AdminLeaveRequest";
+import { useAuthStore  } from "@/store/authStore"
 
 export default function LeaveRequests() {
-  // const admin = true;
-  // const [isAdmin, setIsAdmin] = useState(false);
 
-  // useEffect(() => {
+  const { user } = useAuthStore();
 
-  //   const userRole = localStorage.getItem("userRole");
-  //   setIsAdmin(userRole === "admin")
-
-  // }, []);
-
-  // return isAdmin ? <AdminEvent /> : <UserEvent />
-  // return admin ? <AdminDashboard /> : <UserDashboard />;
-  return <LeaveRequest />
+  return user.role === "admin" ? <AdminLeaveRequest /> : <UserLeaveRequest />
 }

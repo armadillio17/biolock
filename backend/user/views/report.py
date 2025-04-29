@@ -2,7 +2,9 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from user.models.report import Report
-from user.serializers import ReportSerializer
+from user.serializers import ReportSerializer, AttendanceSerializer
+from django.utils.timezone import now
+from user.models.attendance import Attendance
 
 
 class ReportListCreateView(APIView):
@@ -59,3 +61,24 @@ class ReportDetailView(APIView):
             return Response({"error": "Report not found"}, status=status.HTTP_404_NOT_FOUND)
         report.delete()  # Calls the overridden `delete` method in the model
         return Response({"message": "Report deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+class GenerateDailyReport(APIView):
+    """Generate and Save Daily Attendance Report"""
+    def get(self, request):
+        # user = request.user_id
+        date = now().date()
+        
+        attendances = Attendance.objects.filter(date=date, deleted_at__isnull=True)
+        serializer = AttendanceSerializer(attendances, many=True)    
+        
+        report = Report.objects.create(
+            type="daily_attendance",
+            data=serializer.data
+        )
+        
+        return Response({
+            "message": "Daily report generated successfully.",
+            "report_id": report.id,
+            "date": report.created_at,
+            "total_records": len(serializer.data)
+        }, status=status.HTTP_201_CREATED)

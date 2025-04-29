@@ -3,9 +3,24 @@ import DashboardLayout from "@/layouts/DashboardLayout"
 import { Button } from "./ui/button"
 import { Calendar } from "./CalendarComponent"
 import OvertimeRequestModal from "./UserPrompt/OvertimeRequestPrompt";
+import { useAuthStore } from '@/store/authStore.ts';
 
 export default function OvertimeRequest() {
   const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
+  const { user } = useAuthStore();
+
+  const getTodayDate = (): string => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const day = today.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const [selectedDate, setSelectedDate] = useState<string>(getTodayDate()); // Set initial date to today's date
+
+  const userId = user.userId || '';
+  const date = selectedDate;
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -14,6 +29,11 @@ export default function OvertimeRequest() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+
+  const handleDateSelect = (date: string) => {
+    setSelectedDate(date); // Update selected date when user clicks on a date
+  };
+  
   return (
     <DashboardLayout>
       <div className="flex flex-col">
@@ -28,7 +48,7 @@ export default function OvertimeRequest() {
           </Button>
         </div>
 
-        <Calendar />
+        <Calendar onDateSelect={handleDateSelect} /> 
       </div>
       {/* Table for Leave Requests */}
       <div className="mt-6 overflow-x-auto">

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -52,7 +53,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'user.middleware.AutoLogoutMiddleware' # Custom middleware to logout user after 30 minutes of inactivity
 ]
 
@@ -136,10 +136,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
+CORS_ALLOW_CREDENTIALS = True
 #CORS settings to allow request 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173", # Change this to your local
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
 
 CORS_ALLOW_HEADERS = [
@@ -162,7 +163,10 @@ AUTH_USER_MODEL = 'user.CustomUser'
 REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',  # Limits anonymous users
-        'rest_framework.throttling.UserRateThrottle',  # Limits authenticated users (Note: Use this if needed right now its not used)
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'user.authentication.CookieTokenAuthentication',  # Use your actual path
+        # Other authentication classes if needed
     ],
     'DEFAULT_THROTTLE_RATES': {
         'anon': '100/hour',  # Set rate for anonymous users
