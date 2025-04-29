@@ -9,6 +9,7 @@ import OvertimeRequest from './components/UserOvertimeRequest';
 import AdminEventList from './pages/AdminEvent';
 import AdminActivityLog from './components/AdminActivityLog';
 import UserList from './pages/UserList';
+import DepartmentView from './pages/DepartmentView';
 import AdminReport from './pages/AdminReport';
 import { ProtectedRoute } from './ProtectedRoutes';
 
@@ -53,6 +54,10 @@ export const router = createBrowserRouter([
     {
         path: '/users',
         element: <ProtectedRoute element={<UserList />} requiredRole="admin" />,
+    },
+    {
+        path: '/department',
+        element: <ProtectedRoute element={<DepartmentView />} requiredRole="admin" />,
     },
     {
         path: '/activity-logs',
