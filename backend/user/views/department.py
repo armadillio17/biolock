@@ -1,7 +1,9 @@
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.contrib.auth.models import User
+from django.conf import settings
+from user.models.users import CustomUser  # Only import your custom user model
+
 from user.models.department import Department, DepartmentUser
 from user.serializers import DepartmentSerializer, AssignUserDepartmentSerializer
 
@@ -61,7 +63,6 @@ class DepartmentDetailView(APIView):
         department.delete()
         return Response({"message": "Department deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
-
 class AssignUserToDepartmentView(APIView):
     """Manually assign a user to a department"""
 
@@ -75,14 +76,14 @@ class AssignUserToDepartmentView(APIView):
 
         try:
             department = Department.objects.get(id=department_id, deleted_at__isnull=True)
-            user = User.objects.get(id=user_id)
+            user = CustomUser.objects.get(id=user_id)  # Changed from User to CustomUser
             _, created = DepartmentUser.objects.get_or_create(department=department, user=user)
 
             if created:
                 return Response({"message": "User assigned successfully"}, status=status.HTTP_201_CREATED)
             return Response({"message": "User is already assigned"}, status=status.HTTP_200_OK)
 
-        except (Department.DoesNotExist, User.DoesNotExist):
+        except (Department.DoesNotExist, CustomUser.DoesNotExist):  # Changed from User.DoesNotExist
             return Response({"error": "Department or User not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -97,10 +98,10 @@ class RemoveUserFromDepartmentView(APIView):
 
         try:
             department = Department.objects.get(id=department_id, deleted_at__isnull=True)
-            user = User.objects.get(id=user_id)
+            user = CustomUser.objects.get(id=user_id)  # Changed from User to CustomUser
             department_user = DepartmentUser.objects.get(department=department, user=user)
             department_user.delete()
             return Response({"message": "User removed successfully"}, status=status.HTTP_200_OK)
 
-        except (Department.DoesNotExist, User.DoesNotExist, DepartmentUser.DoesNotExist):
+        except (Department.DoesNotExist, CustomUser.DoesNotExist, DepartmentUser.DoesNotExist):  # Changed User to CustomUser
             return Response({"error": "User not found in department"}, status=status.HTTP_404_NOT_FOUND)

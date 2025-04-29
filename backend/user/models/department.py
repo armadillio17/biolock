@@ -1,7 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User  # Assuming you use Django's built-in User model
+from django.contrib.auth import get_user_model
 from django.utils.timezone import now
 from django.conf import settings
+
+User = get_user_model()
 
 class Department(models.Model):
     department_name = models.CharField(max_length=255)
