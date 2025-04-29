@@ -1,4 +1,4 @@
-import { Element4, Calendar, CalendarTick, CalendarAdd, CalendarEdit, DocumentText1, Profile2User, Activity, Hierarchy } from "iconsax-react";
+import { Element4, Calendar, CalendarAdd, CalendarEdit, DocumentText1, Profile2User, Activity, Hierarchy } from "iconsax-react";
 import dummyPic from "@/assets/dummy person.jpg";
 // Define a type for the menu items
 export interface SidebarMenuItem {
