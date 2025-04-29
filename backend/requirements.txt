@@ -7,3 +7,9 @@ mysqlclient==2.2.7
 pytz==2025.1
 sqlparse==0.5.3
 typing_extensions==4.12.2
+
+#New
+reportlab==4.1.0               # Added for PDF generation
+xhtml2pdf==0.2.8               # Added for HTML to PDF conversion
+Pillow==10.3.0                 # Required dependency for xhtml2pdf
+html5lib==1.1                  # Required dependency for xhtml2pdf
