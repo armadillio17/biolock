@@ -72,7 +72,7 @@ urlpatterns = [
     path('attendance/', AttendanceListCreateView.as_view(), name='attendance-list'),
     path('attendance/<int:pk>/', AttendanceDetailUpdateDeleteView.as_view(), name='attendance-detail'),
     path('attendance/absent-count/', DailyAttendanceCountView.as_view(), name='attendance-detail'),
-    path('user-attendance/', UserAttendanceView.as_view(), name='user-attendance-detail'),
+    path('user-attendance/<int:user_id>', UserAttendanceView.as_view(), name='user-attendance-detail'),
     
     # User Clock In
     path('clock-in/', UserClockInView.as_view(), name='user-clock-in'),
