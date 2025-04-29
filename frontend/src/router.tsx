@@ -12,6 +12,7 @@ import UserList from './pages/UserList';
 import DepartmentView from './pages/DepartmentView';
 import AdminReport from './pages/AdminReport';
 import { ProtectedRoute } from './ProtectedRoutes';
+import MessagePage from './pages/Messages'
 
 
 export const router = createBrowserRouter([
@@ -62,5 +63,9 @@ export const router = createBrowserRouter([
     {
         path: '/activity-logs',
         element: <ProtectedRoute element={<AdminActivityLog />} requiredRole="admin" />,
+    },
+    {
+        path: '/messages',
+        element: <ProtectedRoute element={<MessagePage />} />,
     },
 ]);

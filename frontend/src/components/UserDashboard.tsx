@@ -1,8 +1,10 @@
 import DashboardLayout from "@/layouts/DashboardLayout"
 import { Metrics }  from "@/components/UserDashboardComponent/MetricsComponent"
 // import { EventCarousel }  from "@/components/UserDashboardComponent/EventCarouselComponent"
-import { Timesheet }  from "@/components/UserDashboardComponent/TimesheetComponent"
+// import { Timesheet }  from "@/components/UserDashboardComponent/TimesheetComponent"
 import { Notification }  from "@/components/UserDashboardComponent/NotificationComponent"
+import MessagesComponent from "@/components/MessagesComponent";
+// import { Calendar } from "@/components/UpdatedCalendarComponent"
 
 
 // import { useAuthStore  } from "@/store/authStore"
@@ -34,8 +36,9 @@ function UserDashboard() {
         <Metrics />
         {/* <EventCarousel /> */}
         
-        <div className="grid grid-cols-[2fr_1fr] gap-4 my-5 w-full h-max-[100px]">
-          <div className="w-full h-auto">
+        {/* <div className="grid grid-cols-[2fr_1fr] gap-4 my-5 w-full h-max-[100px]"> */}
+        <div className="grid grid-cols-[2fr_2fr] gap-4 my-5 w-full h-max-[100px]">
+          {/* <div className="w-full h-auto">
             <div className="flex flex-col text-[#4E4E53] rounded-2xl px-6 py-4 my-5 bg-[#D1F8FF]">
               <p className="text-2xl font-bold">Timesheet Record</p>
               <div className="overflow-hidden rounded-2xl ">
@@ -56,6 +59,15 @@ function UserDashboard() {
                 </div>
               </div>
             </div>
+          </div> */}
+
+          <div className="w-full h-auto rounded-2xl px-6 py-4 my-5 bg-[#D1F8FF]">
+            <div className="flex flex-col text-[#4E4E53]">
+              <p className="text-2xl font-bold">Messages</p>
+              <div className="h-[440px] mt-5 overflow-auto no-scrollbar">
+                {/* <MessagesComponent /> */}
+              </div>
+            </div>
           </div>
 
           <div className="w-full h-auto rounded-2xl px-6 py-4 my-5 bg-[#D1F8FF]">
@@ -69,6 +81,8 @@ function UserDashboard() {
         </div>
 
       </div>
+
+
 
       
     </DashboardLayout>

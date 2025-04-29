@@ -1,4 +1,4 @@
-import { Element4, Calendar, CalendarTick, CalendarAdd, CalendarEdit, DocumentText1, Profile2User, Activity, Hierarchy } from "iconsax-react";
+import { Element4, Calendar, CalendarTick, CalendarAdd, CalendarEdit, DocumentText1, Profile2User, Activity, Hierarchy, Messenger } from "iconsax-react";
 import dummyPic from "@/assets/dummy person.jpg";
 // Define a type for the menu items
 export interface SidebarMenuItem {
@@ -31,7 +31,8 @@ export const sidebarMenuUser: SidebarMenuItem[] = [
     { name: "Dashboard", icon: <Element4 size="27" color= "#0F217D" />, path: "/dashboard" },
     { name: "Timesheet", icon: <Calendar size="27" color= "#FF9F1C" />, path: "/timesheet" },
     { name: "Leave Request", icon: <CalendarAdd size="27" color= "#F988AA" />, path: "/leave-request" },
-    { name: "Overtime", icon: <CalendarEdit size="27" color= "#53CDED" />, path: "/overtime" },
+    { name: "Messages", icon: <Messenger size="27" color= "#6C4AB6" />, path: "/messages" },
+    // { name: "Overtime", icon: <CalendarEdit size="27" color= "#53CDED" />, path: "/overtime" },
 ];
 
 // Sidebar Profile Object
@@ -59,20 +60,3 @@ export const Activitylogs= [
 ];
 
 
-export const userCards = [
-    {
-        group: "Clock In Group",
-        items: [
-            { title: "Clock In", count: 1, color: "#52F76B" },
-            { title: "Clock Out", count: 1, color: "#7A8EF7" },
-        ],
-    },
-    {
-        group: "Daily Metrics",
-        items: [
-            { title: "Daily Hours", count: 1, color: "#D1F8FF" },
-            { title: "Daily Overtime", count: 1, color: "#D1F8FF" },
-            { title: "Daily Break", count: 1, color: "#D1F8FF" },
-        ],
-    },
-];

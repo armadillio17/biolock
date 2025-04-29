@@ -1,8 +1,6 @@
 import DashboardLayout from "@/layouts/DashboardLayout";
-// import { adminCards } from "@/data/dashboard-data.tsx";
-import Chart from "@/components/AdminDashboard/Chart.tsx";
 import ActivityLog from "./ActivityLog";
-import { useDashboardStore } from "@/store/dashboardStore"; // ✅ Import store
+import { useDashboardStore } from "@/store/dashboardStore";
 import { useEffect } from "react";
 
 const FormattedDate = () => {
@@ -16,7 +14,7 @@ const FormattedDate = () => {
   return <p className="text-sm">{formattedDate}</p>;
 };
 
-function AdminDashboard() {
+function SuperAdmin() {
   // const { userCount, fetchUserCount } = useDashboardStore();
 
   const fetchUserCount = useDashboardStore((state) => state.fetchUserCount);
@@ -90,4 +88,4 @@ function AdminDashboard() {
   );
 }
 
-export default AdminDashboard;
+export default SuperAdmin;

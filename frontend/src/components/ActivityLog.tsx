@@ -106,7 +106,7 @@ export default function ActivityLog() {
     return (
         <div className="flex flex-col">
             <div className="flex flex-col text-[#333]">
-                <p className="text-2xl font-bold mb-2">Activity Logs</p>
+                <p className="text-2xl font-bold mb-2">Recent Logs</p>
             </div>
 
                 <div className="overflow-x-auto">

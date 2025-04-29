@@ -6,21 +6,29 @@ interface OvertimeRequestModalProps {
 }
 
 const OvertimeRequestModal: React.FC<OvertimeRequestModalProps> = ({ isOpen, onClose }) => {
-  const [name, setName] = useState('');
-  const [date, setDate] = useState('');
-  const [hours, setHours] = useState('');
-  const [reason, setReason] = useState('');
+  const [formData, setFormData] = useState({
+    date: '',
+    hours: '',
+    reason: '',
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log({
-      name,
-      date,
-      hours,
-      reason,
-    });
-    onClose(); // Close the modal after submission
+    try {
+
+      onClose(); // Close the modal after submission
+    } catch (error) {
+      console.error('Failed to submit leave request:', error);
+      // Handle the error accordingly (e.g., show an error message)
+    }
   };
 
   if (!isOpen) return null;
@@ -31,21 +39,11 @@ const OvertimeRequestModal: React.FC<OvertimeRequestModalProps> = ({ isOpen, onC
         <h2 className="text-xl font-bold mb-4">Overtime Request Form</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              required
-            />
-          </div>
-          <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Date</label>
             <input
               type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
+              value={formData.date}
+              onChange={handleChange}
               className="mt-1 block w-full border border-gray-300 rounded-md p-2"
               required
             />
@@ -54,8 +52,8 @@ const OvertimeRequestModal: React.FC<OvertimeRequestModalProps> = ({ isOpen, onC
             <label className="block text-sm font-medium text-gray-700">Hours Worked</label>
             <input
               type="number"
-              value={hours}
-              onChange={(e) => setHours(e.target.value)}
+              value={formData.hours}
+              onChange={handleChange}
               className="mt-1 block w-full border border-gray-300 rounded-md p-2"
               required
             />
@@ -63,8 +61,8 @@ const OvertimeRequestModal: React.FC<OvertimeRequestModalProps> = ({ isOpen, onC
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Reason for Overtime</label>
             <textarea
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
+              value={formData.reason}
+              onChange={handleChange}
               className="mt-1 block w-full border border-gray-300 rounded-md p-2"
               rows={4}
               required

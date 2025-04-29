@@ -10,7 +10,7 @@ export default function AdminReport() {
     // Add other types here as needed
   };
   
-  const { reportList, fetchReportList, generateDailyReport, isLoading } = useReportStore();
+  const { reportList, fetchReportList, generateDailyReport, downloadReportDataPDF, viewReportDataPDF, isLoading } = useReportStore();
 
   useEffect(() => {
     fetchReportList();
@@ -19,6 +19,22 @@ export default function AdminReport() {
   const handleGenerateReport = async () => {
     if (!isLoading) {
       await generateDailyReport();
+      await fetchReportList();
+    }
+  };
+
+  console.log("reportList", reportList);
+  
+
+  const handleDownloadReport = async ($reportId:number) => {
+    if (!isLoading) {
+      await downloadReportDataPDF($reportId);
+    }
+  };
+
+  const handleViewReport = async ($reportId:number) => {
+    if (!isLoading) {
+      await viewReportDataPDF($reportId);
     }
   };
   return (
@@ -59,13 +75,13 @@ export default function AdminReport() {
                       <td className="py-3 px-6 text-center">
                         <Button 
                           className="bg-green-500 text-white px-4 py-1 rounded"
-                          // onClick={() => handleViewReport(report)}
+                          onClick={() => handleViewReport(report.id)}
                         >
                           View
                         </Button>
                         <Button 
                           className="bg-blue-500 text-white px-4 py-1 rounded ml-2"
-                          // onClick={() => updateLeaveRequest("declined", leave.id)}
+                          onClick={() => handleDownloadReport(report.id)}
                         >
                           Download
                         </Button>
