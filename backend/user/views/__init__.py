@@ -1,4 +1,4 @@
-from .users import UserCreateView, UserUpdateDeleteView, UserAuthenticationView, GetUserRoleView, LogoutView, UserCountView
+from .users import UserCreateView, UserUpdateDeleteView, UserAuthenticationView, GetUserRoleView, LogoutView, UserCountView, NewRegistrationRegisteredList, AcceptedUserList
 from .attendance import AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView, DailyAttendanceCountView
 from .department import DepartmentListCreateView, DepartmentDetailView, AssignUserToDepartmentView, RemoveUserFromDepartmentView
 from .leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView
@@ -46,5 +46,7 @@ __all__ = [
     "UserCountView",
     "LeaveRequestCountView",
     "DailyAttendanceCountView",
-    "GenerateDailyReport"
+    "GenerateDailyReport",
+    "NewRegistrationRegisteredList",
+    "AcceptedUserList"
     ]
