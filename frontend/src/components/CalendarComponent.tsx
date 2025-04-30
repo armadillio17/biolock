@@ -37,8 +37,6 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect }) => {
 
   for (let i = 0; i < firstDay; i++) {
     const prevDay = daysInPrevMonth - firstDay + i + 1;
-    const prevMonth = month - 1 < 0 ? 11 : month - 1;
-    const prevYear = month - 1 < 0 ? year - 1 : year;
 
     prevMonthDays.push(
       <div
@@ -78,8 +76,6 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect }) => {
   const remainingCells = 42 - totalCurrentDays; // 6 rows of 7 days = 42 cells
 
   for (let day = 1; day <= remainingCells; day++) {
-    const nextMonth = month + 1 > 11 ? 0 : month + 1;
-    const nextYear = month + 1 > 11 ? year + 1 : year;
 
     nextMonthDays.push(
       <div

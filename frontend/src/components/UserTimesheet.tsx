@@ -4,8 +4,9 @@ import { Calendar } from "@/components/UserTimesheetCalendarComponent";
 import { useAttendanceStore } from '@/store/attendanceStore';
 
 export default function TimesheetReport() {
-  const {userAttendance, fetchUserAttendance, isLoading } = useAttendanceStore();
-  
+  const {userAttendance, fetchUserAttendance } = useAttendanceStore();
+  type AttendanceStatus = "working" | "absent" | "leave" | "holiday" | "dayoff";
+
   useEffect(() => {
         fetchUserAttendance();
   }, [fetchUserAttendance]);
@@ -24,7 +25,6 @@ const handleDateSelect = (date: string) => {
   setSelectedDate(date); // Update selected date when user clicks on a date
 };
 
-console.log("userAttendance", userAttendance);
 
 
 const userAttendanceList = Array.isArray(userAttendance)
@@ -33,14 +33,14 @@ const userAttendanceList = Array.isArray(userAttendance)
   )
 : []; // If not an array yet, just return an empty list
 
-const status = Array.isArray(userAttendance)
-? userAttendance.reduce((acc: Record<string, string>, curr) => {
-    if (curr.date && curr.status) {
-      acc[curr.date] = curr.status;
-    }
-    return acc;
-  }, {})
-: {};
+  const status: Record<string, AttendanceStatus> = Array.isArray(userAttendance)
+    ? userAttendance.reduce((acc, curr) => {
+      if (curr.date && curr.status) {
+        acc[curr.date] = curr.status as AttendanceStatus;
+      }
+      return acc;
+    }, {} as Record<string, AttendanceStatus>)
+    : {};
 
   return (
     <DashboardLayout>

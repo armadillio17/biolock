@@ -24,7 +24,7 @@ interface ClockOutData{
 
 interface AttendanceState {
   attendance: AttendanceData[];
-  userAttendance: AttendanceData[];
+  userAttendance: AttendanceData | null;
   clockIn: ClockInData[];
   clockOut: ClockOutData[];
   isLoading: boolean;
@@ -38,7 +38,7 @@ interface AttendanceState {
 
 export const useAttendanceStore = create<AttendanceState>((set) => ({
   attendance: [],
-  userAttendance: [],
+  userAttendance: null,
   clockIn: [],
   clockOut: [],
   isLoading: false,
@@ -151,7 +151,6 @@ export const useAttendanceStore = create<AttendanceState>((set) => ({
         },
       });
 
-      console.log("response", response);
 
       set({ clockOut: response.data,
         isLoading: false,

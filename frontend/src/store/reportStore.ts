@@ -2,18 +2,21 @@ import { create } from "zustand";
 import axios from "axios";
 import { base_url } from '../config.ts';
 
+// Define known report types for better type safety
+export type ReportType = 'daily_attendance' | 'monthly_attendance' | 'custom_report' | string;
+
 interface ReportData {
-  // id: number;
-  type: string;
+  id: number;
+  type: ReportType; // Use the union type which includes string
   details: string;
   status: string;
   date: string;
-  // created_at: string;
+  created_at: string;
 }
 
 interface DailyReportData {
   created_at: string;
-  type: string;
+  type: ReportType;
 }
 
 interface ReportState {
@@ -26,15 +29,14 @@ interface ReportState {
   fetchReportList: () => Promise<void>;
   generateDailyReport: () => Promise<void>;
   generateMonthlyReport: () => Promise<void>;
-  downloadReportDataPDF: (report_id:number) => Promise<void>;
-  viewReportDataPDF: (report_id:number) => Promise<void>;
+  downloadReportDataPDF: (report_id: number) => Promise<void>;
+  viewReportDataPDF: (report_id: number) => Promise<void>;
 }
 
 export const useReportStore = create<ReportState>((set) => ({
   reportList: [],
   createDailyReport: [],
   createMonthlyReport: [],
-  downloadReport:[],
   isLoading: false,
   error: null,
 
@@ -115,7 +117,7 @@ export const useReportStore = create<ReportState>((set) => ({
 
   downloadReportDataPDF: async (report_id: number) => {
     set({ isLoading: true, error: null });
-  
+
     try {
       const response = await axios.get(`${base_url}/reports/download-pdf/${report_id}`, {
         responseType: 'blob',
@@ -123,7 +125,7 @@ export const useReportStore = create<ReportState>((set) => ({
           "Content-Type": "application/json",
         },
       });
-  
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
@@ -131,7 +133,7 @@ export const useReportStore = create<ReportState>((set) => ({
       document.body.appendChild(link);
       link.click();
       link.remove();
-  
+
       set({ isLoading: false });
     } catch (error: unknown) {
       console.error("Error fetching report:", error);
@@ -144,7 +146,7 @@ export const useReportStore = create<ReportState>((set) => ({
 
   viewReportDataPDF: async (report_id: number) => {
     set({ isLoading: true, error: null });
-  
+
     try {
       const response = await axios.get(`${base_url}/reports/download-pdf/${report_id}`, {
         responseType: 'blob',
@@ -152,11 +154,11 @@ export const useReportStore = create<ReportState>((set) => ({
           "Content-Type": "application/json",
         },
       });
-  
+
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
       window.open(url, '_blank'); // Opens the PDF in a new tab
-  
+
       set({ isLoading: false });
     } catch (error: unknown) {
       console.error("Error fetching report:", error);
@@ -166,7 +168,4 @@ export const useReportStore = create<ReportState>((set) => ({
       });
     }
   }
-  
-  
-
 }));

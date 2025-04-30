@@ -19,21 +19,22 @@ const months = Array.from({ length: 12 }, (_, i) =>
 export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, statusByDate = {} }) => {
   const today = new Date();
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const month = currentDate.getMonth();
   const year = currentDate.getFullYear();
 
-  const updateMonth = (newMonth) => {
+  const updateMonth = (newMonth: string) => {
     setCurrentDate(new Date(year, parseInt(newMonth), 1));
   };
 
-  const updateYear = (newYear) => {
+  const updateYear = (newYear: string) => {
     setCurrentDate(new Date(parseInt(newYear), month, 1));
   };
 
-  const getDaysInMonth = (m, y) => new Date(y, m + 1, 0).getDate();
-  const getFirstDay = (m, y) => new Date(y, m, 1).getDay();
+  const getDaysInMonth = (m: number, y: number): number => new Date(y, m + 1, 0).getDate();
+  const getFirstDay = (m: number, y: number): number => new Date(y, m, 1).getDay();
+
 
   const daysInMonth = getDaysInMonth(month, year);
   const firstDay = getFirstDay(month, year);
@@ -42,13 +43,14 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, statusByDate =
     month === 0 ? year - 1 : year
   );
 
-  const handleDateSelect = (day) => {
+  const handleDateSelect = (day: number) => {
     const dateStr = `${year}-${(month + 1).toString().padStart(2, "0")}-${day
       .toString()
       .padStart(2, "0")}`;
     setSelectedDate(dateStr);
     onDateSelect(dateStr);
   };
+
 
   const renderDays = () => {
     const prev = Array.from({ length: firstDay }, (_, i) => (
