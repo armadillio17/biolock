@@ -17,6 +17,8 @@ interface UserStore {
     userList: UserData[]; 
     newRegisteredUser: UserData[]; 
     approvedUser: UserData[]; 
+    isLoading: boolean;
+    error: string | null;
 
     fetchUserList: () => Promise<void>; 
     fetchNewUserList: () => Promise<void>; 
@@ -29,6 +31,8 @@ export const useUserStore = create<UserStore>((set) => ({
     userList: [],
     newRegisteredUser: [],
     approvedUser: [],
+    isLoading: false,
+    error: null,
 
     fetchUserList: async () => {
         try {
@@ -55,6 +59,7 @@ export const useUserStore = create<UserStore>((set) => ({
     },
 
     fetchApprovedUserList: async () => {
+        set({ isLoading: true, error: null });
         try {
             const response = await authAxios.get(`${base_url}/users/list/`, {
                 withCredentials: true
@@ -67,6 +72,7 @@ export const useUserStore = create<UserStore>((set) => ({
     },
 
     approvedRegisteredUser: async (userId: number, is_accepted:boolean) => {
+        set({ isLoading: true, error: null });
         try {
             const response = await authAxios.put(`${base_url}/users/${userId}/`,{
                 is_accepted: is_accepted

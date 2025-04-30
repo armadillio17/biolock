@@ -1,90 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import DashboardLayout from "@/layouts/DashboardLayout"
 import { Button } from "./ui/button"
-import { authAxios } from "@/lib/secured-axios-instance";
-import { base_url } from '../config';
 import { useUserStore } from "@/store/userlistStore";
 
 export default function UserLists() {
-  interface RegistrationUser {
-    name?: string;
-  }
 
-  interface RegistrationRequest {
-    id: number;
-    created_at: string;
-    user?: RegistrationUser;
-    email?: string;
-    first_name: string;
-    last_name: string;
-  }
-
-  interface User {
-    id: number;
-    created_at: string;
-    name?: string;
-    email?: string;
-    first_name: string;
-    last_name: string;
-  }
-  const [registrationRequests, setRegistrationRequests] = useState<RegistrationRequest[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
-
-  const [loading, setLoading] = useState({
-    requests: true,
-    users: true
-  });
-  const [error, setError] = useState<{
-    requests: string | null;
-    users: string | null;
-  }>({
-    requests: null,
-    users: null
-  });
-
-  // Fetch registration requests
-  useEffect(() => {
-    const fetchRegistrationRequests = async () => {
-      try {
-        const response = await authAxios.get(`${base_url}/user/`); // Adjust endpoint as needed
-        setRegistrationRequests(response.data);
-        setLoading(prev => ({ ...prev, requests: false }));
-      } catch (err) {
-        setError(prev => ({ ...prev, requests: (err as Error).message }));
-        setLoading(prev => ({ ...prev, requests: false }));
-      }
-    };
-
-    fetchRegistrationRequests();
-  }, [setRegistrationRequests]);
-
-  // Fetch users
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await authAxios.get(`${base_url}/user/`); // Adjust endpoint as needed
-        setUsers(response.data);
-        setLoading(prev => ({ ...prev, users: false }));
-      } catch (err) {
-        setError(prev => ({ ...prev, users: (err as Error).message }));
-        setLoading(prev => ({ ...prev, users: false }));
-      }
-    };
-
-    fetchUsers();
-  }, [setUsers]);
-
-  const formatDate = (dateString: string) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    }).replace(/\//g, '-');
-  };
-
-  const { fetchNewUserList, fetchApprovedUserList, approvedRegisteredUser } = useUserStore();
+  const { newRegisteredUser, approvedUser, fetchNewUserList, fetchApprovedUserList, approvedRegisteredUser, isLoading, error } = useUserStore();
 
   useEffect(() => {
     fetchNewUserList();
@@ -103,6 +24,10 @@ export default function UserLists() {
     await fetchApprovedUserList();
   };
 
+  const formatDate = (dateStr: string): string => {
+    return new Date(dateStr).toLocaleDateString();
+  };
+
   return (
     <DashboardLayout>
       <div className="flex flex-col">
@@ -111,10 +36,10 @@ export default function UserLists() {
         {/* Registration Request Section */}
         <div className="mt-4">
           <h3 className="text-lg font-semibold text-center">Registration Request</h3>
-          {loading.requests ? (
+          {isLoading ? (
             <p className="text-center">Loading requests...</p>
-          ) : error.requests ? (
-            <p className="text-center text-red-500">Error: {error.requests}</p>
+          ) : error ? (
+            <p className="text-center text-red-500">Error: {error}</p>
           ) : (
             <table className="min-w-full text-center border border-gray-300">
               <thead>
@@ -126,8 +51,8 @@ export default function UserLists() {
                 </tr>
               </thead>
               <tbody>
-                {registrationRequests.length > 0 ? (
-                  registrationRequests.map(request => (
+                {newRegisteredUser.length > 0 ? (
+                  newRegisteredUser.map(request => (
                     <tr key={request.id} className="border-b border-gray-300">
                       <td className="px-4 py-2">{formatDate(request.created_at)}</td>
                       <td className="px-4 py-2">
@@ -165,10 +90,10 @@ export default function UserLists() {
         {/* User List Section */}
         <div className="mt-6">
           <h3 className="text-lg font-semibold text-center">User List</h3>
-          {loading.users ? (
+          {isLoading ? (
             <p className="text-center">Loading users...</p>
-          ) : error.users ? (
-            <p className="text-center text-red-500">Error: {error.users}</p>
+          ) : error ? (
+            <p className="text-center text-red-500">Error: {error}</p>
           ) : (
             <table className="min-w-full text-center border border-gray-300">
               <thead>
@@ -179,8 +104,8 @@ export default function UserLists() {
                 </tr>
               </thead>
               <tbody>
-                {users.length > 0 ? (
-                  users.map(user => (
+                {approvedUser.length > 0 ? (
+                  approvedUser.map(user => (
                     <tr key={user.id} className="border-b border-gray-300">
                       <td className="px-4 py-2">{formatDate(user.created_at)}</td>
                       <td className="px-4 py-2">
