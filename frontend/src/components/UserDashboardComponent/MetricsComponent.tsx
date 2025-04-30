@@ -40,7 +40,8 @@ export const Metrics = () => {
         }
       };
 
-
+      console.log("Test", userAttendance );
+      
   return (
 
     <div className="grid w-full grid-cols-1 gap-4 my-5 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
@@ -62,7 +63,7 @@ export const Metrics = () => {
                     style={{ 
                         backgroundColor: card.color ,
                     }}
-                    onClick={card.title === "Clock In" ? clockIn : clockOut}
+                    onClick={card.title === "Clock In" ? handleClockIn : handleClockOut}
                     > <h2 className={`font-bold m-3`}> {card.title} </h2>
                     </div>
                     ))}
@@ -85,7 +86,7 @@ export const Metrics = () => {
                 }}
                 >
                     <h3 className="text-lg font-bold">{group.items[0]?.title}</h3>
-                    <h1 className="p-4 text-4xl font-bold"> 1 </h1>
+                    <h1 className="p-4 text-4xl font-bold"> {userAttendance.working_hours ?? 0} </h1>
                     {/* <p className="text-xl font-semibold">{card.count}</p> */}
                 </div>
                 ))}
@@ -106,7 +107,7 @@ export const Metrics = () => {
                 }}
                 >
                     <h3 className="text-lg font-bold">{group.items[1]?.title}</h3>
-                    <h1 className="p-4 text-4xl font-bold"> 1 </h1>
+                    <h1 className="p-4 text-4xl font-bold"> {userAttendance.overtime_hours ?? 0} </h1>
                     {/* <p className="text-xl font-semibold">{card.count}</p> */}
                 </div>
                 ))}
