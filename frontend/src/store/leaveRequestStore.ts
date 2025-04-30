@@ -138,7 +138,6 @@ export const leaveRequestStore = create<LeaveRequestState>((set) => ({
 
       const leaveRequest = response.data;
 
-      console.log("leaveRequest", leaveRequest);
       
 
       set({ 
@@ -162,7 +161,6 @@ export const leaveRequestStore = create<LeaveRequestState>((set) => ({
 
     try {
 
-      console.log("data", status, id);
       
 
       // const token = useAuthStore.getState().getAuthToken();

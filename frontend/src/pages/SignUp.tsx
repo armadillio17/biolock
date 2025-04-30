@@ -41,7 +41,6 @@ function SignUp() {
             throw new Error(error || "Sign Up Failed");
         }
 
-        console.log('Sign up attempt:', formData);
         navigate('/');
     };
 

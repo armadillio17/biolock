@@ -40,7 +40,6 @@ export const Metrics = () => {
         }
       };
 
-      console.log("Test", userAttendance );
       
   return (
 
@@ -54,12 +53,12 @@ export const Metrics = () => {
                 .map((group) => (
                 <div 
                 key = {group.group}
-                className={`flex flex-col items-center justify-center w-full h-full grid grid-cols-1 gap-y-4 text-center`}
+                className={`flex-col items-center justify-center w-full h-full grid grid-cols-1 gap-y-4 text-center`}
                 >
                     {group.items.map((card, index) => (
                     <div 
                     key = {index}
-                    className={`flex flex-col items-center w-full h-full shadow-md rounded-2xl shadow-md text-center text-gray-800`}
+                    className={`flex flex-col items-center w-full h-full rounded-2xl shadow-md text-center text-gray-800`}
                     style={{ 
                         backgroundColor: card.color ,
                     }}
@@ -86,7 +85,7 @@ export const Metrics = () => {
                 }}
                 >
                     <h3 className="text-lg font-bold">{group.items[0]?.title}</h3>
-                    <h1 className="p-4 text-4xl font-bold"> {userAttendance.working_hours ?? 0} </h1>
+                        <h1 className="p-4 text-4xl font-bold"> {userAttendance?.working_hours ?? 0} </h1>
                     {/* <p className="text-xl font-semibold">{card.count}</p> */}
                 </div>
                 ))}
@@ -107,7 +106,7 @@ export const Metrics = () => {
                 }}
                 >
                     <h3 className="text-lg font-bold">{group.items[1]?.title}</h3>
-                    <h1 className="p-4 text-4xl font-bold"> {userAttendance.overtime_hours ?? 0} </h1>
+                    <h1 className="p-4 text-4xl font-bold"> {userAttendance?.overtime_hours ?? 0} </h1>
                     {/* <p className="text-xl font-semibold">{card.count}</p> */}
                 </div>
                 ))}

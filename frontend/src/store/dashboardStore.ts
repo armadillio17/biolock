@@ -3,46 +3,54 @@ import axios from "axios";
 import { base_url } from "../config";
 import { useAuthStore } from "./authStore";
 
-// Notification state interface
 interface UserCountData {
-    count: number;
-    approvedUsers: number;
-    newlyRegisteredUsers: number;
+  count: number;
+  approvedUsers: number;
+  newlyRegisteredUsers: number;
 }
 
-interface LeaveCountData{
-    approvedLeave: number;
+interface LeaveCountData {
+  approvedLeaveCount: number;
 }
 
-interface StatusCountData{
-    absentCount: number;
-    workingCount: number;
-    onLeavecount: number;
+interface StatusCountData {
+  absentCount: number;
+  workingCount: number;
+  onBreakCount: number;
+  dayOffCount: number;
+  onLeaveCount: number;
 }
 
 interface UserState {
-  userCount: UserCountData[];
-  approvedLeave: LeaveCountData[]
-  status: StatusCountData[]
+  userCount: UserCountData;
+  approvedLeave: LeaveCountData;
+  status: StatusCountData;
 
-  fetchUserCount: () => Promise<void>;  
-  fetchLeaveCount: () => Promise<void>;  
-  fetchStatusCount: () => Promise<void>;  
+  fetchUserCount: () => Promise<void>;
+  fetchLeaveCount: () => Promise<void>;
+  fetchStatusCount: () => Promise<void>;
 }
 
 export const useDashboardStore = create<UserState>((set) => ({
-    userCount: [],
-    approvedLeave: [],
-    status: [],
+  userCount: {
+    count: 0,
+    approvedUsers: 0,
+    newlyRegisteredUsers: 0,
+  },
+  approvedLeave: {
+    approvedLeaveCount: 0,
+  },
+  status: {
+    absentCount: 0,
+    workingCount: 0,
+    onBreakCount: 0,
+    dayOffCount: 0,
+    onLeaveCount: 0,
+  },
 
-    fetchUserCount: async () => {
+  fetchUserCount: async () => {
     try {
-    //   const token = useAuthStore.getState().getAuthToken();
       const user = useAuthStore.getState().user;
-
-    //   if (!token) {
-    //     throw new Error("Authentication token not found");
-    //   }
 
       if (!user || !user.userId) {
         throw new Error("User ID not found");
@@ -51,28 +59,18 @@ export const useDashboardStore = create<UserState>((set) => ({
       const response = await axios.get(`${base_url}/users/user-count/`, {
         headers: {
           "Content-Type": "application/json",
-        //   Authorization: `Bearer ${token}`,
         },
       });
 
-    //   console.log("userCount2", response.data);
-
-      set({ 
-        userCount: response.data
-     });
+      set({ userCount: response.data });
     } catch (error) {
-      console.error("Error fetching notifications:", error);
+      console.error("Error fetching user count:", error);
     }
   },
 
-    fetchLeaveCount: async () => {
+  fetchLeaveCount: async () => {
     try {
-    //   const token = useAuthStore.getState().getAuthToken();
       const user = useAuthStore.getState().user;
-
-    //   if (!token) {
-    //     throw new Error("Authentication token not found");
-    //   }
 
       if (!user || !user.userId) {
         throw new Error("User ID not found");
@@ -81,28 +79,18 @@ export const useDashboardStore = create<UserState>((set) => ({
       const response = await axios.get(`${base_url}/leave-requests/count/`, {
         headers: {
           "Content-Type": "application/json",
-        //   Authorization: `Bearer ${token}`,
         },
       });
 
-    //   console.log("userCount2", response.data);
-
-      set({ 
-        approvedLeave: response.data
-     });
+      set({ approvedLeave: response.data });
     } catch (error) {
-      console.error("Error fetching notifications:", error);
+      console.error("Error fetching leave count:", error);
     }
   },
 
   fetchStatusCount: async () => {
     try {
-    //   const token = useAuthStore.getState().getAuthToken();
       const user = useAuthStore.getState().user;
-
-    //   if (!token) {
-    //     throw new Error("Authentication token not found");
-    //   }
 
       if (!user || !user.userId) {
         throw new Error("User ID not found");
@@ -111,18 +99,12 @@ export const useDashboardStore = create<UserState>((set) => ({
       const response = await axios.get(`${base_url}/attendance/absent-count/`, {
         headers: {
           "Content-Type": "application/json",
-        //   Authorization: `Bearer ${token}`,
         },
       });
 
-    //   console.log("userCount2", response.data);
-
-      set({ 
-        status: response.data
-     });
+      set({ status: response.data });
     } catch (error) {
-      console.error("Error fetching notifications:", error);
+      console.error("Error fetching status count:", error);
     }
   },
-
 }));

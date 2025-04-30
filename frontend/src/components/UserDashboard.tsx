@@ -3,7 +3,6 @@ import { Metrics }  from "@/components/UserDashboardComponent/MetricsComponent"
 // import { EventCarousel }  from "@/components/UserDashboardComponent/EventCarouselComponent"
 // import { Timesheet }  from "@/components/UserDashboardComponent/TimesheetComponent"
 import { Notification }  from "@/components/UserDashboardComponent/NotificationComponent"
-import MessagesComponent from "@/components/MessagesComponent";
 // import { Calendar } from "@/components/UpdatedCalendarComponent"
 
 
