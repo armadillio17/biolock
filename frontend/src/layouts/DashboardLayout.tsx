@@ -148,7 +148,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             )}
 
             {/* Main content */}
-            <main className="flex-grow max-h-screen p-5 overflow-auto">{children}</main>
+            <main className="flex-grow max-h-screen p-5 overflow-auto scrollbar-hide">
+                {children}
+            </main>
         </div>
     );
 };

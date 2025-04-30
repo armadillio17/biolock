@@ -29,9 +29,9 @@ export const sidebarMenu: SidebarMenuItem[] = [
 
 export const sidebarMenuUser: SidebarMenuItem[] = [
     { name: "Dashboard", icon: <Element4 size="27" color= "#0F217D" />, path: "/dashboard" },
+    { name: "Inbox", icon: <Messenger size="27" color= "#6C4AB6" />, path: "/inbox" },
     { name: "Timesheet", icon: <Calendar size="27" color= "#FF9F1C" />, path: "/timesheet" },
     { name: "Leave Request", icon: <CalendarAdd size="27" color= "#F988AA" />, path: "/leave-request" },
-    { name: "Messages", icon: <Messenger size="27" color= "#6C4AB6" />, path: "/messages" },
     // { name: "Overtime", icon: <CalendarEdit size="27" color= "#53CDED" />, path: "/overtime" },
 ];
 

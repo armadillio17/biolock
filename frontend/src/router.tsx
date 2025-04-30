@@ -65,7 +65,7 @@ export const router = createBrowserRouter([
         element: <ProtectedRoute element={<AdminActivityLog />} requiredRole="admin" />,
     },
     {
-        path: '/messages',
+        path: '/inbox',
         element: <ProtectedRoute element={<MessagePage />} />,
     },
 ]);
