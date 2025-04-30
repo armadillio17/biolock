@@ -58,9 +58,9 @@ class AttendanceDetailUpdateDeleteView(APIView):
         return Response({"message": "Attendance record soft deleted"}, status=status.HTTP_204_NO_CONTENT)
 
 class UserAttendanceView(APIView):
-    def get(self, request):
+    def get(self, request, user_id):
         """Retrieve all non-deleted attendance records for a specific user"""
-        attendances = Attendance.objects.filter(user_id=request.user.id, deleted_at__isnull=True)
+        attendances = Attendance.objects.filter(user_id=user_id, deleted_at__isnull=True)
         serializer = AttendanceSerializer(attendances, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
@@ -104,7 +104,7 @@ class UserClockOutView(APIView):
         attendance = Attendance.objects.filter(user_id=user, clock_in__date=today, clock_out__isnull=True).first()
         
         if not attendance:
-            return Response({"error": "Already clock in for today"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Already clock out for today"}, status=status.HTTP_400_BAD_REQUEST)
         
         serializer = ClockOutSerializer(attendance, data=request.data, partial=True)
         

@@ -35,7 +35,7 @@ export default function ActivityLog() {
             // Handle arrays
             if (Array.isArray(parsedData)) {
                 return (
-                    <ul className="list-disc pl-5">
+                    <ul className="pl-5 list-disc">
                         {parsedData.map((item, index) => (
                             <li key={index}>{renderDetails(item)}</li>
                         ))}
@@ -106,24 +106,24 @@ export default function ActivityLog() {
     return (
         <div className="flex flex-col">
             <div className="flex flex-col text-[#333]">
-                <p className="text-2xl font-bold mb-2">Activity Logs</p>
+                <p className="mb-2 text-2xl font-bold">Recent Logs</p>
             </div>
 
-                <div className="overflow-x-auto">
-                    <table className="min-w-full text-sm text-gray-700">
-                        <thead className="text-gray-600 uppercase text-xs">
-                            <tr className="bg-black from-indigo-500 to-purple-600 text-white">
-                                <th className="py-3 px-6 text-left rounded-tl-2xl">Date</th>
-                                <th className="py-3 px-6 text-left">Action</th>
-                                <th className="py-3 px-6 text-left rounded-tr-2xl">Details</th>
+            <div className="w-full px-2 overflow-x-auto sm:px-4">
+                <table className="min-w-[600px] sm:min-w-full text-sm text-gray-700">
+                        <thead className="text-xs text-gray-600 uppercase">
+                            <tr className="text-white bg-black from-indigo-500 to-purple-600">
+                                <th className="px-6 py-3 text-left rounded-tl-2xl">Date</th>
+                                <th className="px-6 py-3 text-left">Action</th>
+                                <th className="px-6 py-3 text-left rounded-tr-2xl">Details</th>
                             </tr>
                         </thead>
                         <tbody>
                             {activities.map((activity) => (
                                 <tr key={activity.id} className="bg-white ">
-                                    <td className="py-4 px-6 whitespace-nowrap">{new Date(activity.created_at).toLocaleString()}</td>
-                                    <td className="py-4 px-6 whitespace-nowrap font-medium">{formatType(activity.type)}</td>
-                                    <td className="py-4 px-6">
+                                    <td className="px-6 py-4 whitespace-nowrap">{new Date(activity.created_at).toLocaleString()}</td>
+                                    <td className="max-w-xs px-6 py-4 break-words whitespace-normal">{formatType(activity.type)}</td>
+                                    <td className="px-6 py-4">
                                         <div className="flex flex-col gap-1">
                                             {activity.data ? (
                                                 <>

@@ -151,7 +151,7 @@ export default function UserLists() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={3} className="py-4 text-center">No pending registration requests</td>
+                    <td colSpan={3} className="p-4 text-left">No pending registration requests</td>
                   </tr>
                 )}
               </tbody>

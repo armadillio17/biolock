@@ -22,9 +22,9 @@ export default function OvertimeRequest() {
   const userId = user.userId || '';
   const date = selectedDate;
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
+  // const handleOpenModal = () => {
+  //   setIsModalOpen(true);
+  // };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -40,12 +40,12 @@ export default function OvertimeRequest() {
         {/* Greetings and time */}
         <div className="flex flex-col-2 gap-4 items-center text-[#4E4E53]">
           <p className="text-2xl font-bold">Overtime</p>
-          <Button
+          {/* <Button
             className="w-auto h-auto my-2 border-[1px] border-[#028090] rounded-xl text-[12px] font-meduim"
             onClick={handleOpenModal} // Open modal on button click
           >
             Request Overtime
-          </Button>
+          </Button> */}
         </div>
 
         <Calendar onDateSelect={handleDateSelect} /> 

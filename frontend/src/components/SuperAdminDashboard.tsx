@@ -1,8 +1,6 @@
 import DashboardLayout from "@/layouts/DashboardLayout";
-// import { adminCards } from "@/data/dashboard-data.tsx";
-import Chart from "@/components/AdminDashboard/Chart.tsx";
 import ActivityLog from "./ActivityLog";
-import { useDashboardStore } from "@/store/dashboardStore"; // ✅ Import store
+import { useDashboardStore } from "@/store/dashboardStore";
 import { useEffect } from "react";
 
 const FormattedDate = () => {
@@ -16,7 +14,7 @@ const FormattedDate = () => {
   return <p className="text-sm">{formattedDate}</p>;
 };
 
-function AdminDashboard() {
+function SuperAdmin() {
   // const { userCount, fetchUserCount } = useDashboardStore();
 
   const fetchUserCount = useDashboardStore((state) => state.fetchUserCount);
@@ -55,8 +53,8 @@ function AdminDashboard() {
         </div>
 
         {/* Attendance Cards & Graphs */}
-        <div className="flex flex-col items-center w-full gap-8 mt-5">
-          <div className="grid w-full max-w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="flex flex-col items-center w-full mt-5 gap-8">
+          <div className="grid w-full grid-cols-4 gap-4 max-w-full">
             {adminCards.map((card, index) => (
               <div
                 key={index}
@@ -72,7 +70,7 @@ function AdminDashboard() {
           </div>
 
           {/* Graph & Activity Log */}
-          <div className="flex w-full gap-8">
+          <div className="flex gap-8 w-full">
             {/* Graph Section */}
             {/* <div className="flex flex-col justify-center items-center bg-[#A4DDED] rounded-2xl p-5 w-1/2 text-center gap-5 shadow-lg border border-black">
               <h4 className="text-[24px] font-bold">Lorem Ipsum</h4>
@@ -80,7 +78,7 @@ function AdminDashboard() {
             </div> */}
 
             {/* Activity Log Section */}
-            <div className="w-full sm:w-1/2 min-h-[250px] rounded-2xl bg-[#A4DDED] p-5 border border-black shadow-lg">
+            <div className="w-1/2 min-h-[250px] rounded-2xl bg-[#A4DDED] p-5 border border-black shadow-lg">
                 <ActivityLog />
             </div>
           </div>
@@ -90,4 +88,4 @@ function AdminDashboard() {
   );
 }
 
-export default AdminDashboard;
+export default SuperAdmin;
