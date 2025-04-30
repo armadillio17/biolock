@@ -73,14 +73,63 @@ class UserUpdateDeleteView(APIView):
 
 
 ## ----------- User Authentication with DRF Throttling ----------- ##
-class LoginThrottle(AnonRateThrottle):
-    scope = 'login'
+# class LoginThrottle(AnonRateThrottle):
+#     scope = 'login'
+
+# class UserAuthenticationView(APIView):
+#     """User authentication with DRF throttling"""
+
+#     throttle_classes = [LoginThrottle]
+    
+#     def post(self, request):
+#         """User authentication"""
+        
+#         username = request.data['username']
+#         password = request.data['password']
+        
+#         if username is None or username.strip() == "":
+#             return Response({"error": "Username is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+#         if password is None or password.strip() == "":
+#             return Response({"error": "Password is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+#         try:
+#             user = CustomUser.objects.get(username=username, deleted_at__isnull=True)
+            
+#             # Compare hashed password
+#             if not bcrypt.checkpw(password.encode(), user.password.encode()):
+#                 return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+            
+#             if not user.is_accepted:
+#                 return Response({"error": "Your account is not approved yet. Please contact support or try again later."}, status=status.HTTP_403_FORBIDDEN)
+            
+#             # Create or get authentication token
+#             token, created = Token.objects.get_or_create(user=user)
+            
+#             # Create response object
+#             response = Response({
+#                 "user_id": user.id, 
+#                 "success": True
+#             }, status=status.HTTP_200_OK)
+            
+#             # Set token in HTTP-only cookie
+#             response.set_cookie(
+#                 'auth_token',
+#                 token.key,
+#                 httponly=True,
+#                 # secure=True,  
+#                 # samesite='Strict',
+#                 max_age=86400 * 30  # 30 days or adjust as needed
+#             )
+            
+#             return response
+            
+#         except CustomUser.DoesNotExist:
+#             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class UserAuthenticationView(APIView):
-    """User authentication with DRF throttling"""
+    """User authentication without DRF throttling"""
 
-    throttle_classes = [LoginThrottle]
-    
     def post(self, request):
         """User authentication"""
         
@@ -96,37 +145,31 @@ class UserAuthenticationView(APIView):
         try:
             user = CustomUser.objects.get(username=username, deleted_at__isnull=True)
             
-            # Compare hashed password
             if not bcrypt.checkpw(password.encode(), user.password.encode()):
                 return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
             
             if not user.is_accepted:
                 return Response({"error": "Your account is not approved yet. Please contact support or try again later."}, status=status.HTTP_403_FORBIDDEN)
             
-            # Create or get authentication token
             token, created = Token.objects.get_or_create(user=user)
             
-            # Create response object
             response = Response({
                 "user_id": user.id, 
                 "success": True
             }, status=status.HTTP_200_OK)
             
-            # Set token in HTTP-only cookie
             response.set_cookie(
                 'auth_token',
                 token.key,
                 httponly=True,
-                # secure=True,  
-                # samesite='Strict',
-                max_age=86400 * 30  # 30 days or adjust as needed
+                max_age=86400 * 30
             )
             
             return response
             
         except CustomUser.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+
 class LogoutView(APIView):
             def post(self, request):
                 response = Response({"success": True})

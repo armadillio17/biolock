@@ -1,16 +1,20 @@
 "use client";
 
-import React from 'react';
+import React from "react";
+import DashboardLayout from "@/layouts/DashboardLayout";
 
 interface MessageProps {
   text: string;
   sender: string;
-  timestamp: number; // Assuming timestamp is a Unix timestamp in milliseconds
+  timestamp: number; // Unix timestamp in milliseconds
 }
 
-const Message: React.FC<MessageProps> = ({ text, sender, timestamp }) => {
+const MessageItem: React.FC<MessageProps> = ({ text, sender, timestamp }) => {
   const formatDate = (date: number) => {
-    return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return new Date(date).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   return (
@@ -21,5 +25,41 @@ const Message: React.FC<MessageProps> = ({ text, sender, timestamp }) => {
     </div>
   );
 };
+
+function Message() {
+  // Sample messages
+  const messages: MessageProps[] = [
+    {
+      text: "Hey there!",
+      sender: "Alice",
+      timestamp: Date.now() - 600000, // 10 mins ago
+    },
+    {
+      text: "Hello, how are you?",
+      sender: "Bob",
+      timestamp: Date.now() - 300000, // 5 mins ago
+    },
+    {
+      text: "Doing well, thanks!",
+      sender: "Alice",
+      timestamp: Date.now(), // now
+    },
+  ];
+
+  return (
+      <div className="flex flex-col text-[#4E4E53] mt-5">
+        <div className="mt-6 overflow-x-auto">
+          {messages.map((msg, idx) => (
+            <MessageItem
+              key={idx}
+              text={msg.text}
+              sender={msg.sender}
+              timestamp={msg.timestamp}
+            />
+          ))}
+        </div>
+      </div>
+  );
+}
 
 export default Message;

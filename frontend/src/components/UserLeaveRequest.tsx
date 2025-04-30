@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import DashboardLayout from "@/layouts/DashboardLayout";
 import { Button } from "./ui/button";
-import { Calendar } from "./CalendarComponent";
+// import { Calendar } from "./CalendarComponent";
+import { Calendar } from './LeaveRequestCalendarComponent';
 import LeaveRequestModal from "./UserPrompt/LeaveRequestPrompt";
 import { leaveRequestStore } from '@/store/leaveRequestStore';
 import { useAuthStore } from '@/store/authStore.ts';
@@ -43,6 +44,20 @@ export default function LeaveRequest() {
   // Filter leave requests by selected date
   const leaveRequestList = userLeaveRequest.filter((leave) => leave.start_date === selectedDate || leave.end_date === selectedDate);
 
+  const leaveRequestsByDate = userLeaveRequest.reduce((acc, leave) => {
+    const add = (date: string) => {
+      if (!acc[date]) acc[date] = [];
+      acc[date].push({ status: leave.status });
+    };
+  
+    add(leave.start_date);
+    if (leave.end_date && leave.end_date !== leave.start_date) {
+      add(leave.end_date);
+    }
+  
+    return acc;
+  }, {} as Record<string, { status: string | null }[]>);
+
   return (
     <DashboardLayout>
       <div className="flex flex-col">
@@ -57,7 +72,7 @@ export default function LeaveRequest() {
           </Button>
         </div>
         <div>
-          <Calendar onDateSelect={handleDateSelect} /> 
+        <Calendar onDateSelect={handleDateSelect} leaveRequestsByDate={leaveRequestsByDate} />
         </div>
       </div>
 

@@ -162,16 +162,16 @@ AUTH_USER_MODEL = 'user.CustomUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',  # Limits anonymous users
+        # 'rest_framework.throttling.AnonRateThrottle',  # Limits anonymous users
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'user.authentication.CookieTokenAuthentication',  # Use your actual path
+        # 'user.authentication.CookieTokenAuthentication',  # Use your actual path
         # Other authentication classes if needed
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/hour',  # Set rate for anonymous users
-        'user': '1000/day',  # Set rate for authenticated users
-        'login': '5/min'  # Limit 5 login attempts per minute
+    #     'anon': '100/hour',  # Set rate for anonymous users
+    #     'user': '1000/day',  # Set rate for authenticated users
+    #     'login': '5/min'  # Limit 5 login attempts per minute
     }
 }
 
