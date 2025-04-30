@@ -57,7 +57,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     
     # Auth
-    path('login/', UserAuthenticationView.as_view(), name='login'),
+    path('api/login/', UserAuthenticationView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     
     # Users
