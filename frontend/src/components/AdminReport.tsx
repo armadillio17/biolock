@@ -5,12 +5,12 @@ import { useEffect } from 'react';
 
 export default function AdminReport() {
 
-  const typeMapping = {
-    "daily_attendance": "Daily Attendance",
-    // Add other types here as needed
+  const typeMapping: Record<string, string> = {
+    daily_attendance: 'Daily Attendance Report',
+    monthly_attendance: 'Monthly Attendance Report',
+    custom_report: 'Custom Report'
   };
-  
-  const { reportList, fetchReportList, generateDailyReport, isLoading } = useReportStore();
+  const { reportList, fetchReportList, generateDailyReport, downloadReportDataPDF, viewReportDataPDF, isLoading } = useReportStore();
 
   useEffect(() => {
     fetchReportList();
@@ -19,17 +19,32 @@ export default function AdminReport() {
   const handleGenerateReport = async () => {
     if (!isLoading) {
       await generateDailyReport();
+      await fetchReportList();
+    }
+  };
+
+  
+
+  const handleDownloadReport = async ($reportId:number) => {
+    if (!isLoading) {
+      await downloadReportDataPDF($reportId);
+    }
+  };
+
+  const handleViewReport = async ($reportId:number) => {
+    if (!isLoading) {
+      await viewReportDataPDF($reportId);
     }
   };
   return (
     <DashboardLayout>
       <div className="flex flex-col">
         {/* Header with Button beside the Title */}
-        <div className="flex items-center justify-between border-b border-gray-300 pb-2">
+        <div className="flex items-center justify-between pb-2 border-b border-gray-300">
           <div className="flex items-center gap-4">
             <p className="text-lg font-semibold">Reports</p>
             <Button 
-            className="bg-green-500 text-white px-4 py-2 rounded-md"
+            className="px-4 py-2 text-white bg-green-500 rounded-md"
             onClick={handleGenerateReport}
             >
               Generate Report
@@ -52,20 +67,23 @@ export default function AdminReport() {
                 {reportList && reportList.length > 0 ? (
                   reportList.map((report, index) => (
                     <tr key={index} className="border-b border-gray-300 hover:bg-gray-100">
-                      <td className="py-3 px-6 text-center">
+                      <td className="px-6 py-3 text-center">
                         {new Date(report.created_at).toLocaleDateString()}
                       </td>
-                      <td className="py-3 px-6 text-center">{typeMapping[report.type] || report.type}</td>
-                      <td className="py-3 px-6 text-center">
-                        <Button 
-                          className="bg-green-500 text-white px-4 py-1 rounded"
-                          // onClick={() => handleViewReport(report)}
+                      <td className="px-6 py-3 text-center">
+                        {/* Using a type check or fallback for safety */}
+                        {typeMapping[report.type] || report.type}
+                      </td>
+                      <td className="px-6 py-3 text-center">
+                        <Button
+                          className="px-4 py-1 text-white bg-green-500 rounded"
+                          onClick={() => handleViewReport(report.id)}
                         >
                           View
                         </Button>
-                        <Button 
-                          className="bg-blue-500 text-white px-4 py-1 rounded ml-2"
-                          // onClick={() => updateLeaveRequest("declined", leave.id)}
+                        <Button
+                          className="px-4 py-1 ml-2 text-white bg-blue-500 rounded"
+                          onClick={() => handleDownloadReport(report.id)}
                         >
                           Download
                         </Button>
@@ -74,7 +92,7 @@ export default function AdminReport() {
                   ))
                 ) : (
                   <tr className="border-b border-gray-300">
-                    <td className="py-3 px-6" colSpan={3}>No Generated Report.</td>
+                    <td className="px-6 py-3" colSpan={3}>No Generated Report.</td>
                   </tr>
                 )}
               </tbody>

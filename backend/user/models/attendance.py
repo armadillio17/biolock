@@ -42,5 +42,16 @@ class Attendance(models.Model):
         """Check if the record is soft-deleted."""
         return self.deleted_at is not None
 
+    # def __str__(self):
+    #     return f"Attendance #{self.id} for {self.user}"
     def __str__(self):
-        return f"Attendance #{self.id} - {self.user}"
+        # This is the safest implementation that will work regardless of your field naming
+        if hasattr(self, 'user_id') and isinstance(self.user_id, int):
+            return f"Attendance #{self.id} - User #{self.user_id}"
+        elif hasattr(self, 'user') and hasattr(self.user, '__str__'):
+            return f"Attendance #{self.id} - {str(self.user)}"
+        elif hasattr(self, 'user') and hasattr(self.user, 'id'):
+            return f"Attendance #{self.id} - User #{self.user.id}"
+        else:
+            return f"Attendance #{self.id}"
+

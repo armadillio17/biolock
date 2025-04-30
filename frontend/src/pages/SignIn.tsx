@@ -113,7 +113,7 @@ function SignIn() {
                             </p>
                         </Button>
                         <div className="flex justify-center mt-8">
-                            <p>Don't have an account?</p>
+                            <p>Don&apos;t have an account?</p>
                             <a href="/sign-up" className="text-[#1600DD]">
                                 Create an account
                             </a>

@@ -24,18 +24,25 @@ interface ClockOutData{
 
 interface AttendanceState {
   attendance: AttendanceData[];
+  userAttendance: AttendanceData | null;
   clockIn: ClockInData[];
   clockOut: ClockOutData[];
+  isLoading: boolean;
+  error: string | null;
 
   fetchAttendanceList: () => Promise<void>;  
+  fetchUserAttendance: () => Promise<void>;  
   clockInUser: () => Promise<void>;  
   clockOutUser: () => Promise<void>;
 }
 
 export const useAttendanceStore = create<AttendanceState>((set) => ({
   attendance: [],
+  userAttendance: null,
   clockIn: [],
   clockOut: [],
+  isLoading: false,
+  error: null,
 
   fetchAttendanceList: async () => {
     try {
@@ -50,7 +57,7 @@ export const useAttendanceStore = create<AttendanceState>((set) => ({
         throw new Error("User ID not found");
       }
 
-      const response = await axios.get(`${base_url}/attendance/${user.userId}/`, {
+      const response = await axios.get(`${base_url}/user-attendance/${user.userId}`, {
         headers: {
           "Content-Type": "application/json",
         //   Authorization: `Bearer ${token}`,
@@ -63,7 +70,34 @@ export const useAttendanceStore = create<AttendanceState>((set) => ({
     }
   },
 
+  fetchUserAttendance: async () => {
+    try {
+    //   const token = useAuthStore.getState().getAuthToken();
+      const user = useAuthStore.getState().user;
+
+    //   if (!token) {
+    //     throw new Error("Authentication token not found");
+    //   }
+
+      if (!user || !user.userId) {
+        throw new Error("User ID not found");
+      }
+
+      const response = await axios.get(`${base_url}/user-attendance/${user.userId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        //   Authorization: `Bearer ${token}`,
+        },
+      });
+
+      set({ userAttendance: response.data });
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  },
+
   clockInUser: async () => {
+    set({ isLoading: true, error: null });
     try {
     //   const token = useAuthStore.getState().getAuthToken();
       const user = useAuthStore.getState().user;
@@ -77,7 +111,7 @@ export const useAttendanceStore = create<AttendanceState>((set) => ({
       }
 
       const response = await axios.post(`${base_url}/clock-in/`, {
-        user_id : user.userId
+        user : user.userId
       }, {
         headers: {
           "Content-Type": "application/json",
@@ -85,13 +119,17 @@ export const useAttendanceStore = create<AttendanceState>((set) => ({
         },
       });
 
-      set({ clockIn: response.data });
+      set({ 
+        clockIn: response.data,
+        isLoading: false,
+       });
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }
   },
 
   clockOutUser: async () => {
+    set({ isLoading: true, error: null });
     try {
     //   const token = useAuthStore.getState().getAuthToken();
       const user = useAuthStore.getState().user;
@@ -105,7 +143,7 @@ export const useAttendanceStore = create<AttendanceState>((set) => ({
       }
 
       const response = await axios.put(`${base_url}/clock-out/`, {
-        user_id : user.userId
+        user_id: user.userId
       }, {
         headers: {
           "Content-Type": "application/json",
@@ -113,7 +151,10 @@ export const useAttendanceStore = create<AttendanceState>((set) => ({
         },
       });
 
-      set({ clockOut: response.data });
+
+      set({ clockOut: response.data,
+        isLoading: false,
+       });
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }

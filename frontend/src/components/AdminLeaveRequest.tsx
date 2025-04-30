@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import DashboardLayout from "@/layouts/DashboardLayout";
 import { Button } from "./ui/button";
-import { Calendar } from "./CalendarComponent";
+import { Calendar } from "@/components/LeaveRequestCalendarComponent";
 import LeaveRequestModal from "./UserPrompt/LeaveRequestPrompt";
 import { leaveRequestStore } from '@/store/leaveRequestStore';
 import { useAuthStore } from '@/store/authStore.ts';
@@ -45,6 +45,18 @@ export default function LeaveRequest() {
     )
   : []; // If not an array yet, just return an empty list
 
+  const leaveRequestsByDate: Record<string, { status: string | null }[]> = {};
+
+  if (Array.isArray(leaveRequest)) {
+    leaveRequest.forEach((leave) => {
+      const start = leave.start_date;
+      if (!leaveRequestsByDate[start]) {
+        leaveRequestsByDate[start] = [];
+      }
+      leaveRequestsByDate[start].push({ status: leave.status });
+    });
+  }
+
   return (
     <DashboardLayout>
       <div className="flex flex-col">
@@ -61,7 +73,7 @@ export default function LeaveRequest() {
 
         {/* Calendar */}
         <div>
-          <Calendar onDateSelect={handleDateSelect} /> 
+          <Calendar onDateSelect={handleDateSelect} leaveRequestsByDate={leaveRequestsByDate}/> 
         </div>
       </div>
 

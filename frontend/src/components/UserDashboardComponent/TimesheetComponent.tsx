@@ -1,44 +1,14 @@
-import { base_url } from '@/config';
-import { useState, useEffect } from "react";
-
-interface AttendanceData {
-  id: number;
-  date: string;
-  clock_in: string | null;
-  clock_out: string | null;
-  status: string;
-  working_hours: number;
-  overtime_hours: number;
-}
+// import { base_url } from '@/config';
+import { useEffect } from "react";
+import { useAttendanceStore } from "@/store/attendanceStore";
 
 export const Timesheet = () => {
 
-  const [data, setData] = useState<AttendanceData[]>([]);
+  const { attendance, fetchAttendanceList } = useAttendanceStore();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`${base_url}/attendance/`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(response.statusText || "No Data Found");
-        }
-
-        const jsonData: AttendanceData[] = await response.json();
-        setData(jsonData); // Update state, triggering re-render
-      } catch (err) {
-        console.error("Fetch error:", err instanceof Error ? err.message : err);
-      }
-    };
-
-    fetchData();
-  }, []); // Runs once on mount
+   fetchAttendanceList();
+  }, [fetchAttendanceList]);
 
   const formatTime = (dateTime: string | null) => {
     if (!dateTime) return "N/A"; // Handle null values
@@ -52,7 +22,7 @@ export const Timesheet = () => {
   return (
     <table className="w-full border-collapse">
         <tbody className="text-gray-700">
-        {data.map((row, index) => (
+        {attendance.map((row, index) => (
             <tr
             key={row.id}
             className={`flex w-full border-b ${

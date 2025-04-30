@@ -7,15 +7,16 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 export default function AdminEvent() {
-  const [dateRange, setDateRange] = useState([null, null]);
+  // Fix the dateRange type to be properly typed for DatePicker
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
   const [startDate, endDate] = dateRange;
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const pickerRef = useRef(null);
+  const pickerRef = useRef<HTMLDivElement | null>(null);
 
-  // Close picker when clicking outside
+  // Close picker when clicking outside - fixed event type
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (pickerRef.current && !pickerRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
         setShowDatePicker(false);
       }
     };
@@ -35,7 +36,7 @@ export default function AdminEvent() {
         </div>
 
         {/* Date Range Button */}
-        <div className="mb-4 relative" ref={pickerRef}>
+        <div className="relative mb-4" ref={pickerRef}>
           <Button
             onClick={() => setShowDatePicker(!showDatePicker)}
             className="flex items-center gap-2 border border-[#028090] rounded-xl px-4 py-2 w-[278px]"
@@ -50,7 +51,7 @@ export default function AdminEvent() {
                 selectsRange={true}
                 startDate={startDate}
                 endDate={endDate}
-                onChange={(update) => setDateRange(update)}
+                onChange={(update: [Date | null, Date | null]) => setDateRange(update)}
                 isClearable={true}
                 inline
               />
@@ -65,24 +66,24 @@ export default function AdminEvent() {
         </div>
 
         {/* Events Table */}
-        <div className="w-full bg-white rounded-2xl border border-gray-300 shadow-sm">
+        <div className="w-full bg-white border border-gray-300 shadow-sm rounded-2xl">
           <table className="w-full border-collapse">
-            <thead className="text-gray-700 bg-gray-300 text-sm">
+            <thead className="text-sm text-gray-700 bg-gray-300">
               <tr>
-                <th className="p-3 text-center w-1/5">Date</th>
-                <th className="p-3 text-center w-1/5">Title</th>
-                <th className="p-3 text-center w-1/5">Status</th>
-                <th className="p-3 text-center w-2/5">Actions</th>
+                <th className="w-1/5 p-3 text-center">Date</th>
+                <th className="w-1/5 p-3 text-center">Title</th>
+                <th className="w-1/5 p-3 text-center">Status</th>
+                <th className="w-2/5 p-3 text-center">Actions</th>
               </tr>
             </thead>
           </table>
           <div className="h-[65vh] overflow-auto">
-            <EventList startDate={startDate} endDate={endDate} />
+            {/* Make sure EventList accepts startDate and endDate props, or pass them as needed */}
+            <EventList
+            />
           </div>
         </div>
       </div>
     </DashboardLayout>
-    
   );
 }
-

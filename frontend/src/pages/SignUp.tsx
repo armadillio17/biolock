@@ -41,7 +41,6 @@ function SignUp() {
             throw new Error(error || "Sign Up Failed");
         }
 
-        console.log('Sign up attempt:', formData);
         navigate('/');
     };
 
@@ -160,7 +159,7 @@ function SignUp() {
                         </Button>
                         <div className="flex justify-center gap-2 mt-8">
                             <p>Already have an account?</p>
-                            <a href="/sign-in" className="text-[#1600DD]">
+                            <a href="/" className="text-[#1600DD]">
                                 Sign In
                             </a>
                         </div>
