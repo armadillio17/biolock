@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-3b-vu&@5w2+fh=+0+#5e42&idta+*%ud+wf*aqra!1hintr(97
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '::1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '::1', 'biolock.astrosail.site', 'api.astrosail.site', ]
 
 
 # Application definition
