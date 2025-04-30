@@ -3,29 +3,33 @@ import DashboardLayout from "@/layouts/DashboardLayout"
 import { Button } from "./ui/button"
 import { authAxios } from "@/lib/secured-axios-instance";
 import { base_url } from '../config';
-import { useUserStore  } from "@/store/userlistStore";
+import { useUserStore } from "@/store/userlistStore";
 
 export default function UserLists() {
   interface RegistrationUser {
     name?: string;
   }
-  
+
   interface RegistrationRequest {
     id: number;
     created_at: string;
     user?: RegistrationUser;
     email?: string;
+    first_name: string;
+    last_name: string;
   }
-  
+
   interface User {
     id: number;
     created_at: string;
     name?: string;
     email?: string;
+    first_name: string;
+    last_name: string;
   }
   const [registrationRequests, setRegistrationRequests] = useState<RegistrationRequest[]>([]);
   const [users, setUsers] = useState<User[]>([]);
-  
+
   const [loading, setLoading] = useState({
     requests: true,
     users: true
@@ -52,7 +56,7 @@ export default function UserLists() {
     };
 
     fetchRegistrationRequests();
-  }, []);
+  }, [setRegistrationRequests]);
 
   // Fetch users
   useEffect(() => {
@@ -68,7 +72,7 @@ export default function UserLists() {
     };
 
     fetchUsers();
-  }, []);
+  }, [setUsers]);
 
   const formatDate = (dateString: string) => {
     if (!dateString) return 'N/A';
@@ -80,7 +84,7 @@ export default function UserLists() {
     }).replace(/\//g, '-');
   };
 
-  const { newRegisteredUser, approvedUser, fetchNewUserList, fetchApprovedUserList, approvedRegisteredUser} = useUserStore();
+  const { fetchNewUserList, fetchApprovedUserList, approvedRegisteredUser } = useUserStore();
 
   useEffect(() => {
     fetchNewUserList();
@@ -92,19 +96,18 @@ export default function UserLists() {
     await fetchNewUserList();
     await fetchApprovedUserList();
   };
-  
+
   const handleDecline = async (userId: number) => {
     await approvedRegisteredUser(userId, false);
     await fetchNewUserList();
     await fetchApprovedUserList();
   };
-  // console.log("userList", userList);
 
   return (
     <DashboardLayout>
       <div className="flex flex-col">
         <h2 className="text-xl font-bold text-center">Users</h2>
-        
+
         {/* Registration Request Section */}
         <div className="mt-4">
           <h3 className="text-lg font-semibold text-center">Registration Request</h3>
@@ -113,36 +116,36 @@ export default function UserLists() {
           ) : error.requests ? (
             <p className="text-center text-red-500">Error: {error.requests}</p>
           ) : (
-            <table className="min-w-full border border-gray-300 text-center">
+            <table className="min-w-full text-center border border-gray-300">
               <thead>
-                <tr className="border-b border-gray-300 bg-gray-100">
-                  <th className="py-2 px-4">Date</th>
-                  <th className="py-2 px-4">Users</th>
-                  <th className="py-2 px-4">Email</th>
-                  <th className="py-2 px-4 w-1/3">Actions</th>
+                <tr className="bg-gray-100 border-b border-gray-300">
+                  <th className="px-4 py-2">Date</th>
+                  <th className="px-4 py-2">Users</th>
+                  <th className="px-4 py-2">Email</th>
+                  <th className="w-1/3 px-4 py-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {newRegisteredUser.length > 0 ? (
-                  newRegisteredUser.map(request => (
+                {registrationRequests.length > 0 ? (
+                  registrationRequests.map(request => (
                     <tr key={request.id} className="border-b border-gray-300">
-                      <td className="py-2 px-4">{formatDate(request.created_at)}</td>
-                      <td className="py-2 px-4">
+                      <td className="px-4 py-2">{formatDate(request.created_at)}</td>
+                      <td className="px-4 py-2">
                         {request.first_name} {request.last_name}
                       </td>
-                      <td className="py-2 px-4">
+                      <td className="px-4 py-2">
                         {request.email}
                       </td>
-                      <td className="py-2 px-4 w-1/3">
-                        <Button 
+                      <td className="w-1/3 px-4 py-2">
+                        <Button
                           onClick={() => handleApprove(request.id)}
-                          className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600"
+                          className="px-4 py-1 text-white bg-green-500 rounded hover:bg-green-600"
                         >
                           Approve
                         </Button>
-                        <Button 
+                        <Button
                           onClick={() => handleDecline(request.id)}
-                          className="bg-red-500 text-white px-4 py-1 rounded ml-2 hover:bg-red-600"
+                          className="px-4 py-1 ml-2 text-white bg-red-500 rounded hover:bg-red-600"
                         >
                           Decline
                         </Button>
@@ -151,35 +154,40 @@ export default function UserLists() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={3} className="p-4 text-left">No pending registration requests</td>
+                    <td colSpan={4} className="p-4 text-center">No pending registration requests</td>
                   </tr>
                 )}
               </tbody>
             </table>
           )}
         </div>
-        
+
         {/* User List Section */}
         <div className="mt-6">
           <h3 className="text-lg font-semibold text-center">User List</h3>
-          <table className="min-w-full border border-gray-300 text-center">
-            <thead>
-              <tr className="border-b border-gray-300 bg-gray-100">
-                <th className="py-2 px-4">Date</th>
-                <th className="py-2 px-4">Users</th>
-                <th className="py-2 px-4">Email</th>
-              </tr>
-            </thead>
-            <tbody>
-            {approvedUser.length > 0 ? (
-                  approvedUser.map(request => (
-                    <tr key={request.id} className="border-b border-gray-300">
-                      <td className="py-2 px-4">{formatDate(request.created_at)}</td>
-                      <td className="py-2 px-4">
-                        {request.first_name} {request.last_name}
+          {loading.users ? (
+            <p className="text-center">Loading users...</p>
+          ) : error.users ? (
+            <p className="text-center text-red-500">Error: {error.users}</p>
+          ) : (
+            <table className="min-w-full text-center border border-gray-300">
+              <thead>
+                <tr className="bg-gray-100 border-b border-gray-300">
+                  <th className="px-4 py-2">Date</th>
+                  <th className="px-4 py-2">Users</th>
+                  <th className="px-4 py-2">Email</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.length > 0 ? (
+                  users.map(user => (
+                    <tr key={user.id} className="border-b border-gray-300">
+                      <td className="px-4 py-2">{formatDate(user.created_at)}</td>
+                      <td className="px-4 py-2">
+                        {user.first_name} {user.last_name}
                       </td>
-                      <td className="py-2 px-4">
-                        {request.email}
+                      <td className="px-4 py-2">
+                        {user.email}
                       </td>
                     </tr>
                   ))
@@ -188,8 +196,9 @@ export default function UserLists() {
                     <td colSpan={3} className="py-4 text-center">No Approved Users</td>
                   </tr>
                 )}
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </DashboardLayout>

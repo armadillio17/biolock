@@ -24,7 +24,6 @@ export const useNotificationStore = create<NotificationState>((set) => ({
     //   const token = useAuthStore.getState().getAuthToken();
       const user = useAuthStore.getState().user;
 
-      console.log("User: ", user);
 
     //   if (!token) {
     //     throw new Error("Authentication token not found");

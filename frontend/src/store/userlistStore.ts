@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+// import { persist, createJSONStorage } from "zustand/middleware";
 import { base_url } from '../config';
 import { authAxios } from "@/lib/secured-axios-instance";
 

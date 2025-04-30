@@ -20,10 +20,10 @@ export const EventList = () => {
               index % 2 === 0 ? "bg-[#E6F0FA]" : "bg-white"
             } text-[14px]`}
           >
-            <td className="p-3 text-center w-1/5 text-black">{row.date}</td>
-            <td className="p-3 text-center w-1/5 text-black">{row.title}</td>
-            <td className="p-3 text-center w-1/5 text-green-500">{row.status}</td>
-            <td className="p-3 text-center w-2/5">
+            <td className="w-1/5 p-3 text-center text-black">{row.date}</td>
+            <td className="w-1/5 p-3 text-center text-black">{row.title}</td>
+            <td className="w-1/5 p-3 text-center text-green-500">{row.status}</td>
+            <td className="w-2/5 p-3 text-center">
               <div className="flex justify-center gap-4">
                 <button 
                   className="bg-[#77DD77] text-white px-5 py-2 rounded-md hover:bg-[#66CC66] w-24"

@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { base_url } from '../config';
 import { authAxios } from "@/lib/secured-axios-instance";
 interface UserData {
+    token: null;
     userId: string | null;
     first_name: string | null;
     last_name: string | null;
@@ -14,6 +15,7 @@ interface AuthState {
     user: UserData;
     loginError: string | null;
     isLoading: boolean;
+    getAuthToken: () => string | null;
 
     login: (username: string, password: string) => Promise<boolean>;
     logout: () => void;
@@ -29,11 +31,15 @@ export const useAuthStore = create<AuthState>()(
         first_name: null,
         last_name: null,
         isAuthenticated: false,
-        role: null
+        role: null,
+        token: null
       },
       loginError: null,
       isLoading: false,
-
+      getAuthToken: () => {
+        const user = get().user;
+        return user?.token || null;
+      },
       login: async (username: string, password: string) => {
         set({ isLoading: true, loginError: null });
 
@@ -59,17 +65,17 @@ export const useAuthStore = create<AuthState>()(
             isLoading: false
           }));
 
-          // Fetch role right after login
           await get().fetchUserRole(userId);
           await get().fetchUser(userId);
 
           return true;
         } catch (error) {
-          console.log(error);
+          console.error(error);
           set({ isLoading: false });
-          return false;
+          return false; // ✅ ensure it returns boolean
         }
       },
+
 
       fetchUserRole: async (userId: string) => {
         try {
@@ -94,7 +100,6 @@ export const useAuthStore = create<AuthState>()(
             // withCredentials: true
           });
 
-          console.log("user.users", user);
 
           set((state) => ({
             user: {
@@ -118,7 +123,8 @@ export const useAuthStore = create<AuthState>()(
               first_name: null,
               last_name: null,
               isAuthenticated: false,
-              role: null
+              role: null,
+              token: null
             }
           });
         });

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Search, ChevronLeft, ChevronDown, User } from "lucide-react";
+import { Search, ChevronDown, User } from "lucide-react";
 import dummyPic from "@/assets/dummy person.jpg";
 
 interface MessageProps {
@@ -56,23 +56,23 @@ const Inbox: React.FC<MessageProps> = ({
             <img 
               src={avatarUrl} 
               alt={`${sender}'s avatar`}
-              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border border-gray-200" 
+              className="object-cover w-8 h-8 border border-gray-200 rounded-full sm:w-10 sm:h-10" 
             />
           ) : (
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-200 flex items-center justify-center">
+            <div className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full sm:w-10 sm:h-10">
               <User size={20} className="text-gray-500" />
             </div>
           )}
         </div>
         <div className="flex-grow">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <span className="font-medium text-gray-900">{sender}</span>
             <span className="text-xs text-gray-500">{formatDate(timestamp)}</span>
           </div>
         </div>
       </div>
       <div className="pl-11 sm:pl-13">
-        <div className="text-sm sm:text-base text-gray-700 mb-1 line-clamp-2">{text}</div>
+        <div className="mb-1 text-sm text-gray-700 sm:text-base line-clamp-2">{text}</div>
       </div>
     </div>
   );
@@ -80,10 +80,10 @@ const Inbox: React.FC<MessageProps> = ({
 
 const EmptyState = () => (
   <div className="flex flex-col items-center justify-center py-12 text-center">
-    <div className="bg-gray-100 rounded-full p-4 mb-4">
+    <div className="p-4 mb-4 bg-gray-100 rounded-full">
       <Search size={24} className="text-gray-400" />
     </div>
-    <h3 className="text-lg font-medium text-gray-700 mb-1">No messages found</h3>
+    <h3 className="mb-1 text-lg font-medium text-gray-700">No messages found</h3>
     <p className="text-sm text-gray-500">Try adjusting your search or filters</p>
   </div>
 );
@@ -128,7 +128,7 @@ function Message() {
     },
   ];
 
-  const [messages, setMessages] = useState<MessageProps[]>(initialMessages);
+  const [messages ] = useState<MessageProps[]>(initialMessages);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredMessages, setFilteredMessages] = useState<MessageProps[]>(initialMessages);
   const [showFilters, setShowFilters] = useState(false);
@@ -169,8 +169,8 @@ function Message() {
   };
 
   return (
-    <div className="mx-auto px-4 sm:px-6 py-4 text-gray-800">
-      <h1 className="text-xl sm:text-2xl font-bold mb-4">Messages</h1>
+    <div className="px-4 py-4 mx-auto text-gray-800 sm:px-6">
+      <h1 className="mb-4 text-xl font-bold sm:text-2xl">Messages</h1>
       
       {/* Search and filters */}
       <div className="mb-4">
@@ -180,7 +180,7 @@ function Message() {
             placeholder="Search messages..."
             value={searchQuery}
             onChange={handleSearch}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
           <Search size={18} className="absolute left-3 top-2.5 text-gray-400" />
           <button 
@@ -196,9 +196,9 @@ function Message() {
         
         {/* Filter options */}
         {showFilters && (
-          <div className="bg-white border border-gray-200 rounded-lg p-3 mb-4 animate-fadeIn shadow-sm">
+          <div className="p-3 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm animate-fadeIn">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="font-medium text-sm">Filters</h3>
+              <h3 className="text-sm font-medium">Filters</h3>
               <button 
                 onClick={clearFilters}
                 className="text-xs text-blue-600 hover:text-blue-800"
@@ -212,7 +212,7 @@ function Message() {
                 id="unread"
                 checked={filterUnread}
                 onChange={() => setFilterUnread(!filterUnread)}
-                className="h-4 w-4 text-blue-600 rounded"
+                className="w-4 h-4 text-blue-600 rounded"
               />
               <label htmlFor="unread" className="ml-2 text-sm text-gray-700">
                 Show unread only
