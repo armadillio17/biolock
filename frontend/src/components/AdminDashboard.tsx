@@ -55,8 +55,8 @@ function AdminDashboard() {
         </div>
 
         {/* Attendance Cards & Graphs */}
-        <div className="flex flex-col items-center w-full mt-5 gap-8">
-          <div className="grid w-full grid-cols-4 gap-4 max-w-full">
+        <div className="flex flex-col items-center w-full gap-8 mt-5">
+          <div className="grid w-full max-w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {adminCards.map((card, index) => (
               <div
                 key={index}
@@ -72,7 +72,7 @@ function AdminDashboard() {
           </div>
 
           {/* Graph & Activity Log */}
-          <div className="flex gap-8 w-full">
+          <div className="flex w-full gap-8">
             {/* Graph Section */}
             {/* <div className="flex flex-col justify-center items-center bg-[#A4DDED] rounded-2xl p-5 w-1/2 text-center gap-5 shadow-lg border border-black">
               <h4 className="text-[24px] font-bold">Lorem Ipsum</h4>
@@ -80,7 +80,7 @@ function AdminDashboard() {
             </div> */}
 
             {/* Activity Log Section */}
-            <div className="w-1/2 min-h-[250px] rounded-2xl bg-[#A4DDED] p-5 border border-black shadow-lg">
+            <div className="w-full sm:w-1/2 min-h-[250px] rounded-2xl bg-[#A4DDED] p-5 border border-black shadow-lg">
                 <ActivityLog />
             </div>
           </div>

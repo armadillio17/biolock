@@ -2,7 +2,7 @@ import { ReactNode, useState, useEffect } from "react";
 import { useAuthStore } from '@/store/authStore';
 import { sidebarMenu, sidebarMenuUser, sidebarProfile } from "@/data/dashboard-data.tsx";
 import { LogoutCurve, HambergerMenu, ArrowSquareLeft } from "iconsax-react";
-
+import { HiMiniChevronDoubleLeft } from "react-icons/hi2";
 interface DashboardLayoutProps {
     children: ReactNode;
 }
@@ -34,10 +34,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             {!isDesktop && sidebarOpen && (
                 <aside className="min-w-[340px] p-7 bg-[#CCE5FE] fixed h-screen z-10">
                     <button
-                        className="absolute right-4 top-3"
+                        className="absolute left-[20px] top-[20px]"
                         onClick={() => setSidebarOpen(false)}
                     >
-                        <ArrowSquareLeft size="24" color="#007fff" />
+                        <HiMiniChevronDoubleLeft className="text-[#504E53] text-[20px]"/>
                     </button>
 
                     <div className="flex flex-col justify-between h-full">
@@ -139,7 +139,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                             onClick={() => setSidebarOpen(true)}
                         >
                             <HambergerMenu
-                                size="32"
+                                size="20"
                                 color="#504E53"
                             />
                         </button>

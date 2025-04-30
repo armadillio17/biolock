@@ -44,7 +44,7 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect }) => {
       <div
         key={`prev-${prevDay}`}
         id={`prev-date-${prevDay}`}
-        className="h-16 flex items-center justify-center border border-gray-200 rounded-lg text-gray-400"
+        className="flex items-center justify-center text-sm text-gray-400 border border-gray-200 rounded-lg aspect-square md:text-base"
       >
         {prevDay}
       </div>
@@ -63,9 +63,8 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect }) => {
       <div
         key={`current-${day}`}
         id={`date-${day}`}
-        className={`h-16 flex items-center justify-center border border-gray-300 rounded-lg transition duration-200 ease-in-out hover:bg-blue-200 ${
-          isToday ? 'bg-blue-300' : ''
-        }`}
+        className={`flex items-center justify-center border border-gray-300 rounded-lg transition duration-200 ease-in-out hover:bg-blue-200 aspect-square text-sm md:text-base ${isToday ? 'bg-blue-300' : ''
+          }`}
         onClick={() => onDateSelect(`${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`)} // Handle date click
       >
         {day}
@@ -86,7 +85,7 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect }) => {
       <div
         key={`next-${day}`}
         id={`next-date-${day}`}
-        className="h-16 flex items-center justify-center border border-gray-200 rounded-lg text-gray-400"
+        className="flex items-center justify-center text-sm text-gray-400 border border-gray-200 rounded-lg aspect-square md:text-base"
       >
         {day}
       </div>
@@ -97,31 +96,31 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect }) => {
   const allDays = [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
 
   return (
-    <div className="flex flex-col p-4 bg-white shadow-lg rounded-lg h-100">
-      <div className="flex justify-between items-center mb-4">
-        <h2 id="month-name" className="text-xl font-semibold">
+    <div className="flex flex-col w-full max-w-full p-2 overflow-hidden bg-white rounded-lg shadow-lg md:p-4">
+      <div className="flex items-center justify-between mb-2 md:mb-4">
+        <h2 id="month-name" className="text-base font-semibold truncate md:text-xl">
           {currentDate.toLocaleString("default", { month: "long" })} {year}
         </h2>
-        <div className="flex space-x-2">
+        <div className="flex space-x-1 md:space-x-2">
           <button
             id="prev-month-button"
             onClick={handlePrevMonth}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
+            className="px-2 py-1 text-sm text-white transition duration-200 bg-blue-500 rounded-lg md:px-4 md:py-2 hover:bg-blue-600 md:text-base"
           >
             &lt;
           </button>
           <button
             id="next-month-button"
             onClick={handleNextMonth}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
+            className="px-2 py-1 text-sm text-white transition duration-200 bg-blue-500 rounded-lg md:px-4 md:py-2 hover:bg-blue-600 md:text-base"
           >
             &gt;
           </button>
         </div>
       </div>
-      <div className="grid grid-cols-7 gap-2 overflow-auto">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, index) => (
-          <div key={index} className="font-bold text-center text-gray-700">{day}</div>
+      <div className="grid grid-cols-7 gap-1 overflow-auto md:gap-2">
+        {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
+          <div key={index} className="text-xs font-bold text-center text-gray-700 md:text-sm">{day}</div>
         ))}
         {allDays}
       </div>

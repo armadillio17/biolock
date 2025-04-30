@@ -54,46 +54,18 @@ export default function TimesheetReport() {
           <p className="text-2xl font-bold">Timesheet</p>
         </div>
         <div className="w-full h-full mt-2">
-          <Calendar onDateSelect={handleDateSelect} statusByDate={status}/> 
-          <div className="mt-6 overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-300">
-              <thead>
-                <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                  <th className="py-3 px-6 text-center">Clock In</th>
-                  <th className="py-3 px-6 text-center">Clock Out</th>
-                  <th className="py-3 px-6 text-center">Working Hours</th>
-                  <th className="py-3 px-6 text-center">Overtime Hours</th>
-                  <th className="py-3 px-6 text-center">Status</th>
-                  <th className="py-3 px-6 text-center"></th>
-                </tr>
-              </thead>
-              <tbody className="text-gray-600 text-sm font-light">
-                {userAttendanceList && userAttendanceList.length > 0 ? (
-                  userAttendanceList.map((attendance, index) => (
-                    <tr key={index} className="border-b border-gray-300 hover:bg-gray-100">
-                      <td className="py-3 px-6 text-center">
-                      {attendance.clock_in
-                        ? new Date(attendance.clock_in).toLocaleString()
-                        : '-- -- --'}
-                      </td>
-                      <td className="py-3 px-6 text-center">
-                      {attendance.clock_out
-                        ? new Date(attendance.clock_out).toLocaleString()
-                        : '-- -- --'}
-                      </td>
-                      <td className="py-3 px-6 text-center">
-                        {attendance.working_hours ?? '-- -- --' }</td>
-                      <td className="py-3 px-6 text-center">{attendance.overtime_hours ?? '-- -- --'}</td>
-                      <td className="py-3 px-6 text-center">{attendance.status ?? '-- -- --'}</td>
-
-                    </tr>
-                  ))
-                ) : (
-                  <tr className="border-b border-gray-300 hover:bg-gray-100">
-                    <td className="py-3 px-6 text-center" colSpan={6}>No Attendance Found.</td>
+          <div className="overflow-x-auto border-[1px] border-black rounded-2xl">
+            <table className="w-full border-collapse">
+              <thead className="font-bold text-[14px] text-gray-700 bg-gray-300">
+                  <tr className="flex w-full">
+                  <th className="p-3 text-center w-1/7">Date</th>
+                  <th className="p-3 text-center w-1/7">Clock In</th>
+                  <th className="p-3 text-center w-1/7">Clock Out</th>
+                  <th className="p-3 text-center w-1/7">Status</th>
+                  <th className="p-3 text-center w-1/7">Total Hours</th>
+                  <th className="p-3 text-center w-1/7">Overtime</th>
                   </tr>
-                )}
-              </tbody>
+              </thead>
             </table>
           </div>
         </div>

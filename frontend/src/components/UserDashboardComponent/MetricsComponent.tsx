@@ -43,7 +43,7 @@ export const Metrics = () => {
 
   return (
 
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 my-5 w-full">
+    <div className="grid w-full grid-cols-1 gap-4 my-5 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
 
         {/* Clock In Group */}
         <div className="flex flex-col items-center w-full">
@@ -62,8 +62,8 @@ export const Metrics = () => {
                     style={{ 
                         backgroundColor: card.color ,
                     }}
-                    onClick={card.title === "Clock In" ? handleClockIn : handleClockOut}
-                    > <h2 className={` m-3`}> {card.title} </h2>
+                    onClick={card.title === "Clock In" ? clockIn : clockOut}
+                    > <h2 className={`font-bold m-3`}> {card.title} </h2>
                     </div>
                     ))}
                 </div>
@@ -85,7 +85,7 @@ export const Metrics = () => {
                 }}
                 >
                     <h3 className="text-lg font-bold">{group.items[0]?.title}</h3>
-                    <h1 className="text-4xl font-bold p-4">{userAttendance[0]?.working_hours}</h1>
+                    <h1 className="p-4 text-4xl font-bold"> 1 </h1>
                     {/* <p className="text-xl font-semibold">{card.count}</p> */}
                 </div>
                 ))}
@@ -106,7 +106,7 @@ export const Metrics = () => {
                 }}
                 >
                     <h3 className="text-lg font-bold">{group.items[1]?.title}</h3>
-                    <h1 className="text-4xl font-bold p-4">{userAttendance[0]?.overtime_hours}</h1>
+                    <h1 className="p-4 text-4xl font-bold"> 1 </h1>
                     {/* <p className="text-xl font-semibold">{card.count}</p> */}
                 </div>
                 ))}
@@ -127,7 +127,7 @@ export const Metrics = () => {
                 }}
                 >
                     <h3 className="text-lg font-bold">{group.items[2]?.title}</h3>
-                    <h1 className="text-4xl font-bold p-4"> 0 </h1>
+                    <h1 className="p-4 text-4xl font-bold"> 1 </h1>
                     {/* <p className="text-xl font-semibold">{card.count}</p> */}
                 </div>
                 ))}

@@ -36,21 +36,23 @@ function UserDashboard() {
         <Metrics />
         {/* <EventCarousel /> */}
         
+        <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-4 my-5 w-full h-max-[100px]">
+          <div className="w-full h-auto">
         {/* <div className="grid grid-cols-[2fr_1fr] gap-4 my-5 w-full h-max-[100px]"> */}
         <div className="grid grid-cols-[2fr_2fr] gap-4 my-5 w-full h-max-[100px]">
           {/* <div className="w-full h-auto">
             <div className="flex flex-col text-[#4E4E53] rounded-2xl px-6 py-4 my-5 bg-[#D1F8FF]">
               <p className="text-2xl font-bold">Timesheet Record</p>
-              <div className="overflow-hidden rounded-2xl ">
-                <table className="w-full border-collapse mt-5">
+              <div className="overflow-x-auto rounded-2xl ">
+                <table className="w-full mt-5 border-collapse">
                   <thead className="font-bold text-[14px] text-gray-700 bg-gray-300">
                       <tr className="flex w-full">
-                      <th className="p-3 text-center w-1/6">Date</th>
-                      <th className="p-3 text-center w-1/6">Clock In</th>
-                      <th className="p-3 text-center w-1/6">Clock Out</th>
-                      <th className="p-3 text-center w-1/6">Status</th>
-                      <th className="p-3 text-center w-1/6">Total Hours</th>
-                      <th className="p-3 text-center w-1/6">Overtime</th>
+                      <th className="p-3 text-center w-1/7">Date</th>
+                      <th className="p-3 text-center w-1/7">Clock In</th>
+                      <th className="p-3 text-center w-1/7">Clock Out</th>
+                      <th className="p-3 text-center w-1/7">Status</th>
+                      <th className="p-3 text-center w-1/7">Total Hours</th>
+                      <th className="p-3 text-center w-1/7">Overtime</th>
                       </tr>
                   </thead>
                 </table>
