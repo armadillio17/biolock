@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 interface CalendarProps {
   onDateSelect: (date: string) => void;
   leaveRequestsByDate?: Record<string, { status: string | null }[]>;
@@ -9,13 +15,16 @@ const months = Array.from({ length: 12 }, (_, i) =>
   new Date(0, i).toLocaleString("default", { month: "long" })
 );
 
-export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, leaveRequestsByDate = {} }) => {
+export const Calendar: React.FC<CalendarProps> = ({
+  onDateSelect,
+  leaveRequestsByDate = {},
+}) => {
+  const today = new Date();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const month = currentDate.getMonth();
   const year = currentDate.getFullYear();
-  const today = new Date();
 
   const updateMonth = (newMonth: number) => {
     setCurrentDate(new Date(year, newMonth, 1));
@@ -25,8 +34,10 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, leaveRequestsB
     setCurrentDate(new Date(newYear, month, 1));
   };
 
-  const getDaysInMonth = (m: number, y: number) => new Date(y, m + 1, 0).getDate();
-  const getFirstDay = (m: number, y: number) => new Date(y, m, 1).getDay();
+  const getDaysInMonth = (m: number, y: number) =>
+    new Date(y, m + 1, 0).getDate();
+  const getFirstDay = (m: number, y: number) =>
+    new Date(y, m, 1).getDay();
 
   const daysInMonth = getDaysInMonth(month, year);
   const firstDay = getFirstDay(month, year);
@@ -41,51 +52,53 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, leaveRequestsB
   };
 
   const renderDays = () => {
-    const prev = Array.from({ length: firstDay }, (_, i) => prevMonthDays - firstDay + i + 1).map(
-      (day) => (
-        <div
-          key={`prev-${day}`}
-          className="h-16 flex items-center justify-center rounded-lg text-gray-400"
-        >
-          {day}
-        </div>
-      )
-    );
+    const prev = Array.from({ length: firstDay }, (_, i) => (
+      <div
+        key={`prev-${i}`}
+        className="flex items-center justify-center h-12 text-sm text-gray-300"
+      >
+        {prevMonthDays - firstDay + i + 1}
+      </div>
+    ));
+
     const current = Array.from({ length: daysInMonth }, (_, i) => {
       const day = i + 1;
-      const dateStr = `${year}-${(month + 1).toString().padStart(2, "0")}-${day
+      const dateStr = `${year}-${(month + 1)
         .toString()
-        .padStart(2, "0")}`;
+        .padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
 
       const isToday =
         day === today.getDate() &&
         month === today.getMonth() &&
         year === today.getFullYear();
+
       const isSelected = dateStr === selectedDate;
 
       const requests = leaveRequestsByDate[dateStr] || [];
-      const pendingCount = requests.filter((req) => !req.status || req.status.trim() === "").length;
+      const pendingCount = requests.filter(
+        (req) => !req.status || req.status.trim() === ""
+      ).length;
       const hasLeave = requests.some((req) => req.status === "pending");
 
-      let statusClass = "";
-      if (hasLeave) {
-        statusClass = "bg-yellow-100 border-yellow-400";
+      let dayClass = `relative flex items-center justify-center rounded-xl transition-all h-12 cursor-pointer `;
+      if (isToday) {
+        dayClass += "bg-blue-600 text-white font-bold";
+      } else if (isSelected) {
+        dayClass += "bg-blue-100 text-blue-800 font-semibold";
+      } else {
+        dayClass += "hover:bg-blue-50 text-gray-800";
       }
 
       return (
-        <div
-          key={`day-${day}`}
-          className={`relative h-16 flex items-center justify-center border rounded-[25px] cursor-pointer transition 
-            ${isToday ? "bg-blue-600 text-white font-bold" : 
-            isSelected ? "bg-blue-300 text-blue-800 font-semibold" : 
-            "hover:bg-blue-300"} ${statusClass}`}
-          onClick={() => handleDateSelect(day)}
-        >
+        <div key={`day-${day}`} className={dayClass} onClick={() => handleDateSelect(day)}>
           <span>{day}</span>
           {pendingCount > 0 && (
-            <span className="absolute top-1 right-2 text-xs bg-red-500 text-white rounded-full px-1">
+            <span className="absolute top-1.5 right-1.5 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">
               {pendingCount}
             </span>
+          )}
+          {hasLeave && (
+            <div className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-yellow-400" />
           )}
         </div>
       );
@@ -94,8 +107,8 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, leaveRequestsB
     const total = prev.length + current.length;
     const next = Array.from({ length: 42 - total }, (_, i) => (
       <div
-        key={`next-${i + 1}`}
-        className="h-16 flex items-center justify-center rounded-lg text-gray-400"
+        key={`next-${i}`}
+        className="flex items-center justify-center h-12 text-sm text-gray-300"
       >
         {i + 1}
       </div>
@@ -105,50 +118,56 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, leaveRequestsB
   };
 
   return (
-    <div className="flex flex-col p-4 border shadow-lg rounded-xl">
-      <div className="flex space-x-4 mb-4">
-        <div className="relative">
-          <select
-            value={month}
-            onChange={(e) => updateMonth(parseInt(e.target.value))}
-            className="text-xl appearance-none overflow-hidden bg-grey-200 border border-black text-gray-700 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
+    <div className="w-full max-w-md p-6 mx-auto bg-white border border-gray-100 shadow-xl rounded-2xl">
+      {/* Header */}
+      <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
+        <Select
+          value={month.toString()}
+          onValueChange={(val) => updateMonth(parseInt(val))}
+        >
+          <SelectTrigger className="w-full sm:w-auto">
+            <SelectValue placeholder="Select month" />
+          </SelectTrigger>
+          <SelectContent>
             {months.map((name, idx) => (
-              <option key={idx} value={idx}>
+              <SelectItem key={idx} value={idx.toString()}>
                 {name}
-              </option>
+              </SelectItem>
             ))}
-          </select>
-        </div>
-        <div className="relative">
-          <select
-            value={year}
-            onChange={(e) => updateYear(parseInt(e.target.value))}
-            className="text-xl appearance-none overflow-hidden bg-grey-200 border border-black text-gray-700 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={year.toString()}
+          onValueChange={(val) => updateYear(parseInt(val))}
+        >
+          <SelectTrigger className="w-full sm:w-auto">
+            <SelectValue placeholder="Select year" />
+          </SelectTrigger>
+          <SelectContent>
             {Array.from({ length: 101 }, (_, i) => {
               const y = today.getFullYear() - 50 + i;
               return (
-                <option key={y} value={y}>
+                <SelectItem key={y} value={y.toString()}>
                   {y}
-                </option>
+                </SelectItem>
               );
             })}
-          </select>
-        </div>
+          </SelectContent>
+        </Select>
       </div>
 
-      <div className="grid grid-cols-7 gap-2">
+      {/* Weekdays */}
+      <div className="grid grid-cols-7 gap-1 mb-2 text-xs text-center text-gray-500">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-          <div
-            key={day}
-            className="text-center font-semibold text-gray-600 p-4 bg-blue-200 rounded-[25px]"
-          >
+          <div key={day} className="font-semibold">
             {day}
           </div>
         ))}
-        {renderDays()}
       </div>
+
+      {/* Calendar Grid */}
+      <div className="grid grid-cols-7 gap-1">{renderDays()}</div>
     </div>
   );
 };

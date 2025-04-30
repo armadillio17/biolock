@@ -32,27 +32,23 @@ function UserDashboard() {
 
         <Metrics />
         {/* <EventCarousel /> */}
-        
-        <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-4 my-5 w-full h-max-[100px]">
-          <div className="w-full h-auto">
-            <div className="grid grid-cols-[2fr_2fr] gap-4 my-5 w-full h-max-[100px]">
-              {/* Timesheet and Messages/Notification components */}
-              <div className="w-full h-auto rounded-2xl px-6 py-4 my-5 bg-[#D1F8FF]">
-                <div className="flex flex-col text-[#4E4E53]">
-                  <p className="text-2xl font-bold">Messages</p>
-                  <div className="h-[440px] mt-5 overflow-auto no-scrollbar">
-                    {/* <MessagesComponent /> */}
-                  </div>
-                </div>
+        <div className="grid w-full grid-cols-1 gap-4 my-5 sm:grid-cols-2 lg:grid-cols-2">
+          {/* Messages component */}
+          <div className="w-full h-auto rounded-2xl px-4 sm:px-6 py-4 my-2 sm:my-5 bg-[#D1F8FF]">
+            <div className="flex flex-col text-[#4E4E53]">
+              <p className="text-xl font-bold sm:text-2xl">Messages</p>
+              <div className="h-[320px] sm:h-[440px] mt-3 sm:mt-5 overflow-auto no-scrollbar">
+                {/* <MessagesComponent /> */}
               </div>
+            </div>
+          </div>
 
-              <div className="w-full h-auto rounded-2xl px-6 py-4 my-5 bg-[#D1F8FF]">
-                <div className="flex flex-col text-[#4E4E53]">
-                  <p className="text-2xl font-bold">Notification</p>
-                  <div className="h-[440px] mt-5 overflow-auto no-scrollbar">
-                    <Notification />
-                  </div>
-                </div>
+          {/* Notification component */}
+          <div className="w-full h-auto rounded-2xl px-4 sm:px-6 py-4 my-2 sm:my-5 bg-[#D1F8FF]">
+            <div className="flex flex-col text-[#4E4E53]">
+              <p className="text-xl font-bold sm:text-2xl">Notification</p>
+              <div className="h-[320px] sm:h-[440px] mt-3 sm:mt-5 overflow-auto no-scrollbar">
+                <Notification />
               </div>
             </div>
           </div>

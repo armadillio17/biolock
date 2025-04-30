@@ -1,7 +1,7 @@
 import { ReactNode, useState, useEffect } from "react";
 import { useAuthStore } from '@/store/authStore';
 import { sidebarMenu, sidebarMenuUser, sidebarProfile } from "@/data/dashboard-data.tsx";
-import { LogoutCurve, HambergerMenu, ArrowSquareLeft } from "iconsax-react";
+import { LogoutCurve, HambergerMenu } from "iconsax-react";
 import { HiMiniChevronDoubleLeft } from "react-icons/hi2";
 interface DashboardLayoutProps {
     children: ReactNode;
