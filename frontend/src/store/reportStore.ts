@@ -114,26 +114,6 @@ export const useReportStore = create<ReportState>((set) => ({
       });
     }
   },
-  // Todo
-  // handleDownload: async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       `/api/reports/download-pdf/${reportId}/`,
-  //       { responseType: 'blob' }
-  //     );
-      
-  //     // Create download link
-  //     const url = window.URL.createObjectURL(new Blob([response.data]));
-  //     const link = document.createElement('a');
-  //     link.href = url;
-  //     link.setAttribute('download', `attendance_report_${new Date().toISOString().split('T')[0]}.pdf`);
-  //     document.body.appendChild(link);
-  //     link.click();
-  //     link.parentNode.removeChild(link);
-  //   } catch (error) {
-  //     console.error('Download failed:', error);
-  //   }
-  // },
 
   downloadReportDataPDF: async (report_id: number) => {
     set({ isLoading: true, error: null });
