@@ -1,15 +1,29 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import DashboardLayout from "@/layouts/DashboardLayout"
 import { Button } from "./ui/button"
 import { useUserStore } from "@/store/userlistStore";
 
 export default function UserLists() {
 
-  const { newRegisteredUser, approvedUser, fetchNewUserList, fetchApprovedUserList, approvedRegisteredUser, isLoading, error } = useUserStore();
+  const { newRegisteredUser, approvedUser, fetchNewUserList, fetchApprovedUserList, approvedRegisteredUser, error } = useUserStore();
+  const [localLoading, setLocalLoading] = useState(true);
 
   useEffect(() => {
-    fetchNewUserList();
-    fetchApprovedUserList();
+    const loadData = async () => {
+      setLocalLoading(true);
+      try {
+        await Promise.all([
+          fetchNewUserList(),
+          fetchApprovedUserList()
+        ]);
+      } catch (err) {
+        console.error("Failed to load user data:", err);
+      } finally {
+        setLocalLoading(false);
+      }
+    };
+    
+    loadData();
   }, [fetchNewUserList, fetchApprovedUserList]);
 
   const handleApprove = async (userId: number) => {
@@ -36,7 +50,7 @@ export default function UserLists() {
         {/* Registration Request Section */}
         <div className="mt-4">
           <h3 className="text-lg font-semibold text-center">Registration Request</h3>
-          {isLoading ? (
+          {localLoading ? (  // Changed from isLoading to localLoading
             <p className="text-center">Loading requests...</p>
           ) : error ? (
             <p className="text-center text-red-500">Error: {error}</p>
@@ -90,8 +104,8 @@ export default function UserLists() {
         {/* User List Section */}
         <div className="mt-6">
           <h3 className="text-lg font-semibold text-center">User List</h3>
-          {isLoading ? (
-            <p className="text-center">Loading users...</p>
+          {localLoading ? (  // Changed from isLoading to localLoading
+            <p className="text-center">Loading requests...</p>
           ) : error ? (
             <p className="text-center text-red-500">Error: {error}</p>
           ) : (
