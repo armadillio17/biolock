@@ -50,11 +50,6 @@ export default function UserLists() {
         {/* Registration Request Section */}
         <div className="mt-4">
           <h3 className="text-lg font-semibold text-center">Registration Request</h3>
-          {localLoading ? (  // Changed from isLoading to localLoading
-            <p className="text-center">Loading requests...</p>
-          ) : error ? (
-            <p className="text-center text-red-500">Error: {error}</p>
-          ) : (
             <table className="min-w-full text-center border border-gray-300">
               <thead>
                 <tr className="bg-gray-100 border-b border-gray-300">
@@ -98,17 +93,11 @@ export default function UserLists() {
                 )}
               </tbody>
             </table>
-          )}
         </div>
 
         {/* User List Section */}
         <div className="mt-6">
           <h3 className="text-lg font-semibold text-center">User List</h3>
-          {localLoading ? (  // Changed from isLoading to localLoading
-            <p className="text-center">Loading requests...</p>
-          ) : error ? (
-            <p className="text-center text-red-500">Error: {error}</p>
-          ) : (
             <table className="min-w-full text-center border border-gray-300">
               <thead>
                 <tr className="bg-gray-100 border-b border-gray-300">
@@ -137,7 +126,6 @@ export default function UserLists() {
                 )}
               </tbody>
             </table>
-          )}
         </div>
       </div>
     </DashboardLayout>
