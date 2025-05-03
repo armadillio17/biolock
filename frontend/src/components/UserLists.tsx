@@ -5,12 +5,12 @@ import { useUserStore } from "@/store/userlistStore";
 
 export default function UserLists() {
 
-  const { newRegisteredUser, approvedUser, fetchNewUserList, fetchApprovedUserList, approvedRegisteredUser, error } = useUserStore();
-  const [localLoading, setLocalLoading] = useState(true);
+  const { newRegisteredUser, approvedUser, fetchNewUserList, fetchApprovedUserList, approvedRegisteredUser } = useUserStore();
+  // const [localLoading, setLocalLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
-      setLocalLoading(true);
+      // setLocalLoading(true);
       try {
         await Promise.all([
           fetchNewUserList(),
@@ -19,7 +19,7 @@ export default function UserLists() {
       } catch (err) {
         console.error("Failed to load user data:", err);
       } finally {
-        setLocalLoading(false);
+        // setLocalLoading(false);
       }
     };
     
