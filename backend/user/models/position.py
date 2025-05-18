@@ -26,7 +26,7 @@ class Position(models.Model):
 
 class PositionUser(models.Model):  # Pivot table
     position = models.ForeignKey(Position, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     assigned_at = models.DateTimeField(auto_now_add=True)  # Track when assigned
 
     class Meta:

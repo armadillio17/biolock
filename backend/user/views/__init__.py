@@ -9,6 +9,7 @@ from .attendance_adjustments import AttendanceAdjustmentsListCreateView, Attenda
 from .position import PositionListCreateView, PositionDetailView, AssignUserToPositionView, RemoveUserFromPositionView
 from .logs import LogsListCreateView, LogsDetailView
 from .attendance_summary import AttendanceSummaryListCreateView, AttendanceSummaryDetailView
+from .payroll.payslip import PayslipView
 
 __all__ = [
     "UserCreateView",
@@ -48,5 +49,6 @@ __all__ = [
     "DailyAttendanceCountView",
     "GenerateDailyReport",
     "NewRegistrationRegisteredList",
-    "AcceptedUserList"
+    "AcceptedUserList",
+    "PayslipView",
     ]

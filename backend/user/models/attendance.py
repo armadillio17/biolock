@@ -17,14 +17,14 @@ class Attendance(models.Model):
     ]
 
     # user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendances") 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendances") 
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendances", null=True, blank=True) 
     holiday = models.ForeignKey(Holiday, on_delete=models.SET_NULL, null=True, blank=True, related_name="attendances") 
 
     date = models.DateField()
     clock_in = models.DateTimeField(null=True, blank=True)
     clock_out = models.DateTimeField(null=True, blank=True)
-    working_hours = models.IntegerField(default=0)
-    overtime_hours = models.IntegerField(default=0)
+    working_hours = models.FloatField(default=0.0)
+    overtime_hours = models.FloatField(default=0.0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     scheduled_start = models.DateTimeField(null=True, blank=True)
     scheduled_end = models.DateTimeField(null=True, blank=True)
