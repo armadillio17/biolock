@@ -1,4 +1,4 @@
-import { Element4, Calendar, CalendarAdd, CalendarEdit, DocumentText1, Profile2User, Activity, Hierarchy, Messenger } from "iconsax-react";
+import { Element4, Calendar, CalendarAdd, CalendarEdit, DocumentText1, Profile2User, Activity, Hierarchy, Messenger, MoneySend } from "iconsax-react";
 import dummyPic from "@/assets/dummy person.jpg";
 // Define a type for the menu items
 export interface SidebarMenuItem {
@@ -25,6 +25,8 @@ export const sidebarMenu: SidebarMenuItem[] = [
     { name: "Users", icon: <Profile2User size="27" color= "#FABA6C" />, path: "/users" },
     { name: "Departments", icon: <Hierarchy size="27" color="#6C4AB6" />, path: "/department" },
     { name: "Activity Logs", icon: <Activity size="27" color= "#723D46" />, path: "/activity-logs" },
+    { name: "Payroll", icon: <MoneySend size="27" color= "#723D46" />, path: "/payroll" },
+
 ];
 
 export const sidebarMenuUser: SidebarMenuItem[] = [

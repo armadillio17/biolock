@@ -10,7 +10,7 @@ interface Department {
   department_name: string;
 }
 
-function App() {
+export default function DepartmentView() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [showInput, setShowInput] = useState(false);
   const [newDepartment, setNewDepartment] = useState('');
@@ -212,5 +212,3 @@ function App() {
     </DashboardLayout>
   );
 }
-
-export default App
