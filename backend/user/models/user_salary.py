@@ -4,11 +4,17 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-class Logs(models.Model):
-    # user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendances") 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_logs", null=True, blank=True) 
-    action = models.CharField(max_length=255)
-    details = models.TextField()
+class UserSalary(models.Model):
+    SALARY_TYPE_CHOICES = [
+        ("monthly", "Monthly"),
+        ("hourly", "Hourly"),
+    ]
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="salary", null=True, blank=True)
+    salary_type = models.CharField(max_length=20, choices=SALARY_TYPE_CHOICES)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    effective_date = models.DateField(default=now)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
@@ -22,6 +28,3 @@ class Logs(models.Model):
     def is_deleted(self):
         """Check if the record is soft-deleted."""
         return self.deleted_at is not None
-
-    def __str__(self):
-        return f"Logs {self.details} on {self.action}"

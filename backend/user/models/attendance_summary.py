@@ -5,17 +5,20 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class AttendanceSummary(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendance_summaries")
-    # user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendances")  
-    period_start = models.DateField()
-    period_end = models.DateField()
-    total_working_hours = models.IntegerField(default=0)
-    total_overtime_hours = models.IntegerField(default=0)
-    total_leave_hours = models.IntegerField(default=0)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendance_summaries", null=True, blank=True)
+    date = models.DateField()  # This is now a daily summary
+
+    total_working_hours = models.FloatField(default=0.0)
+    total_overtime_hours = models.FloatField(default=0.0)
+    total_leave_hours = models.FloatField(default=0.0)
     total_absences = models.IntegerField(default=0)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ("user", "date")  # Ensure one summary per user per day
 
     def delete(self, *args, **kwargs):
         """Soft delete by setting the deleted_at field."""
@@ -28,4 +31,4 @@ class AttendanceSummary(models.Model):
         return self.deleted_at is not None
 
     def __str__(self):
-        return f"Attendance #{self.id} - {self.user}"
+        return f"Summary for {self.user} on {self.date}"

@@ -10,6 +10,9 @@ from .holiday import HolidaySerializer
 from .attendance_adjustments import AttendanceAdjustmentsSerializer
 from .logs import LogsSerializer
 from .attendance_summary import AttendanceSummarySerializer
+from .payroll_period import PayrollPeriodSerializer
+from .payslip import PayslipSerializer
+from .user_salary import UserSalarySerializer
 
 __all__ = [
     "AttendanceSerializer",
@@ -29,4 +32,7 @@ __all__ = [
     "AttendanceAdjustmentsSerializer",
     "LogsSerializer",
     "AttendanceSummarySerializer",
+    "PayrollPeriodSerializer",
+    "PayslipSerializer",
+    "UserSalarySerializer",
     ]

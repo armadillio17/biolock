@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.utils.timezone import now
 from user.models.attendance import Attendance
+from user.models.attendance_summary import AttendanceSummary
 from user.serializers import AttendanceSerializer, ClockInSerializer, ClockOutSerializer
 
 class AttendanceListCreateView(APIView):
@@ -12,13 +13,13 @@ class AttendanceListCreateView(APIView):
         serializer = AttendanceSerializer(attendances, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, request):
-        """Create a new attendance record"""
-        serializer = AttendanceSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # def post(self, request):
+    #     """Create a new attendance record"""
+    #     serializer = AttendanceSerializer(data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AttendanceDetailUpdateDeleteView(APIView):
     def get_object(self, pk):
@@ -81,36 +82,83 @@ class UserAttendanceView(APIView):
 class UserClockInView(APIView):
     def post(self, request):
         """Create a new clock-in record"""
+
         try:
-            serializer = ClockInSerializer(data=request.data)  # `partial=True` not needed for POST
+            user_id = request.data.get("user_id")
+            today = now().date()
+
+            # Check for an open attendance (already clocked in)
+            existing = Attendance.objects.filter(
+                user_id=user_id,
+                clock_in__date=today,
+                clock_out__isnull=True
+            ).first()
+
+            if existing:
+                return Response({"error": "Already clocked in and not yet clocked out."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Create a new attendance record
+            serializer = ClockInSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-            print("Validation Errors:", serializer.errors)  # Log validation errors
+            print("Validation Errors:", serializer.errors)
             return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
-            print(f"Unexpected Error: {str(e)}")  # Log unexpected errors
+            print(f"Unexpected Error: {str(e)}")
             return Response({"error": "An unexpected error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
 class UserClockOutView(APIView):
     def put(self, request):
-        """Update clock out based on the clock-in record"""
+        """Update clock out and create/update attendance summary"""
         
         today = now().date()
-        user = request.data["user_id"]
+        user_id = request.data["user_id"]
         
-        attendance = Attendance.objects.filter(user_id=user, clock_in__date=today, clock_out__isnull=True).first()
+        attendance = Attendance.objects.filter(
+            user_id=user_id,
+            clock_in__date=today,
+            clock_out__isnull=True
+        ).first()
         
         if not attendance:
-            return Response({"error": "Already clock out for today"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Already clocked out for today"}, status=status.HTTP_400_BAD_REQUEST)
         
         serializer = ClockOutSerializer(attendance, data=request.data, partial=True)
         
         if serializer.is_valid():
-            serializer.save()
+            attendance = serializer.save()
+
+            # ---- Calculate working hours ----
+            if attendance.clock_in and attendance.clock_out:
+                duration = attendance.clock_out - attendance.clock_in
+                total_hours = round(duration.total_seconds() / 3600, 2)
+
+                # ---- Save working hours to attendance ----
+                attendance.working_hours = total_hours
+                attendance.save()
+
+                # ---- Create or update summary ----
+                summary, created = AttendanceSummary.objects.get_or_create(
+                    user=attendance.user,
+                    date=today,
+                    defaults={
+                        "total_working_hours": total_hours,
+                        "total_overtime_hours": attendance.overtime_hours,
+                        "total_leave_hours": 0,
+                        "total_absences": 0,
+                    }
+                )
+                if not created:
+                    # Update existing summary (e.g. re-clock out)
+                    summary.total_working_hours = total_hours
+                    summary.total_overtime_hours = attendance.overtime_hours
+                    summary.save()
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class DailyAttendanceView(APIView):
