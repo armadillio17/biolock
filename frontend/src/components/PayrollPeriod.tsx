@@ -101,7 +101,7 @@ const handleGeneratePayslip = async (period: PayrollPeriod) => {
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Set Payroll Period</h2>
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Payroll Period</h2>
         
         {error && (
           <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -142,7 +142,7 @@ const handleGeneratePayslip = async (period: PayrollPeriod) => {
             </div>
           </div>
 
-          <div className="flex items-center">
+          {/* <div className="flex items-center">
             <input
               type="checkbox"
               id="isProcessed"
@@ -153,7 +153,7 @@ const handleGeneratePayslip = async (period: PayrollPeriod) => {
             <label htmlFor="isProcessed" className="ml-2 block text-sm text-gray-700">
               Mark as Processed
             </label>
-          </div>
+          </div> */}
 
           <Button
             type="submit"
@@ -176,32 +176,33 @@ const handleGeneratePayslip = async (period: PayrollPeriod) => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Start Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">End Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {periodList.map((period) => (
                   <tr key={period.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
                       {new Date(period.start_date).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
                       {new Date(period.end_date).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
                       <span className={`px-2 py-1 rounded-full text-xs ${period.is_processed ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
                         {period.is_processed ? 'Processed' : 'Pending'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => period.id && handleDelete(period.id)}
                         disabled={isLoading}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
                       >
                         <Trash2 className="h-4 w-4 text-red-500" />
                       </Button>

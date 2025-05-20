@@ -252,17 +252,17 @@ export default function UserSalary() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">User</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Type</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Amount</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {salaryList.map((salary) => (
                   <tr key={salary.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
                       {editingId === salary.id ? (
                         <select
                           className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -279,7 +279,7 @@ export default function UserSalary() {
                         getUserName(salary.user)
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize text-center">
                       {editingId === salary.id ? (
                         <select
                           className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -293,7 +293,7 @@ export default function UserSalary() {
                         salary.salary_type
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
                       {editingId === salary.id ? (
                         <input
                           type="number"
@@ -312,7 +312,7 @@ export default function UserSalary() {
                         })
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
                       {editingId === salary.id ? (
                         <div className="relative">
                           <input
@@ -321,22 +321,22 @@ export default function UserSalary() {
                             value={salary.effective_date}
                             onChange={(e) => handleEditChange(salary.id!, 'effective_date', e.target.value)}
                           />
-                          <Calendar className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                          <Calendar className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 text-center" />
                         </div>
                       ) : (
                         new Date(salary.effective_date).toLocaleDateString()
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
                       {editingId === salary.id ? (
-                        <div className="flex space-x-2">
+                        <div className="flex space-x-2 flex justify-center">
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleSaveEdit(salary)}
                             disabled={isLoading}
                           >
-                            <Check className="h-4 w-4 text-green-500" />
+                            <Check className="h-4 w-4 text-green-500 items-center" />
                           </Button>
                           <Button
                             variant="ghost"
@@ -348,12 +348,13 @@ export default function UserSalary() {
                           </Button>
                         </div>
                       ) : (
-                        <div className="flex space-x-2">
+                        <div className="flex space-x-2 flex justify-center">
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleEdit(salary)}
                             disabled={isLoading || editingId !== null}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -362,6 +363,7 @@ export default function UserSalary() {
                             size="sm"
                             onClick={() => salary.id && handleDelete(salary.id)}
                             disabled={isLoading || editingId !== null}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
                           >
                             <Trash2 className="h-4 w-4 text-red-500" />
                           </Button>

@@ -1,10 +1,10 @@
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from user.models.position import Department, Position, DepartmentPosition, PositionUser
 from user.serializers import PositionSerializer, AssignUserPositionSerializer
-
+from user.models.users import CustomUser
 
 class PositionListCreateView(APIView):
     """List all positions or create a new one"""
@@ -80,7 +80,7 @@ class AssignUserToPositionView(APIView):
             department_position = DepartmentPosition.objects.get(department=department, position=position)
 
             # Assign the user to the position
-            user = User.objects.get(id=user_id)
+            user = CustomUser.objects.get(id=user_id)
             _, created = PositionUser.objects.get_or_create(department_position=department_position, user=user)
 
             if created:
@@ -89,7 +89,7 @@ class AssignUserToPositionView(APIView):
 
         except (Department.DoesNotExist, Position.DoesNotExist, DepartmentPosition.DoesNotExist):
             return Response({"error": "Department, Position, or Department-Position link not found"}, status=status.HTTP_404_NOT_FOUND)
-        except User.DoesNotExist:
+        except CustomUser.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -111,12 +111,12 @@ class RemoveUserFromPositionView(APIView):
             department_position = DepartmentPosition.objects.get(department=department, position=position)
 
             # Remove the user from the position
-            user = User.objects.get(id=user_id)
+            user = CustomUser.objects.get(id=user_id)
             position_user = PositionUser.objects.get(department_position=department_position, user=user)
             position_user.delete()
             return Response({"message": "User removed from position successfully"}, status=status.HTTP_200_OK)
 
         except (Department.DoesNotExist, Position.DoesNotExist, DepartmentPosition.DoesNotExist):
             return Response({"error": "Department, Position, or Department-Position link not found"}, status=status.HTTP_404_NOT_FOUND)
-        except (User.DoesNotExist, PositionUser.DoesNotExist):
+        except (CustomUser.DoesNotExist, PositionUser.DoesNotExist):
             return Response({"error": "User not found in this position"}, status=status.HTTP_404_NOT_FOUND)

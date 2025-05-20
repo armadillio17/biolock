@@ -1,12 +1,13 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from user.models.department import Department
 from user.models.position import Position, PositionUser, DepartmentPosition
+from user.models.users import CustomUser
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = CustomUser
         fields = ['id', 'username', 'email']
 
 
@@ -25,7 +26,7 @@ class PositionSerializer(serializers.ModelSerializer):
         fields = ['id', 'position_name', 'created_at', 'updated_at', 'deleted_at', 'users', 'department']
 
     def get_users(self, obj):
-        users = User.objects.filter(positionuser__position=obj)
+        users = CustomUser.objects.filter(positionuser__position=obj)
         return UserSerializer(users, many=True).data
 
     def get_department(self, obj):
