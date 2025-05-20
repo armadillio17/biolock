@@ -37,7 +37,6 @@ export default function PayrollRelease() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-
   // Group payslips by payroll period
   const groupedPayslips = payslips.reduce((acc, payslip) => {
     const periodKey = `${payslip.payroll_period.start_date}-${payslip.payroll_period.end_date}`;
@@ -50,14 +49,17 @@ export default function PayrollRelease() {
           total_amount: payslip.payroll_period.total_amount,
         },
         payslips: [],
-        totalAmount: 0,  // Initialize to 0
+        totalAmount: 0,
         generated_at: payslip.generated_at
       };
     }
     acc[periodKey].payslips.push(payslip);
     acc[periodKey].totalAmount += (payslip.gross_pay - payslip.deductions);
     return acc;
-  }, {} as Record<string, { period: { id: string; start_date: string; end_date: string; total_amount?: number }; payslips: Payslip[]; totalAmount: number; generated_at: string }>);
+  }, {} as Record<string, {
+      period: { id: string; start_date: string; end_date: string; total_amount?: number };
+      payslips: Payslip[]; totalAmount: number; generated_at: string 
+    }>);
 
   // Fetch payslips from API
   const fetchPayslips = async () => {
@@ -81,14 +83,11 @@ export default function PayrollRelease() {
   const downloadPayslipsPdf = async (payrollPeriodId: string) => {
     try {
       const response = await authAxios.get(`/payslip/download-pdf/${payrollPeriodId}/`, {
-        responseType: 'blob', // This is crucial for handling binary data
+        responseType: 'blob',
         headers: {
           'Accept': 'application/pdf',
         },
       });
-
-      // With Axios, successful responses will come here (status 2xx)
-      // No need to check response.ok like with fetch
       
       // Create blob from response data
       const blob = new Blob([response.data], { type: 'application/pdf' });
