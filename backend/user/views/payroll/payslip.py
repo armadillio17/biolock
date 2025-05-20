@@ -107,7 +107,7 @@ class PayslipView(APIView):
             p.drawString(4 * inch, 10.5 * inch, f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
             p.setFont("Helvetica", 10)
             
-            y_position = 10 * inch  # Start position
+            y_position = 10 * inch
             
             for payslip in payslips:
                 # Check if we need a new page

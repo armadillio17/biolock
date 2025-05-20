@@ -61,6 +61,10 @@ from user.views.payroll.user_salary import (
     UserSalaryListCreateView, UserSalaryDetailView
 )
 
+from user.views.payroll.benefits import (
+    BenefitsConfigurationAPIView
+)
+
 urlpatterns = [
     
     path('admin/', admin.site.urls),
@@ -142,4 +146,7 @@ urlpatterns = [
 
     path('api/user-salary/', UserSalaryListCreateView.as_view(), name='user-salary-list-create'),
     path('api/user-salary/<int:pk>/', UserSalaryDetailView.as_view(), name='user-salary-detail'),
+
+    path('api/benefits-configuration/', BenefitsConfigurationAPIView.as_view(), name='benefits-configuration-list-create'),
+    path('api/benefits-configuration/<str:benefit_type>/', BenefitsConfigurationAPIView.as_view(), name='benefits-configuration-detail-update'),
 ]

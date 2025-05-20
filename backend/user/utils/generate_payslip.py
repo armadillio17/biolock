@@ -23,7 +23,7 @@ def generate_payslip(user, payroll_period):
         gross_pay = (Decimal(total_hours) + Decimal(total_overtime)) * hourly_rate
     elif salary.salary_type == "monthly":
         working_days = summaries.count()
-        total_work_hours_standard = working_days * 8  # Assuming 8 hrs/day
+        total_work_hours_standard = working_days * 8
         hourly_rate = salary.amount / Decimal(total_work_hours_standard) if total_work_hours_standard else 0
         gross_pay = (Decimal(total_hours) + Decimal(total_overtime)) * hourly_rate
     else:
