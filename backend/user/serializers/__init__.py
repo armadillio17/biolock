@@ -13,6 +13,7 @@ from .attendance_summary import AttendanceSummarySerializer
 from .payroll_period import PayrollPeriodSerializer
 from .payslip import PayslipSerializer
 from .user_salary import UserSalarySerializer
+from .benefits import BenefitsConfigurationSerializer
 
 __all__ = [
     "AttendanceSerializer",
@@ -35,4 +36,5 @@ __all__ = [
     "PayrollPeriodSerializer",
     "PayslipSerializer",
     "UserSalarySerializer",
+    "BenefitsConfigurationSerializer",
     ]
