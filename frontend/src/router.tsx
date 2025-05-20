@@ -14,6 +14,7 @@ import AdminReport from './pages/AdminReport';
 import { ProtectedRoute } from './ProtectedRoutes';
 import MessagePage from './pages/Messages'
 import Payroll from './pages/Payroll';
+import PositionView from './pages/PositionView';
 
 
 export const router = createBrowserRouter([
@@ -72,5 +73,9 @@ export const router = createBrowserRouter([
     {
         path: '/inbox',
         element: <ProtectedRoute element={<MessagePage />} />,
+    },
+    {
+        path: '/position',
+        element: <ProtectedRoute element={<PositionView />} />,
     },
 ]);
