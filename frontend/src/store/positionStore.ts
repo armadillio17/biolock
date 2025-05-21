@@ -1,20 +1,28 @@
+
 import { create } from "zustand";
 import axios from "axios";
 import { base_url } from '../config.ts';
 // import { useAuthStore } from './authStore.ts'; // Import auth store
 
-interface PositionData {
+export interface PositionData {
   id: number,
   position_name: string
 }
 
+export interface UserPositionData {
+  id: number,
+  position_name: string,
+}
+
 interface PositionState {
   position: PositionData[];
+  userPosition: UserPositionData[] | null;
   isLoading: boolean;
   error: string | null;
     
 // Attendance actions
   fetchPosition: () => Promise<void>;
+  fetchUserPosition: ($position_id: number) => Promise<void>;
   createPosition: (position_name: string) => Promise<void>;
   updatePosition: (id: number, position_name: string) => Promise<void>;
   deletePosition: (id: number) => Promise<void>;
@@ -22,10 +30,10 @@ interface PositionState {
 
 export const usePositionStore = create<PositionState>((set) => ({
   position: [],
+  userPosition:[],
   isLoading: false,
   error: null,
 
-  // Attendance actions
   fetchPosition: async () => {
     set({ isLoading: true, error: null });
     
@@ -48,6 +56,39 @@ export const usePositionStore = create<PositionState>((set) => ({
 
       set({ 
         position: response.data,
+        isLoading: false 
+      });
+    } catch (error) {
+      console.error("Error fetching attendance:", error);
+      set({ 
+        error: "Failed to fetch attendance data",
+        isLoading: false 
+      });
+    }
+  },
+
+  fetchUserPosition: async (position_id: number) => {
+    set({ isLoading: true, error: null });
+    
+    try {
+      // const token = useAuthStore.getState().getAuthToken();
+      
+      // if (!token) {
+      //   throw new Error("Authentication token not found");
+      // }
+      
+      const response = await axios.get(`${base_url}/positions/${position_id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          // "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      // console.log("response.data", response.data);
+      
+
+      set({ 
+        userPosition: response.data,
         isLoading: false 
       });
     } catch (error) {

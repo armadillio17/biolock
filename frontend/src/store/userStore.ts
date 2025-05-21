@@ -9,6 +9,10 @@ interface AttendanceData {
     clock_out: string | null,
 }
 
+interface UserData {
+  position_id: number,
+}
+
 // Define the Attendance Store Interface
 interface AttendanceState {
     attendance: AttendanceData[];
@@ -17,6 +21,15 @@ interface AttendanceState {
     
     // Attendance actions
     fetchAttendance: (userId: number) => Promise<void>;
+}
+
+interface UserState {
+  user: UserData[];
+  isLoading: boolean;
+  error: string | null;
+  
+  // Attendance actions
+  updateUserPosition: (userId: number, position_id: number) => Promise<void>;
 }
 
 // Create Attendance Store
@@ -51,6 +64,37 @@ export const useAttendanceStore = create<AttendanceState>((set) => ({
       console.error("Error fetching attendance:", error);
       set({ 
         error: "Failed to fetch attendance data",
+        isLoading: false 
+      });
+    }
+  },
+}));
+
+
+export const useUpdateUserStore = create<UserState>((set) => ({
+  user: [],
+  isLoading: false,
+  error: null,
+
+  updateUserPosition: async (userId: number, position_id: number) => {
+    set({ isLoading: true, error: null });
+    
+    try {
+      const response = await axios.put(`${base_url}/users/${userId}/`, { position_id }, {
+        headers: {
+          "Content-Type": "application/json",
+          // "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      set({ 
+        user: response.data, // response.data is likely a single object
+        isLoading: false 
+      });
+    } catch (error) {
+      console.error("Failed to update position:", error);
+      set({ 
+        error: "Failed to update user position",
         isLoading: false 
       });
     }

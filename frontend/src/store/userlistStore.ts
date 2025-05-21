@@ -10,6 +10,7 @@ interface UserData {
     last_name: string;
     email: string;
     role_id: number;
+    position_id: number;
     created_at: string;
 }
 
