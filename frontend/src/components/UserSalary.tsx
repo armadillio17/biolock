@@ -252,11 +252,11 @@ export default function UserSalary() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">User</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Type</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Amount</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Actions</th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">User</th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Type</th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Amount</th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Date</th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -329,7 +329,7 @@ export default function UserSalary() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
                       {editingId === salary.id ? (
-                        <div className="flex space-x-2 flex justify-center">
+                        <div className="flex space-x-2 justify-center">
                           <Button
                             variant="ghost"
                             size="sm"
@@ -348,7 +348,7 @@ export default function UserSalary() {
                           </Button>
                         </div>
                       ) : (
-                        <div className="flex space-x-2 flex justify-center">
+                        <div className="flex space-x-2 justify-center">
                           <Button
                             variant="ghost"
                             size="sm"
