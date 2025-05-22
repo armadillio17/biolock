@@ -79,7 +79,6 @@ class PayslipView(APIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
     def download_payslips_pdf(request, payroll_period_id):
         try:
             # Validate input
@@ -111,7 +110,7 @@ class PayslipView(APIView):
             
             for payslip in payslips:
                 # Check if we need a new page
-                if y_position < 1.5 * inch:
+                if y_position < 2 * inch:  # Increased minimum space for more content
                     p.showPage()
                     y_position = 10 * inch
                     p.setFont("Helvetica", 10)
@@ -138,13 +137,59 @@ class PayslipView(APIView):
                 p.drawString(1 * inch, y_position, f"Absences: {payslip.total_absences or 0}")
                 y_position -= 0.3 * inch
                 
-                # Payment info
+                # Payment info - Gross Pay first
                 p.setFont("Helvetica-Bold", 10)
-                p.drawString(1 * inch, y_position, f"Gross Pay: ${payslip.gross_pay or 0:.2f}")
+                p.drawString(1 * inch, y_position, f"Gross Pay: ₱{payslip.gross_pay or 0:.2f}")
+                y_position -= 0.3 * inch
+                
+                # Employee Deductions header
+                p.setFont("Helvetica-Bold", 10)
+                p.drawString(1 * inch, y_position, "Employee Deductions:")
                 y_position -= 0.25 * inch
-                p.drawString(1 * inch, y_position, f"Deductions: ${payslip.deductions or 0:.2f}")
+                
+                # Employee contributions
+                p.setFont("Helvetica", 9)
+                p.drawString(1.2 * inch, y_position, f"SSS: ₱{payslip.sss_employee or 0:.2f}")
+                y_position -= 0.2 * inch
+                p.drawString(1.2 * inch, y_position, f"PhilHealth: ₱{payslip.philhealth_employee or 0:.2f}")
+                y_position -= 0.2 * inch
+                p.drawString(1.2 * inch, y_position, f"Pag-IBIG: ₱{payslip.pagibig_employee or 0:.2f}")
+                y_position -= 0.2 * inch
+                
+                # Other deductions (assuming these fields exist)
+                if hasattr(payslip, 'tax'):
+                    p.drawString(1.2 * inch, y_position, f"Tax: ₱{payslip.tax or 0:.2f}")
+                    y_position -= 0.2 * inch
+                if hasattr(payslip, 'other_deductions'):
+                    p.drawString(1.2 * inch, y_position, f"Other Deductions: ₱{payslip.other_deductions or 0:.2f}")
+                    y_position -= 0.3 * inch
+                
+                # Total employee deductions
+                p.setFont("Helvetica-Bold", 10)
+                p.drawString(1 * inch, y_position, f"Total Employee Deductions: ₱{payslip.deductions or 0:.2f}")
+                y_position -= 0.3 * inch
+                
+                # Employer contributions section
+                p.setFont("Helvetica-Bold", 10)
+                p.drawString(1 * inch, y_position, "Employer Contributions:")
                 y_position -= 0.25 * inch
-                p.drawString(1 * inch, y_position, f"Net Pay: ${payslip.net_pay or 0:.2f}")
+                
+                p.setFont("Helvetica", 9)
+                p.drawString(1.2 * inch, y_position, f"SSS: ₱{payslip.sss_employer or 0:.2f}")
+                y_position -= 0.2 * inch
+                p.drawString(1.2 * inch, y_position, f"PhilHealth: ₱{payslip.philhealth_employer or 0:.2f}")
+                y_position -= 0.2 * inch
+                p.drawString(1.2 * inch, y_position, f"Pag-IBIG: ₱{payslip.pagibig_employer or 0:.2f}")
+                y_position -= 0.3 * inch
+                
+                # Total employer contributions
+                p.setFont("Helvetica-Bold", 10)
+                p.drawString(1 * inch, y_position, f"Total Employer Contributions: ₱{payslip.employer_contributions or 0:.2f}")
+                y_position -= 0.3 * inch
+                
+                # Net Pay
+                p.setFont("Helvetica-Bold", 11)
+                p.drawString(1 * inch, y_position, f"Net Pay: ₱{payslip.net_pay or 0:.2f}")
                 y_position -= 0.5 * inch
                 
                 # Add separator line

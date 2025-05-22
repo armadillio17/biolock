@@ -20,6 +20,29 @@ class CustomUser(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
+
+    # Government identification numbers only
+    sss_number = models.CharField(
+        max_length=20, 
+        null=True, 
+        blank=True, 
+        verbose_name="SSS Number",
+        unique=True
+    )
+    pagibig_number = models.CharField(
+        max_length=20, 
+        null=True, 
+        blank=True, 
+        verbose_name="Pag-IBIG Number",
+        unique=True
+    )
+    philhealth_number = models.CharField(
+        max_length=20, 
+        null=True, 
+        blank=True, 
+        verbose_name="PhilHealth Number",
+        unique=True
+    )
     
     def delete(self):
         """Soft delete by setting the deleted_at field."""

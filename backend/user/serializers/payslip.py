@@ -16,6 +16,9 @@ class PayrollPeriodSerializer(serializers.ModelSerializer):
         fields = 'id', 'start_date', 'end_date', 'total_amount', 'is_processed'
 
 class PayslipSerializer(serializers.ModelSerializer):
+    employee_contributions = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    employer_contributions = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    
     payroll_period = PayrollPeriodSerializer(read_only=True)
     user = CustomUserSerializer(read_only=True)
 
