@@ -2,18 +2,14 @@ import { useEffect, useState} from 'react';
 import DashboardLayout from "@/layouts/DashboardLayout"
 import { Button } from "./ui/button"
 import { useUserStore } from "@/store/userlistStore";
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 import UserViewModal from './ViewUserPrompt';
 import { User } from './ViewUserPrompt'
-import { useUpdateUserStore } from '@/store/userStore';
-import { usePositionStore, PositionData } from '@/store/positionStore';
 
 export default function UserLists() {
 
   const { newRegisteredUser, approvedUser, fetchNewUserList, fetchApprovedUserList, approvedRegisteredUser } = useUserStore();
   // const [localLoading, setLocalLoading] = useState(true);
-  const { updateUserPosition } = useUpdateUserStore();
-  const { fetchUserPosition } = usePositionStore();
 
   useEffect(() => {
     const loadData = async () => {
@@ -34,7 +30,6 @@ export default function UserLists() {
   }, [fetchNewUserList, fetchApprovedUserList]);
   
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [selectedPosition, setSelectedPosition] = useState<PositionData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   const handleApprove = async (userId: number) => {

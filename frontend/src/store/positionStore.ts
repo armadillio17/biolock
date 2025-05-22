@@ -16,7 +16,7 @@ export interface UserPositionData {
 
 interface PositionState {
   position: PositionData[];
-  userPosition: UserPositionData[] | null;
+  userPosition: UserPositionData | null;
   isLoading: boolean;
   error: string | null;
     
@@ -30,7 +30,7 @@ interface PositionState {
 
 export const usePositionStore = create<PositionState>((set) => ({
   position: [],
-  userPosition:[],
+  userPosition:null,
   isLoading: false,
   error: null,
 
