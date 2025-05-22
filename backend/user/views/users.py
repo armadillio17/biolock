@@ -154,7 +154,8 @@ class UserAuthenticationView(APIView):
             token, created = Token.objects.get_or_create(user=user)
             
             response = Response({
-                "user_id": user.id, 
+                "user_id": user.id,
+                "token": token.key,  # ✅ Include the token here
                 "success": True
             }, status=status.HTTP_200_OK)
             

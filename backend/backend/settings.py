@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-3b-vu&@5w2+fh=+0+#5e42&idta+*%ud+wf*aqra!1hintr(97
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '::1', 'biolock.astrosail.site', 'api.astrosail.site', ]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '::1', 'biolock.astrosail.site', 'api.astrosail.site', '10.0.2.2']
 
 
 # Application definition
@@ -141,6 +141,7 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://10.0.2.2",
 ]
 
 CORS_ALLOW_HEADERS = [

@@ -86,11 +86,14 @@ class UserClockInView(APIView):
         try:
             user_id = request.data.get("user_id")
             today = now().date()
+            
+            print("user_id:", user_id)  # Log validation errors
+            print("Incoming request data:", request.data)
 
             # Check for an open attendance (already clocked in)
             existing = Attendance.objects.filter(
                 user_id=user_id,
-                clock_in__date=today,
+                # clock_in__date=today,
                 clock_out__isnull=True
             ).first()
 
