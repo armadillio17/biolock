@@ -17,6 +17,14 @@ interface Payslip {
   total_absences: number;
   gross_pay: number;
   deductions: number;
+  sss_employee: number;
+  philhealth_employee: number;
+  pagibig_employee: number;
+  sss_employer: number;
+  philhealth_employer: number;
+  pagibig_employer: number;
+  employer_contributions: number;
+  employee_contributions: number;
   payroll_period: {
     id: string;
     start_date: string;
@@ -290,6 +298,7 @@ export default function PayrollRelease() {
               </button>
             </div>
             <div className="grid grid-cols-2 gap-4">
+              {/* Existing fields */}
               <div className="space-y-2">
                 <p className="text-sm text-gray-600">Payroll Period</p>
                 <p className="text-lg font-medium">
@@ -319,6 +328,46 @@ export default function PayrollRelease() {
                 <p className="text-sm text-gray-600">Absences</p>
                 <p className="text-lg font-medium">{selectedPayslip.total_absences} days</p>
               </div>
+
+              {/* Government Contributions - Employee Share */}
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">SSS (Employee)</p>
+                <p className="text-lg font-medium">${selectedPayslip.sss_employee.toLocaleString()}</p>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">PhilHealth (Employee)</p>
+                <p className="text-lg font-medium">${selectedPayslip.philhealth_employee.toLocaleString()}</p>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">Pag-IBIG (Employee)</p>
+                <p className="text-lg font-medium">${selectedPayslip.pagibig_employee.toLocaleString()}</p>
+              </div>
+
+              {/* Government Contributions - Employer Share */}
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">SSS (Employer)</p>
+                <p className="text-lg font-medium">${selectedPayslip.sss_employer.toLocaleString()}</p>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">PhilHealth (Employer)</p>
+                <p className="text-lg font-medium">${selectedPayslip.philhealth_employer.toLocaleString()}</p>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">Pag-IBIG (Employer)</p>
+                <p className="text-lg font-medium">${selectedPayslip.pagibig_employer.toLocaleString()}</p>
+              </div>
+
+              {/* Contribution Totals */}
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">Total Employee Contributions</p>
+                <p className="text-lg font-medium">${selectedPayslip.employee_contributions.toLocaleString()}</p>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">Total Employer Contributions</p>
+                <p className="text-lg font-medium">${selectedPayslip.employer_contributions.toLocaleString()}</p>
+              </div>
+
+              {/* Existing financial summary */}
               <div className="space-y-2">
                 <p className="text-sm text-gray-600">Gross Pay</p>
                 <p className="text-lg font-medium text-green-600">${selectedPayslip.gross_pay.toLocaleString()}</p>
