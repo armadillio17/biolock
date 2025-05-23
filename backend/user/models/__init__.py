@@ -14,3 +14,4 @@ from .payroll_period import PayrollPeriod
 from .payslip import Payslip
 from .user_salary import UserSalary
 from .benefits import BenefitsConfiguration
+from .location import Location
