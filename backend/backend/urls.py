@@ -51,6 +51,19 @@ from user.views.logs import (
 from user.views.attendance_summary import (
     AttendanceSummaryListCreateView, AttendanceSummaryDetailView
 )
+from user.views.payroll.payroll_period import (
+    PayrollPeriodListCreateView, PayrollPeriodDetailView
+)
+from user.views.payroll.payslip import (
+    PayslipView
+)
+from user.views.payroll.user_salary import (
+    UserSalaryListCreateView, UserSalaryDetailView
+)
+
+from user.views.payroll.benefits import (
+    BenefitsConfigurationAPIView
+)
 
 urlpatterns = [
     
@@ -122,4 +135,18 @@ urlpatterns = [
     # Attendance Summary Endpoints
     path('api/attendance-summary/', AttendanceSummaryListCreateView.as_view(), name='attendance-summary-list-create'),
     path('api/attendance-summary/<int:pk>/', AttendanceSummaryDetailView.as_view(), name='attendance-summary-detail'),
+
+    
+    # Payroll Related Endpoints
+    path('api/payroll-period/', PayrollPeriodListCreateView.as_view(), name='payroll-period-list-create'),
+    path('api/payroll-period/<int:pk>/', PayrollPeriodDetailView.as_view(), name='payroll-period-detail'),
+
+    path('api/payslip/', PayslipView.as_view(), name='payslip-list-create'),
+    path('api/payslip/download-pdf/<int:payroll_period_id>/', PayslipView.download_payslips_pdf, name='payslip-download-pdf'),
+
+    path('api/user-salary/', UserSalaryListCreateView.as_view(), name='user-salary-list-create'),
+    path('api/user-salary/<int:pk>/', UserSalaryDetailView.as_view(), name='user-salary-detail'),
+
+    path('api/benefits-configuration/', BenefitsConfigurationAPIView.as_view(), name='benefits-configuration-list-create'),
+    path('api/benefits-configuration/<str:benefit_type>/', BenefitsConfigurationAPIView.as_view(), name='benefits-configuration-detail-update'),
 ]

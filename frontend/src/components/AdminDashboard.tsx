@@ -1,6 +1,5 @@
 import DashboardLayout from "@/layouts/DashboardLayout";
 // import { adminCards } from "@/data/dashboard-data.tsx";
-import ActivityLog from "./ActivityLog";
 import { useDashboardStore } from "@/store/dashboardStore"; // ✅ Import store
 import { useEffect } from "react";
 
@@ -79,9 +78,9 @@ function AdminDashboard() {
             </div> */}
 
             {/* Activity Log Section */}
-            <div className="w-full sm:w-1/2 min-h-[250px] rounded-2xl bg-[#A4DDED] p-5 border border-black shadow-lg">
+            {/* <div className="w-full sm:w-1/2 min-h-[250px] rounded-2xl bg-[#A4DDED] p-5 border border-black shadow-lg">
                 <ActivityLog />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

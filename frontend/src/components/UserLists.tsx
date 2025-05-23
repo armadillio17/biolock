@@ -1,7 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useState} from 'react';
 import DashboardLayout from "@/layouts/DashboardLayout"
 import { Button } from "./ui/button"
 import { useUserStore } from "@/store/userlistStore";
+import { Pencil } from 'lucide-react';
+import UserViewModal from './ViewUserPrompt';
+import { User } from './ViewUserPrompt'
 
 export default function UserLists() {
 
@@ -25,7 +28,10 @@ export default function UserLists() {
     
     loadData();
   }, [fetchNewUserList, fetchApprovedUserList]);
-
+  
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   const handleApprove = async (userId: number) => {
     await approvedRegisteredUser(userId, true);
     await fetchNewUserList();
@@ -40,6 +46,15 @@ export default function UserLists() {
 
   const formatDate = (dateStr: string): string => {
     return new Date(dateStr).toLocaleDateString();
+  };
+
+  const handleOpenModal = async (user: User) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -104,6 +119,7 @@ export default function UserLists() {
                   <th className="px-4 py-2">Date</th>
                   <th className="px-4 py-2">Users</th>
                   <th className="px-4 py-2">Email</th>
+                  <th className="px-4 py-2"></th>
                 </tr>
               </thead>
               <tbody>
@@ -117,6 +133,28 @@ export default function UserLists() {
                       <td className="px-4 py-2">
                         {user.email}
                       </td>
+                      <td className="px-4 py-2 items-center">
+                        {/* <Button
+                            className="px-4 py-1 text-white bg-green-500 rounded"
+                            // onClick={() => handleViewReport(report.id)}
+                          >
+                            View
+                        </Button> */}
+                          <Button
+                            onClick={() => handleOpenModal(user)}
+                            className="m-2 p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+                          >
+                            <Pencil className="h-5 w-5" />
+                          </Button>
+                          {/* <Button
+                            onClick={() => {
+
+                            }}
+                            className="m-2 p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                          >
+                            <Trash2 className="h-5 w-5" />
+                          </Button> */}
+                      </td>
                     </tr>
                   ))
                 ) : (
@@ -128,6 +166,7 @@ export default function UserLists() {
             </table>
         </div>
       </div>
+      <UserViewModal isOpen={isModalOpen} onClose={handleCloseModal} user={selectedUser} />
     </DashboardLayout>
   );
 }

@@ -27,7 +27,7 @@ class Department(models.Model):
 
 class DepartmentUser(models.Model):  # Pivot table
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     assigned_at = models.DateTimeField(auto_now_add=True)  # Track when assigned
 
     class Meta:

@@ -13,6 +13,8 @@ import DepartmentView from './pages/DepartmentView';
 import AdminReport from './pages/AdminReport';
 import { ProtectedRoute } from './ProtectedRoutes';
 import MessagePage from './pages/Messages'
+import Payroll from './pages/Payroll';
+import PositionView from './pages/PositionView';
 
 
 export const router = createBrowserRouter([
@@ -65,7 +67,15 @@ export const router = createBrowserRouter([
         element: <ProtectedRoute element={<AdminActivityLog />} requiredRole="admin" />,
     },
     {
+        path: '/payroll',
+        element: <ProtectedRoute element={<Payroll />} requiredRole="admin" />,
+    },
+    {
         path: '/inbox',
         element: <ProtectedRoute element={<MessagePage />} />,
+    },
+    {
+        path: '/position',
+        element: <ProtectedRoute element={<PositionView />} />,
     },
 ]);

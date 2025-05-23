@@ -5,6 +5,9 @@ from datetime import datetime
 from django.utils import timezone
 import pytz
 from rest_framework.exceptions import ValidationError
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class AttendanceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -46,6 +49,13 @@ class UserAttendanceSerializer(serializers.ModelSerializer):
 #     #         raise serializers.ValidationError(f"Update failed: {str(e)}")
 
 class ClockInSerializer(serializers.ModelSerializer):
+    
+    user_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
+        source='user',  # maps this to the model's 'user' field
+        write_only=True
+    )
+    
     class Meta:
         model = Attendance
         fields = '__all__'
@@ -58,24 +68,19 @@ class ClockInSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         today = now().date()
-        user_id = validated_data.get("user_id")  
         
-        # Check if the user has already clocked in today
-        attendance = Attendance.objects.filter(
-            user_id=user_id,
-            clock_in__date=today,
-            clock_out__isnull=True
-        ).first()
+        # No need to extract user_id separately since it's already mapped to 'user'
         
-        if attendance:
-            raise ValidationError({"error": "Already clocked in for today"}, code=400)  # Use 400 Bad Request
-
         try:
+            # Set additional required fields
             validated_data['date'] = today
-            validated_data['status'] = 'working'
+            validated_data['status'] = 'working'  # Changed from 'pending' to match your STATUS_CHOICES
             validated_data['clock_in'] = now()
+            
+            # Create and return the attendance record
             return Attendance.objects.create(**validated_data)
         except Exception as e:
+            print(f"Create Error: {str(e)}")
             raise serializers.ValidationError({"error": f"Error creating attendance record: {str(e)}"})
         
 class ClockOutSerializer(serializers.ModelSerializer):

@@ -1,4 +1,4 @@
-import { Element4, Calendar, CalendarAdd, CalendarEdit, DocumentText1, Profile2User, Activity, Hierarchy, Messenger } from "iconsax-react";
+import { Element4, Calendar, CalendarAdd, CalendarEdit, DocumentText1, Profile2User, Activity, Hierarchy, MoneySend, People } from "iconsax-react";
 import dummyPic from "@/assets/dummy person.jpg";
 // Define a type for the menu items
 export interface SidebarMenuItem {
@@ -19,18 +19,25 @@ export interface SidebarProfile {
 export const sidebarMenu: SidebarMenuItem[] = [
     { name: "Dashboard", icon: <Element4 size="27" color= "#0F217D" />, path: "/dashboard" },
     // { name: "Events", icon: <CalendarTick size="27" color= "#E26D5C" />, path: "/events" },
+    // { name: "Inbox", icon: <CalendarAdd size="27" color= "#F988AA" />, path: "/inbox" },
     { name: "Leave Request", icon: <CalendarAdd size="27" color= "#F988AA" />, path: "/leave-request" },
+    { name: "Payroll", icon: <MoneySend size="27" color= "#723D46" />, path: "/payroll" },
     { name: "Overtime", icon: <CalendarEdit size="27" color= "#53CDED" />, path: "/overtime" },
     { name: "Reports", icon: <DocumentText1 size="27" color= "#13A89E" />, path: "/reports" },
     { name: "Users", icon: <Profile2User size="27" color= "#FABA6C" />, path: "/users" },
     { name: "Departments", icon: <Hierarchy size="27" color="#6C4AB6" />, path: "/department" },
+    { name: "Position", icon: <People size="27" color="#6C4AB6" />, path: "/position" },
+    // { name: "Payroll", icon: <MoneyRecive size="27" color="#6C4AB6" />, path: "/department" },
     { name: "Activity Logs", icon: <Activity size="27" color= "#723D46" />, path: "/activity-logs" },
+    
+
 ];
 
 export const sidebarMenuUser: SidebarMenuItem[] = [
     { name: "Dashboard", icon: <Element4 size="27" color= "#0F217D" />, path: "/dashboard" },
-    { name: "Inbox", icon: <Messenger size="27" color= "#6C4AB6" />, path: "/inbox" },
+    // { name: "Inbox", icon: <Messenger size="27" color= "#6C4AB6" />, path: "/inbox" },
     { name: "Timesheet", icon: <Calendar size="27" color= "#FF9F1C" />, path: "/timesheet" },
+    { name: "Payslip", icon: <Calendar size="27" color= "#FF9F1C" />, path: "/timesheet" },
     { name: "Leave Request", icon: <CalendarAdd size="27" color= "#F988AA" />, path: "/leave-request" },
     // { name: "Overtime", icon: <CalendarEdit size="27" color= "#53CDED" />, path: "/overtime" },
 ];
