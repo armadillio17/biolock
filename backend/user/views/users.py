@@ -8,6 +8,7 @@ from user.models.roles import Role
 from user.serializers import UserSerializer, UserProfileSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
+from user.utils.notification_history import log_notification
 
 # from django.contrib.auth.models import User
 
@@ -31,6 +32,16 @@ class UserCreateView(APIView):
                 serializer.validated_data['password'] = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
                 
             serializer.save()
+
+            log_notification(
+                user_id=request.user.id,
+                notification_type="Registered Users",
+                data={
+                    "status": "Completed",
+                    "details": "New Created User",
+                }
+            )
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -59,6 +70,16 @@ class UserUpdateDeleteView(APIView):
         serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save(updated_at=now())
+
+            log_notification(
+                user_id=request.user.id,
+                notification_type="User Update",
+                data={
+                    "status": "Completed",
+                    "details": "Updated User",
+                }
+            )
+
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -229,4 +250,15 @@ class AcceptedUserList(APIView):
         
         user = CustomUser.objects.filter(is_accepted=True, deleted_at__isnull=True)
         serializer = UserSerializer(user, many=True)
+
+        # Log a notification for the created leave request
+        log_notification(
+            user_id=request.user.id,
+            notification_type="Registration Request",
+            data={
+                "status": "Completed",
+                "details": "User Registered",
+            }
+        )
+
         return Response(serializer.data, status=status.HTTP_200_OK)

@@ -10,6 +10,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from datetime import datetime
+from user.utils.notification_history import log_notification
 
 class PayslipView(APIView):
     def post(self, request, *args, **kwargs):
@@ -46,6 +47,15 @@ class PayslipView(APIView):
 
             payroll_period.is_processed = True
             payroll_period.save()
+
+            log_notification(
+                user_id=request.user.id,  # Use the ID of the logged-in user
+                notification_type="Generate Payslip",
+                data={
+                    "status": "Completed",
+                    "details": "Generated payslips for the period",
+                }
+            )
 
             serializer = PayslipSerializer(payslips, many=True)
             return Response(serializer.data, status=status.HTTP_201_CREATED)

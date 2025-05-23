@@ -2,9 +2,9 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from user.models.leave_request import LeaveRequest
-from user.models.users import CustomUser  # Import the User model
+from user.models.users import CustomUser
 from user.serializers import LeaveRequestSerializer, UserProfileSerializer
-from user.utils.notification_history import log_notification  # Import the helper function
+from user.utils.notification_history import log_notification 
 from datetime import datetime
 
 class LeaveRequestListCreateView(APIView):
@@ -66,9 +66,8 @@ class LeaveRequestListCreateView(APIView):
             # Log a notification for the created leave request
             log_notification(
                 user_id=user.id,  # The user associated with the leave request
-                notification_type="leave_request",
+                notification_type="Leave Request",
                 data={
-                    "leave_request_id": leave_request.id,
                     "status": leave_request.status,
                     "details": leave_request.details
                 }
@@ -115,10 +114,9 @@ class LeaveRequestDetailView(APIView):
 
             # Log a notification for the updated leave request
             log_notification(
-                user_id=updated_leave_request.user_id,  # The user associated with the leave request
-                notification_type="leave_request",
+                user_id=updated_leave_request.user_id,
+                notification_type="Leave Request",
                 data={
-                    "leave_request_id": updated_leave_request.id,
                     "status": updated_leave_request.status,
                     "details": updated_leave_request.details
                 }
@@ -133,18 +131,7 @@ class LeaveRequestDetailView(APIView):
         if not leave_request:
             return Response({"error": "Leave request not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        leave_request.delete()  # Calls the overridden `delete` method in the model
-
-        # Log a notification for the deleted leave request
-        log_notification(
-            user_id=leave_request.attendance_id.user_id,  # The user associated with the leave request
-            notification_type="leave_request",
-            data={
-                "leave_request_id": leave_request.id,
-                "status": "deleted",  # Indicate that the leave request was deleted
-                "details": leave_request.details
-            }
-        )
+        leave_request.delete()
 
         return Response({"message": "Leave request deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
     
