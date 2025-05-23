@@ -111,7 +111,7 @@ export const useAttendanceStore = create<AttendanceState>((set) => ({
       }
 
       const response = await axios.post(`${base_url}/clock-in/`, {
-        user : user.userId
+        user_id : user.userId
       }, {
         headers: {
           "Content-Type": "application/json",
