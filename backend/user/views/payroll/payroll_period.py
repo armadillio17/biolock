@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from user.models import PayrollPeriod
 from user.serializers import PayrollPeriodSerializer
+from user.utils.notification_history import log_notification
 
 class PayrollPeriodListCreateView(APIView):
     def get(self, request, *args, **kwargs):
@@ -13,12 +14,26 @@ class PayrollPeriodListCreateView(APIView):
 
     def post(self, request, *args, **kwargs):
         """Create a new payroll period."""
+        # First check if user is authenticated
+        if not request.user.is_authenticated:
+            return Response({"error": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+
         serializer = PayrollPeriodSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            log_notification(
+                user_id=request.user.id,  # Use the ID of the logged-in user
+                notification_type="Payroll Created",
+                data={
+                    "status": "Completed",
+                    "details": "Payroll setup successfully",
+                }
+            )
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
 class PayrollPeriodDetailView(APIView):
     def get_object(self, pk):
         """Get payroll period by ID."""
@@ -42,6 +57,16 @@ class PayrollPeriodDetailView(APIView):
             serializer = PayrollPeriodSerializer(payroll_period, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
+
+                log_notification(
+                    user_id=request.user.id,  # Use the ID of the logged-in user
+                    notification_type="Payroll Updated",
+                    data={
+                        "status": "Completed",
+                        "details": "Payroll updated successfully",
+                    }
+                )
+
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response({"error": "Payroll period not found"}, status=status.HTTP_404_NOT_FOUND)

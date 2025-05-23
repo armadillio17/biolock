@@ -5,7 +5,7 @@ from user.models.report import Report
 from user.serializers import ReportSerializer, AttendanceSerializer
 from django.utils.timezone import now
 from user.models.attendance import Attendance
-
+from user.utils.notification_history import log_notification 
 
 class ReportListCreateView(APIView):
     """List all reports or create a new one"""
@@ -74,6 +74,15 @@ class GenerateDailyReport(APIView):
         report = Report.objects.create(
             type="daily_attendance",
             data=serializer.data
+        )
+
+        log_notification(
+            user_id=request.user.id,
+            notification_type="Generate Report",
+            data={
+                "status": "Completed",
+                "details": "Report generated",
+            }
         )
         
         return Response({

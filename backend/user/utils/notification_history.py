@@ -11,7 +11,7 @@ def log_notification(user_id, notification_type, data):
         raise ValueError(f"User with ID {user_id} does not exist")
 
     NotificationHistory.objects.create(
-        user_id=user,  # Now passing the actual user instance
+        user_id=user,
         type=notification_type,
         data=data
     )

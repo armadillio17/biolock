@@ -3,7 +3,6 @@ import { base_url } from '../config';
 import { authAxios } from "@/lib/secured-axios-instance";
 
 interface ActivityData {
-    leave_request_id?: string;
     status?: string;
     details?: string;
     [key: string]: string | number | boolean | object | null | undefined;
@@ -111,7 +110,7 @@ export default function ActivityLog() {
                     <thead className="text-xs text-gray-600 uppercase">
                         <tr className="text-white bg-black from-indigo-500 to-purple-600">
                             <th className="px-6 py-3 text-left rounded-tl-2xl">Date</th>
-                            <th className="px-6 py-3 text-left">Action</th>
+                            <th className="px-6 py-3 text-left">Type</th>
                             <th className="px-6 py-3 text-left rounded-tr-2xl">Details</th>
                         </tr>
                     </thead>
@@ -135,22 +134,11 @@ export default function ActivityLog() {
                                     <td className="max-w-xs px-6 py-4 break-words whitespace-normal">{formatType(activity.type)}</td>
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col gap-1">
-                                            {parsedData?.leave_request_id || parsedData?.status || parsedData?.details ? (
+                                            {parsedData?.status || parsedData?.details ? (
                                                 <>
-                                                    {parsedData.leave_request_id && (
-                                                        <p>
-                                                            <span className="font-semibold">Leave Request Id:</span> {parsedData.leave_request_id}
-                                                        </p>
-                                                    )}
                                                     {parsedData.status && (
-                                                        <p className="flex items-center gap-2">
-                                                            <span className="font-semibold">Status:</span>
-                                                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${parsedData.status.toLowerCase() === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                                                                    parsedData.status.toLowerCase() === 'approved' ? 'bg-green-100 text-green-700' :
-                                                                        'bg-red-100 text-red-700'
-                                                                }`}>
-                                                                {parsedData.status}
-                                                            </span>
+                                                        <p>
+                                                            <span className="font-semibold">Status:</span> {parsedData.status}
                                                         </p>
                                                     )}
                                                     {parsedData.details && (
