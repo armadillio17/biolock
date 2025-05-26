@@ -64,6 +64,9 @@ from user.views.payroll.user_salary import (
 from user.views.payroll.benefits import (
     BenefitsConfigurationAPIView
 )
+router = DefaultRouter()
+router.register(r'companies', views.CompanyViewSet)
+router.register(r'locations', views.LocationViewSet)
 from user.views import location
 urlpatterns = [
     
@@ -156,4 +159,7 @@ urlpatterns = [
     path('api/locations/<int:pk>/', location.location_detail, name='location_detail'),
     path('api/locations/<int:pk>/edit/', location.location_update, name='location_update'),
     path('api/locations/<int:pk>/delete/', location.location_delete, name='location_delete'),
+
+    # Company
+    path('api/', include(router.urls)),
 ]
