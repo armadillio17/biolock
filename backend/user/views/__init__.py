@@ -11,6 +11,7 @@ from .logs import LogsListCreateView, LogsDetailView
 from .attendance_summary import AttendanceSummaryListCreateView, AttendanceSummaryDetailView
 from .payroll.payslip import PayslipView
 from .company import CompanyListView,CompanyUpdateDeleteView
+from .request_overtime import ApproveOvertimeView
 
 __all__ = [
     "UserCreateView",
@@ -54,4 +55,5 @@ __all__ = [
     "PayslipView",
     "CompanyListView",
     "CompanyUpdateDeleteView",
+    "ApproveOvertimeView",
     ]

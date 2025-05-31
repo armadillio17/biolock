@@ -164,6 +164,10 @@ urlpatterns = [
     path('api/locations/<int:pk>/edit/', location.location_update, name='location_update'),
     path('api/locations/<int:pk>/delete/', location.location_delete, name='location_delete'),
     
+    # Overtime Requests
+    path('api/approve-overtime/', ApproveOvertimeView.as_view(), name='list-pending-overtime'),
+    path('api/approve-overtime/<int:pk>/', ApproveOvertimeView.as_view(), name='handle-overtime-request'),
+
     # Company
     path('api/company/', CompanyListView.as_view(), name='company_list'),
     path('api/company/update/<int:pk>', CompanyUpdateDeleteView.as_view(), name='company_update'),
