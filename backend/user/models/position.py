@@ -24,7 +24,7 @@ class Position(models.Model):
         return self.position_name
 
 
-class PositionUser(models.Model):  # Pivot table
+class PositionUser(models.Model):
     position = models.ForeignKey(Position, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     assigned_at = models.DateTimeField(auto_now_add=True)  # Track when assigned
@@ -36,7 +36,7 @@ class PositionUser(models.Model):  # Pivot table
         return f"{self.user.username} in {self.position.position_name}"
     
 
-class DepartmentPosition(models.Model):  # Pivot table
+class DepartmentPosition(models.Model):
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
     position = models.ForeignKey(Position, on_delete=models.CASCADE)
     assigned_at = models.DateTimeField(auto_now_add=True)  # Track when assigned
