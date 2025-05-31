@@ -6,7 +6,7 @@ User = get_user_model()
 
 class AttendanceSummary(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendance_summaries", null=True, blank=True)
-    date = models.DateField()  # This is now a daily summary
+    date = models.DateField()
 
     total_working_hours = models.FloatField(default=0.0)
     total_overtime_hours = models.FloatField(default=0.0)
