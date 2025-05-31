@@ -42,3 +42,4 @@ db.sqlite
 db.sqlite3
 backup.sql
 backend/db.sqlite3
+backend/djangoenv/
