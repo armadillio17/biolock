@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 # from user.models.users import CustomUser
 
@@ -180,3 +181,6 @@ REST_FRAMEWORK = {
 SESSION_COOKIE_AGE = 1800  # 1800 seconds = 30 minutes
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Logs out user when they close the browser
 SESSION_SAVE_EVERY_REQUEST = True  # Refresh session on each request
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

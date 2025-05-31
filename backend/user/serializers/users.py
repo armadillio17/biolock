@@ -20,4 +20,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'phone_number',
             'email',
             'created_at',
+            'profile_picture', 
             ]
+        
+    def get_profile_picture(self, obj):
+        # Return default image if no profile picture is set
+        if obj.profile_picture:
+            return obj.profile_picture.url
+        return '/static/images/default_profile.png'  # or your default image path
