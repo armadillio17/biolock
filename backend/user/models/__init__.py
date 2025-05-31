@@ -15,8 +15,5 @@ from .payslip import Payslip
 from .user_salary import UserSalary
 from .benefits import BenefitsConfiguration
 from .location import Location
-<<<<<<< Updated upstream
 from .company import Company
-=======
 from .request_overtime import OvertimeRequest
->>>>>>> Stashed changes
