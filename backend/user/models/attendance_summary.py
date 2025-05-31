@@ -18,7 +18,7 @@ class AttendanceSummary(models.Model):
     deleted_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        unique_together = ("user", "date")  # Ensure one summary per user per day
+        unique_together = ("user", "date")
 
     def delete(self, *args, **kwargs):
         """Soft delete by setting the deleted_at field."""
