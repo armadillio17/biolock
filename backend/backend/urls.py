@@ -64,18 +64,14 @@ from user.views.payroll.user_salary import (
 from user.views.payroll.benefits import (
     BenefitsConfigurationAPIView
 )
-<<<<<<< Updated upstream
-router = DefaultRouter()
-router.register(r'companies', views.CompanyViewSet)
-router.register(r'locations', views.LocationViewSet)
-=======
-
 from user.views.request_overtime import (
     ApproveOvertimeView
 )
-
->>>>>>> Stashed changes
 from user.views import location
+from user.views.company import (
+    CompanyListView, CompanyUpdateDeleteView
+)
+
 urlpatterns = [
     
     path('admin/', admin.site.urls),
@@ -167,12 +163,10 @@ urlpatterns = [
     path('api/locations/<int:pk>/', location.location_detail, name='location_detail'),
     path('api/locations/<int:pk>/edit/', location.location_update, name='location_update'),
     path('api/locations/<int:pk>/delete/', location.location_delete, name='location_delete'),
-
-<<<<<<< Updated upstream
+    
     # Company
-    path('api/', include(router.urls)),
-=======
-    path('api/approve-overtime/', ApproveOvertimeView.as_view(), name='list-pending-overtime'),
-    path('api/approve-overtime/<int:pk>/', ApproveOvertimeView.as_view(), name='handle-overtime-request'),
->>>>>>> Stashed changes
+    path('api/company/', CompanyListView.as_view(), name='company_list'),
+    path('api/company/update/<int:pk>', CompanyUpdateDeleteView.as_view(), name='company_update'),
+    path('api/company/delete/<int:pk>', CompanyUpdateDeleteView.as_view(), name='company_delete'),
+
 ]

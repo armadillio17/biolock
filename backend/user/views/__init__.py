@@ -10,7 +10,7 @@ from .position import PositionListCreateView, PositionDetailView, AssignUserToPo
 from .logs import LogsListCreateView, LogsDetailView
 from .attendance_summary import AttendanceSummaryListCreateView, AttendanceSummaryDetailView
 from .payroll.payslip import PayslipView
-from .company import CompanyViewSet
+from .company import CompanyListView,CompanyUpdateDeleteView
 
 __all__ = [
     "UserCreateView",
@@ -52,5 +52,6 @@ __all__ = [
     "NewRegistrationRegisteredList",
     "AcceptedUserList",
     "PayslipView",
-    "CompanyViewSet"
+    "CompanyListView",
+    "CompanyUpdateDeleteView",
     ]
