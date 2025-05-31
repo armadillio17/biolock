@@ -16,7 +16,6 @@ import MessagePage from './pages/Messages'
 import Payroll from './pages/Payroll';
 import PositionView from './pages/PositionView';
 
-
 export const router = createBrowserRouter([
     {
         path: '/',
