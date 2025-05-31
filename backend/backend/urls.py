@@ -19,7 +19,7 @@ from django.urls import path
 from user.views import (
     UserCreateView, UserUpdateDeleteView, UserAuthenticationView,
     AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView, GetUserRoleView, LogoutView, UserCountView, DailyAttendanceCountView,
-    NewRegistrationRegisteredList, AcceptedUserList,
+    NewRegistrationRegisteredList, AcceptedUserList, UploadProfilePictureView, RemoveProfilePictureView
 ) 
 from user.views.leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView
 from user.views.department import (
@@ -173,4 +173,7 @@ urlpatterns = [
     path('api/company/update/<int:pk>', CompanyUpdateDeleteView.as_view(), name='company_update'),
     path('api/company/delete/<int:pk>', CompanyUpdateDeleteView.as_view(), name='company_delete'),
 
+    # Profile Picture Upload and Removal
+    path('api/user/<int:user_id>/upload-profile/', UploadProfilePictureView.as_view(), name='upload_profile'),
+    path('api/user/<int:user_id>/remove-profile/', RemoveProfilePictureView.as_view(), name='remove_profile'),
 ]

@@ -45,4 +45,4 @@ backend/db.sqlite3
 backend/djangoenv/
 
 # Firebase
-./backend/backend/user/biolock-a6aa5-firebase-adminsdk-fbsvc-8a6e3b1d3f.json
+./backend/user/biolock-a6a5-firebase-adminsdk-fbsvc-8a6e3b1df.json
