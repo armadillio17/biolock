@@ -16,6 +16,6 @@ class RoleAdmin(admin.ModelAdmin):
 @admin.register(Attendance)
 class AttendanceAdmin(admin.ModelAdmin):
     list_display = ('id', 'user_id', 'holiday_id', 'date', 'clock_in', 'clock_out', 'status', 'working_hours',
-                    'overtime_hours', 'scheduled_start', 'scheduled_end', 'created_at', 'updated_at', 'deleted_at')
+                    'scheduled_start', 'scheduled_end', 'created_at', 'updated_at', 'deleted_at')
     list_filter = ('status', 'date')
-    search_fields = ('user__username',)    
+    search_fields = ('user__username',)

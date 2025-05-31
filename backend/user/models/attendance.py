@@ -24,7 +24,7 @@ class Attendance(models.Model):
     clock_in = models.DateTimeField(null=True, blank=True)
     clock_out = models.DateTimeField(null=True, blank=True)
     working_hours = models.FloatField(default=0.0)
-    overtime_hours = models.FloatField(default=0.0)
+    # overtime_hours = models.FloatField(default=0.0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     scheduled_start = models.DateTimeField(null=True, blank=True)
     scheduled_end = models.DateTimeField(null=True, blank=True)

@@ -5,6 +5,7 @@ from django.utils.timezone import now
 from user.models.attendance import Attendance
 from user.models.attendance_summary import AttendanceSummary
 from user.serializers import AttendanceSerializer, ClockInSerializer, ClockOutSerializer
+from user.models.request_overtime import OvertimeRequest
 
 class AttendanceListCreateView(APIView):
     def get(self, request):
@@ -115,10 +116,12 @@ class UserClockInView(APIView):
 
 class UserClockOutView(APIView):
     def put(self, request):
-        """Update clock out and create/update attendance summary"""
+        """Update clock out and create/update attendance summary with precise overtime calculation"""
         
         today = now().date()
         user_id = request.data["user_id"]
+        REGULAR_HOURS = 8
+        MIN_OVERTIME_MINUTES = 30  # Minimum overtime to count (30 minutes)
         
         attendance = Attendance.objects.filter(
             user_id=user_id,
@@ -134,31 +137,46 @@ class UserClockOutView(APIView):
         if serializer.is_valid():
             attendance = serializer.save()
 
-            # ---- Calculate working hours ----
             if attendance.clock_in and attendance.clock_out:
                 duration = attendance.clock_out - attendance.clock_in
-                total_hours = round(duration.total_seconds() / 3600, 2)
-
-                # ---- Save working hours to attendance ----
+                total_seconds = duration.total_seconds()
+                total_hours = round(total_seconds / 3600, 2)
+                
+                # ---- Calculate overtime ----
+                overtime_hours = 0.0
+                if total_hours > REGULAR_HOURS:
+                    overtime_minutes = (total_hours - REGULAR_HOURS) * 60
+                    
+                    # Only count if overtime meets minimum threshold (30 mins)
+                    if overtime_minutes >= MIN_OVERTIME_MINUTES:
+                        overtime_hours = round((total_seconds - (REGULAR_HOURS * 3600)) / 3600, 2)
+                
+                # ---- Save working hours and overtime ----
                 attendance.working_hours = total_hours
                 attendance.save()
 
-                # ---- Create or update summary ----
+                # ---- Create/update summary ----
                 summary, created = AttendanceSummary.objects.get_or_create(
                     user=attendance.user,
                     date=today,
                     defaults={
                         "total_working_hours": total_hours,
-                        "total_overtime_hours": attendance.overtime_hours,
                         "total_leave_hours": 0,
                         "total_absences": 0,
                     }
                 )
                 if not created:
-                    # Update existing summary (e.g. re-clock out)
                     summary.total_working_hours = total_hours
-                    summary.total_overtime_hours = attendance.overtime_hours
                     summary.save()
+
+                # ---- Create Pending Overtime Request if applicable ----
+                if overtime_hours > 0:
+                    OvertimeRequest.objects.create(
+                        user=attendance.user,
+                        date=today,
+                        requested_hours=overtime_hours,
+                        status='pending'
+                    )
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
