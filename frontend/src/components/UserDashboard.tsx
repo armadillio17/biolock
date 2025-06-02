@@ -24,7 +24,7 @@ function UserDashboard() {
     <DashboardLayout>
       <div className="flex flex-col">
         {/* Greetings and time */}
-        <div className="flex flex-col text-[#4E4E53]">
+        <div className="flex flex-col text-[#4E4E53] mb-5">
           <p className="text-2xl font-bold">Welcome Back</p>
           <p className="text-sm"><FormattedDate /></p>
         </div>

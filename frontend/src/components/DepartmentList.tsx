@@ -6,7 +6,7 @@ import { base_url } from '../config';
 import { Plus, Pencil, Trash2, X, Check } from 'lucide-react'
 
 interface Department {
-  id: number;  // Changed from string to number to match Django's PK
+  id: number;
   department_name: string;
 }
 
@@ -14,7 +14,7 @@ export default function DepartmentView() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [showInput, setShowInput] = useState(false);
   const [newDepartment, setNewDepartment] = useState('');
-  const [editingId, setEditingId] = useState<number | null>(null);  // Changed to number
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [editingName, setEditingName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
