@@ -1,4 +1,4 @@
-from .users import UserCreateView, UserUpdateDeleteView, UserAuthenticationView, GetUserRoleView, LogoutView, UserCountView, NewRegistrationRegisteredList, AcceptedUserList
+from .users import UserCreateView, UserUpdateDeleteView, UserAuthenticationView, GetUserRoleView, LogoutView, UserCountView, NewRegistrationRegisteredList, AcceptedUserList, UploadProfilePictureView, RemoveProfilePictureView
 from .attendance import AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView, DailyAttendanceCountView
 from .department import DepartmentListCreateView, DepartmentDetailView, AssignUserToDepartmentView, RemoveUserFromDepartmentView
 from .leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView
@@ -10,7 +10,8 @@ from .position import PositionListCreateView, PositionDetailView, AssignUserToPo
 from .logs import LogsListCreateView, LogsDetailView
 from .attendance_summary import AttendanceSummaryListCreateView, AttendanceSummaryDetailView
 from .payroll.payslip import PayslipView
-from .company import CompanyViewSet
+from .company import CompanyListView,CompanyUpdateDeleteView
+from .request_overtime import ApproveOvertimeView
 
 __all__ = [
     "UserCreateView",
@@ -52,5 +53,9 @@ __all__ = [
     "NewRegistrationRegisteredList",
     "AcceptedUserList",
     "PayslipView",
-    "CompanyViewSet"
+    "CompanyListView",
+    "CompanyUpdateDeleteView",
+    "ApproveOvertimeView",
+    "UploadProfilePictureView",
+    "RemoveProfilePictureView"
     ]

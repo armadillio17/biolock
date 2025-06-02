@@ -7,8 +7,9 @@ from user.models.users import CustomUser
 from user.models.roles import Role
 from user.serializers import UserSerializer, UserProfileSerializer
 from rest_framework.authtoken.models import Token
-from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from user.utils.notification_history import log_notification
+from django.shortcuts import get_object_or_404
+from rest_framework.parsers import MultiPartParser, FormParser
 
 # from django.contrib.auth.models import User
 
@@ -262,3 +263,31 @@ class AcceptedUserList(APIView):
         )
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class UploadProfilePictureView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request, user_id):
+        user = get_object_or_404(CustomUser, id=user_id)
+
+        if 'profile_picture' not in request.FILES:
+            return Response({"error": "No file uploaded"}, status=status.HTTP_400_BAD_REQUEST)
+
+        profile_picture = request.FILES['profile_picture']
+        user.profile_picture = profile_picture
+        user.save()
+
+        return Response({
+            "message": "Profile picture updated",
+            "url": user.profile_picture.url
+        }, status=status.HTTP_200_OK)
+
+class RemoveProfilePictureView(APIView):
+    def post(self, request, user_id):
+        user = get_object_or_404(CustomUser, id=user_id)
+
+        if user.profile_picture and user.profile_picture.name != 'default_profile.png':
+            user.profile_picture.delete()
+            user.profile_picture = 'default_profile.png'
+            user

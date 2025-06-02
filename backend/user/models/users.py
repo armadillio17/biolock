@@ -2,7 +2,10 @@ from django.db import models
 from django.utils.timezone import now
 # from django.contrib.auth.models import User  # Import Django's built-in User model
 from django.contrib.auth.models import AbstractUser
+from django.core.files.storage import FileSystemStorage
 
+def get_profile_picture_path(instance, filename):
+    return f"profile_pictures/{instance.id}/{filename}"
 
 # Create own models per table.
 class CustomUser(AbstractUser):
@@ -42,6 +45,15 @@ class CustomUser(AbstractUser):
         blank=True, 
         verbose_name="PhilHealth Number",
         unique=True
+    )
+
+    # Profile Picture
+    profile_picture = models.ImageField(
+        upload_to=get_profile_picture_path,
+        storage=FileSystemStorage(location='media/profile_pictures'),
+        null=True,
+        blank=True,
+        default='default_profile.png'
     )
     
     def delete(self):

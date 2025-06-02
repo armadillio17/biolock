@@ -6,7 +6,7 @@ User = get_user_model()
 
 class AttendanceSummary(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendance_summaries", null=True, blank=True)
-    date = models.DateField()  # This is now a daily summary
+    date = models.DateField()
 
     total_working_hours = models.FloatField(default=0.0)
     total_overtime_hours = models.FloatField(default=0.0)
@@ -18,7 +18,7 @@ class AttendanceSummary(models.Model):
     deleted_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        unique_together = ("user", "date")  # Ensure one summary per user per day
+        unique_together = ("user", "date")
 
     def delete(self, *args, **kwargs):
         """Soft delete by setting the deleted_at field."""
