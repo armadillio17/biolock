@@ -123,8 +123,30 @@ export const useAttendanceStore = create<AttendanceState>((set) => ({
         clockIn: response.data,
         isLoading: false,
        });
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
+    } catch (err) {
+      set({ isLoading: false });
+
+      if (axios.isAxiosError(err)) {
+        const responseData = err.response?.data;
+        console.error("Clock-in error response:", responseData);
+    
+        if (responseData?.error) {
+          set({ error: responseData.error });
+        } else if (responseData?.errors) {
+          // Optional: parse serializer validation errors
+          const errorMsg = Object.entries(responseData.errors)
+            .map(([field, msgs]) => `${field}: ${(msgs as string[]).join(", ")}`)
+            .join(" | ");
+          set({ error: errorMsg });
+        } else {
+          set({ error: "An unknown error occurred" });
+        }
+    
+      } else if (err instanceof Error) {
+        set({ error: err.message });
+      } else {
+        set({ error: "Unexpected error occurred" });
+      }
     }
   },
 
@@ -155,8 +177,30 @@ export const useAttendanceStore = create<AttendanceState>((set) => ({
       set({ clockOut: response.data,
         isLoading: false,
        });
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
+    } catch (err) {
+      set({ isLoading: false });
+
+      if (axios.isAxiosError(err)) {
+        const responseData = err.response?.data;
+        console.error("Clock-out error response:", responseData);
+    
+        if (responseData?.error) {
+          set({ error: responseData.error });
+        } else if (responseData?.errors) {
+          // Optional: parse serializer validation errors
+          const errorMsg = Object.entries(responseData.errors)
+            .map(([field, msgs]) => `${field}: ${(msgs as string[]).join(", ")}`)
+            .join(" | ");
+          set({ error: errorMsg });
+        } else {
+          set({ error: "An unknown error occurred" });
+        }
+    
+      } else if (err instanceof Error) {
+        set({ error: err.message });
+      } else {
+        set({ error: "Unexpected error occurred" });
+      }
     }
   },
 
