@@ -9,7 +9,8 @@ interface UserData {
     last_name: string | null;
     position_id: number | null;
     isAuthenticated: boolean;
-    role: string | null; // Add role here
+    role: string | null; 
+    profileImage: string | null; // Add role here
 }
 
 interface AuthState {
@@ -34,7 +35,8 @@ export const useAuthStore = create<AuthState>()(
         isAuthenticated: false,
         position_id: null,
         role: null,
-        token: null
+        token: null,
+        profileImage: null
       },
       loginError: null,
       isLoading: false,
@@ -58,6 +60,7 @@ export const useAuthStore = create<AuthState>()(
 
           const userId = response.data.user_id;
           const position_id = response.data.position_id;
+          const profileImage = response.data.position_id;
 
           set((state) => ({
             user: {
@@ -65,6 +68,7 @@ export const useAuthStore = create<AuthState>()(
               userId: userId,
               position_id: position_id,
               isAuthenticated: true,
+              profileImage: profileImage
             },
             isLoading: false
           }));
@@ -129,7 +133,8 @@ export const useAuthStore = create<AuthState>()(
               isAuthenticated: false,
               position_id: null,
               role: null,
-              token: null
+              token: null,
+              profileImage: null
             }
           });
         });
@@ -145,7 +150,8 @@ export const useAuthStore = create<AuthState>()(
           last_name: state.user.last_name,
           isAuthenticated: state.user.isAuthenticated,
           position_id: state.user.position_id,
-          role: state.user.role
+          role: state.user.role,
+          profileImage: state.user.profileImage,
         }
       }),
     }

@@ -1,9 +1,10 @@
-import { ReactNode, useState, useEffect } from "react";
+import { ReactNode, useState, useEffect, useRef } from "react";
 import { useAuthStore } from '@/store/authStore';
 import { sidebarMenu, sidebarMenuUser, sidebarProfile } from "@/data/dashboard-data.tsx";
 import { LogoutCurve, HambergerMenu, DocumentUpload } from "iconsax-react";
 import { HiMiniChevronDoubleLeft } from "react-icons/hi2";
 import { usePositionStore } from "@/store/positionStore";
+import { useImageUploadStore } from "@/store/imageUploadStore";
 interface DashboardLayoutProps {
     children: ReactNode;
 }
@@ -15,11 +16,31 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     const isAdmin = user?.role === "admin";
     const {userPosition, fetchUserPosition} = usePositionStore();
     // const [userPosition, setuserPosition] = useState<string | null>(null);;
+    const { uploadImage } = useImageUploadStore();
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+
 
     const menuItems = isAdmin ? sidebarMenu : sidebarMenuUser;
 
     const capitalize = (str: string): string =>
         str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+          const file = e.target.files[0];
+          setSelectedFile(file);
+      
+          // Check if user and userId exist and userId is a number
+          if (user && typeof user.userId === "number") {
+            uploadImage(user.userId, file);
+          } else {
+            console.warn("User ID is missing or not a number");
+          }
+        }
+      };
+  
 
     // Handle screen resize
     useEffect(() => {
@@ -73,12 +94,23 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                                     />
                                     </div>
 
+                                    <input
+                                        type="file"
+                                        id="profile-upload"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={handleFileChange}
+                                        ref={fileInputRef}
+                                    />
+
                                     {/* Upload icon button (no functionality yet) */}
                                     <button
-                                    className="absolute bottom-0 right-0 bg-white border border-gray-300 rounded-full p-1 shadow hover:bg-gray-100 transition"
-                                    title="Upload new image"
+                                        type="button"
+                                        className="absolute bottom-0 right-0 bg-white border border-gray-300 rounded-full p-1 shadow hover:bg-gray-100 transition"
+                                        title="Upload new image"
+                                        onClick={() => fileInputRef.current?.click()}
                                     >
-                                    <DocumentUpload className="w-4 h-4 text-gray-600" />
+                                        <DocumentUpload className="w-4 h-4 text-gray-600" />
                                     </button>
                                 </div>
 
@@ -135,12 +167,23 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                                     />
                                     </div>
 
+                                    <input
+                                        type="file"
+                                        id="profile-upload"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={handleFileChange}
+                                        ref={fileInputRef}
+                                    />
+
                                     {/* Upload icon button (no functionality yet) */}
                                     <button
-                                    className="absolute bottom-0 right-0 bg-white border border-gray-300 rounded-full p-1 shadow hover:bg-gray-100 transition"
-                                    title="Upload new image"
+                                        type="button"
+                                        className="absolute bottom-0 right-0 bg-white border border-gray-300 rounded-full p-1 shadow hover:bg-gray-100 transition"
+                                        title="Upload new image"
+                                        onClick={() => fileInputRef.current?.click()}
                                     >
-                                    <DocumentUpload className="w-4 h-4 text-gray-600" />
+                                        <DocumentUpload className="w-4 h-4 text-gray-600" />
                                     </button>
                                 </div>
 

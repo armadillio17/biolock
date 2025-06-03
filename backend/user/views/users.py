@@ -180,7 +180,8 @@ class UserAuthenticationView(APIView):
                 "last_name" : user.last_name,
                 "position_id" : user.position_id,
                 "user_id": user.id,
-                "token": token.key,  # ✅ Include the token here
+                "token": token.key,
+                "profileImage": request.build_absolute_uri(user.profile_picture.url) if user.profile_picture else None,
                 "success": True
             }, status=status.HTTP_200_OK)
             
