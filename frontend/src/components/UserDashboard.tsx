@@ -1,5 +1,6 @@
 import DashboardLayout from "@/layouts/DashboardLayout"
 import { Metrics }  from "@/components/UserDashboardComponent/MetricsComponent"
+import { Notification } from "iconsax-react";
 // import { EventCarousel }  from "@/components/UserDashboardComponent/EventCarouselComponent"
 // import { Timesheet }  from "@/components/UserDashboardComponent/TimesheetComponent"
 // import { Notification }  from "@/components/UserDashboardComponent/NotificationComponent"
@@ -19,14 +20,32 @@ const FormattedDate = () => {
   return <p>{formattedDate}</p>;
 };
 
+const count = 0;
+
 function UserDashboard() {
   return (
     <DashboardLayout>
       <div className="flex flex-col">
         {/* Greetings and time */}
-        <div className="flex flex-col text-[#4E4E53] mb-5">
-          <p className="text-2xl font-bold">Welcome Back</p>
-          <p className="text-sm"><FormattedDate /></p>
+        <div className="flex items-center justify-between text-[#4E4E53] mb-5">
+          <div>
+            <p className="text-2xl font-bold">Welcome Back</p>
+            <p className="text-sm"><FormattedDate /></p>
+          </div>
+
+          <div className="relative mx-5">
+            <Notification
+              size="35"
+              color={count > 0 ? "#FFD700" : "#000000"}
+              variant={count > 0 ? "Bold" : "Linear"}
+            />
+            
+            {count > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full px-1.5 py-0.5">
+                {count}
+              </span>
+            )}
+          </div>
         </div>
 
         <Metrics />
