@@ -178,6 +178,7 @@ class UserAuthenticationView(APIView):
             response = Response({
                 "first_name": user.first_name,
                 "last_name" : user.last_name,
+                "position_id" : user.position_id,
                 "user_id": user.id,
                 "token": token.key,  # ✅ Include the token here
                 "success": True
