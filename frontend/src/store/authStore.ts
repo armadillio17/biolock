@@ -59,9 +59,6 @@ export const useAuthStore = create<AuthState>()(
           const userId = response.data.user_id;
           const position_id = response.data.position_id;
 
-          console.log("response.data", response.data);
-          
-
           set((state) => ({
             user: {
               ...state.user,
