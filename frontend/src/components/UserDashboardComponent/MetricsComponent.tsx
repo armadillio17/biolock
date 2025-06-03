@@ -1,141 +1,88 @@
 "use client";
-import { useEffect } from "react";
-import { useAttendanceStore } from '@/store/attendanceStore';
+import { useEffect, useState } from "react";
+import { useAttendanceStore } from "@/store/attendanceStore";
+import { MessageSquare, Timer } from "lucide-react";
+import { Button } from "../ui/button"
+
+interface Message {
+  id: number;
+  text: string;
+  timestamp: string;
+}
 
 export const Metrics = () => {
+  const { userAttendance, clockInUser, clockOutUser, fetchUserAttendance, isLoading } =
+    useAttendanceStore();
 
-    const {userAttendance, clockInUser, clockOutUser, fetchUserAttendance, isLoading } = useAttendanceStore();
+  useEffect(() => {
+    fetchUserAttendance();
+  }, [fetchUserAttendance]);
 
-    useEffect(() => {
-        fetchUserAttendance();
-    }, [fetchUserAttendance]);
-    
-    const userCards = [
-        {
-            group: "Clock In Group",
-            items: [
-                { title: "Clock In", color: "#52F76B" },
-                { title: "Clock Out", color: "#7A8EF7" },
-            ],
-        },
-        {
-            group: "Daily Metrics",
-            items: [
-                { title: "Daily Hours", color:"#D1F8FF"},
-                { title: "Daily Overtime", color:"#D1F8FF"},
-                { title: "Messages", color:"#D1F8FF"},
-            ],
-        },
-    ];
+  const [isClockIn, setIsClockIn] = useState(false);
+  const [startTime, setStartTime] = useState<Date | null>(null);
 
-    const handleClockIn = async () => {
-        if (!isLoading) {
-          await clockInUser();
-        }
-      };
+  const [messages, setMessages] = useState<Message[]>([
+    { id: 1, text: "Remember to take your lunch break!", timestamp: "10:00 AM" },
+    { id: 2, text: "Team meeting at 2 PM", timestamp: "09:30 AM" },
+  ]);
 
-    const handleClockOut = async () => {
-        if (!isLoading) {
-          await clockOutUser();
-        }
-      };
+  const handleClockInOut = async () => {
+    if (isClockIn) {
+      await clockOutUser();
+      setIsClockIn(false);
+      setStartTime(null);
+    } else {
+      await clockInUser();
+      setIsClockIn(true);
+      setStartTime(new Date());
+    }
+  };
 
-      
   return (
-
-    <div className="grid w-full grid-cols-1 gap-4 my-5 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
-
-        {/* Clock In Group */}
-        <div className="flex flex-col items-center w-full">
-            <div className=" flex flex-col items-center w-full min-h-[136px]">
-                {userCards
-                .filter(group => group.group === "Clock In Group")
-                .map((group) => (
-                <div 
-                key = {group.group}
-                className={`flex-col items-center justify-center w-full h-full grid grid-cols-1 gap-y-4 text-center`}
+    <div className="flex h-screen bg-gray-100">
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <main className="flex-1 overflow-auto p-4 md:p-4">
+          {/* Clock In/Out Section */}
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <h2 className="text-xl font-semibold">Time Tracking</h2>
+            <Button
+                onClick={handleClockInOut}
+                disabled={isLoading}
+                className={`flex items-center px-6 py-3 rounded-full text-white transition-colors ${
+                    isClockIn ? "bg-[#FF6962] hover:bg-[#b74f49]" : "bg-[#487F47] hover:bg-[#00572E]"
+                }`}
                 >
-                    {group.items.map((card, index) => (
-                    <div 
-                    key = {index}
-                    className={`flex flex-col items-center w-full h-full rounded-2xl shadow-md text-center text-gray-800`}
-                    style={{ 
-                        backgroundColor: card.color ,
-                    }}
-                    onClick={card.title === "Clock In" ? handleClockIn : handleClockOut}
-                    > <h2 className={`font-bold m-3`}> {card.title} </h2>
-                    </div>
-                    ))}
-                </div>
-                ))}
+                <Timer className="mr-2" size={20} />
+                {isClockIn ? "Clock Out" : "Clock In"}
+            </Button>
             </div>
-        </div>
 
-        {/* Daily Hours */}
-        <div className="flex flex-col items-center w-full">
-            <div className="w-full min-h-[136px]">
-                {userCards
-                .filter(group => group.group === "Daily Metrics")
-                .map((group) => (
-                <div
-                    key={group.group}
-                    className={`w-full h-full p-4 rounded-2xl shadow-md text-center text-gray-800`}
-                style={{
-                backgroundColor:'#D1F8FF',
-                }}
-                >
-                    <h3 className="text-lg font-bold">{group.items[0]?.title}</h3>
-                        <h1 className="p-4 text-4xl font-bold"> {userAttendance?.working_hours ?? 0} </h1>
-                    {/* <p className="text-xl font-semibold">{card.count}</p> */}
-                </div>
-                ))}
-            </div>
-        </div>
+            {startTime && isClockIn && (
+              <p className="mt-4 text-gray-600">
+                Clocked in at: <strong>{startTime.toLocaleTimeString()}</strong>
+              </p>
+            )}
+          </div>
 
-        {/* Daily Overtime */}
-        <div className="flex flex-col items-center w-full">
-            <div className="w-full min-h-[136px]">
-                {userCards
-                .filter(group => group.group === "Daily Metrics")
-                .map((group) => (
-                <div
-                    key={group.group}
-                    className={`w-full min-h-[136px] p-4 rounded-2xl shadow-md text-center text-gray-800`}
-                style={{
-                backgroundColor:'#D1F8FF',
-                }}
-                >
-                    <h3 className="text-lg font-bold">{group.items[1]?.title}</h3>
-                    <h1 className="p-4 text-4xl font-bold"> {userAttendance?.overtime_hours ?? 0} </h1>
-                    {/* <p className="text-xl font-semibold">{card.count}</p> */}
+          {/* Messages Section */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-semibold mb-4">Messages</h2>
+            <div className="space-y-4">
+              {messages.map((message) => (
+                <div key={message.id} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+                  <MessageSquare className="text-indigo-600 mt-1" size={20} />
+                  <div>
+                    <p className="text-gray-700">{message.text}</p>
+                    <p className="text-sm text-gray-500 mt-1">{message.timestamp}</p>
+                  </div>
                 </div>
-                ))}
+              ))}
             </div>
-        </div>
-
-        {/* Messages */}
-        <div className="flex flex-col items-center w-full">
-            <div className="w-full min-h-[136px]">
-                {userCards
-                .filter(group => group.group === "Daily Metrics")
-                .map((group) => (
-                <div
-                    key={group.group}
-                    className={`w-full min-h-[136px] p-4 rounded-2xl shadow-md text-center text-gray-800`}
-                style={{
-                backgroundColor:'#D1F8FF',
-                }}
-                >
-                    <h3 className="text-lg font-bold">{group.items[2]?.title}</h3>
-                    <h1 className="p-4 text-4xl font-bold"> 1 </h1>
-                    {/* <p className="text-xl font-semibold">{card.count}</p> */}
-                </div>
-                ))}
-            </div>
-        </div>
+          </div>
+        </main>
+      </div>
     </div>
-
-    
-
   );
 };
