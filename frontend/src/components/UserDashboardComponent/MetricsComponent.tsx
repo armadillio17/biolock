@@ -67,7 +67,7 @@ export const Metrics = () => {
           </div>
 
           {/* Messages Section */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          {/* <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold mb-4">Messages</h2>
             <div className="space-y-4">
               {messages.map((message) => (
@@ -80,7 +80,7 @@ export const Metrics = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
         </main>
       </div>
     </div>
