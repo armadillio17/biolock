@@ -96,6 +96,7 @@ urlpatterns = [
     
     # User Clock In
     path('api/clock-in/', UserClockInView.as_view(), name='user-clock-in'),
+    path('api/clock-in/<int:pk>', UserClockInView.as_view(), name='check-user-clock-in'),
     path('api/clock-out/', UserClockOutView.as_view(), name='user-clock-out'),
 
     # Leave Request Endpoints

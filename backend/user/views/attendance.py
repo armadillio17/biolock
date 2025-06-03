@@ -81,6 +81,46 @@ class UserAttendanceView(APIView):
 #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserClockInView(APIView):
+    def get(self, request, pk):
+        """Check if the user has clocked in today and return clock-out status."""
+        try:
+            today = now().date()
+
+            attendance = Attendance.objects.filter(
+                user_id=pk,
+                clock_in__date=today,
+                clock_in__isnull=False,
+                deleted_at__isnull=True
+            ).first()
+
+            if attendance:
+                return Response({
+                    "has_clocked_in": True,
+                    "is_clockOut": attendance.is_clockOut,
+                    "clock_in": attendance.clock_in,
+                    "clock_out": attendance.clock_out
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({
+                    "has_clocked_in": False,
+                    "is_clockOut": False
+                }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            print(f"Unexpected Error: {str(e)}")
+            return Response({
+                "error": "An unexpected error occurred.",
+                "is_clockOut": None,
+                "has_clocked_in": False
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        except Exception as e:
+            print(f"Unexpected Error: {str(e)}")
+            return Response({
+                "error": "An unexpected error occurred.",
+                "is_clockOut": None
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
     def post(self, request):
         """Create a new clock-in record"""
 
@@ -90,16 +130,23 @@ class UserClockInView(APIView):
             
             print("user_id:", user_id)  # Log validation errors
             print("Incoming request data:", request.data)
+            
 
             # Check for an open attendance (already clocked in)
             existing = Attendance.objects.filter(
                 user_id=user_id,
-                # clock_in__date=today,
+                clock_in__date=today,
                 clock_out__isnull=True
             ).first()
 
             if existing:
-                return Response({"error": "Already clocked in and not yet clocked out."}, status=status.HTTP_400_BAD_REQUEST)
+                isClockout = Attendance.objects.filter(
+                is_clockOut=True,
+            ).first()
+                if isClockout:
+                    return Response({"error": "Already clocked out."}, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    return Response({"error": "Already clocked in and not yet clocked out."}, status=status.HTTP_400_BAD_REQUEST)
 
             # Create a new attendance record
             serializer = ClockInSerializer(data=request.data)
