@@ -7,6 +7,7 @@ interface UserData {
     userId: string | null;
     first_name: string | null;
     last_name: string | null;
+    position_id: number | null;
     isAuthenticated: boolean;
     role: string | null; // Add role here
 }
@@ -31,6 +32,7 @@ export const useAuthStore = create<AuthState>()(
         first_name: null,
         last_name: null,
         isAuthenticated: false,
+        position_id: null,
         role: null,
         token: null
       },
@@ -55,11 +57,16 @@ export const useAuthStore = create<AuthState>()(
           });
 
           const userId = response.data.user_id;
+          const position_id = response.data.position_id;
+
+          console.log("response.data", response.data);
+          
 
           set((state) => ({
             user: {
               ...state.user,
               userId: userId,
+              position_id: position_id,
               isAuthenticated: true,
             },
             isLoading: false
@@ -123,6 +130,7 @@ export const useAuthStore = create<AuthState>()(
               first_name: null,
               last_name: null,
               isAuthenticated: false,
+              position_id: null,
               role: null,
               token: null
             }
@@ -139,6 +147,7 @@ export const useAuthStore = create<AuthState>()(
           first_name: state.user.first_name,
           last_name: state.user.last_name,
           isAuthenticated: state.user.isAuthenticated,
+          position_id: state.user.position_id,
           role: state.user.role
         }
       }),

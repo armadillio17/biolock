@@ -1,8 +1,9 @@
 import { ReactNode, useState, useEffect } from "react";
 import { useAuthStore } from '@/store/authStore';
 import { sidebarMenu, sidebarMenuUser, sidebarProfile } from "@/data/dashboard-data.tsx";
-import { LogoutCurve, HambergerMenu } from "iconsax-react";
+import { LogoutCurve, HambergerMenu, DocumentUpload } from "iconsax-react";
 import { HiMiniChevronDoubleLeft } from "react-icons/hi2";
+import { usePositionStore } from "@/store/positionStore";
 interface DashboardLayoutProps {
     children: ReactNode;
 }
@@ -12,6 +13,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
     const isAdmin = user?.role === "admin";
+    const {userPosition, fetchUserPosition} = usePositionStore();
+    // const [userPosition, setuserPosition] = useState<string | null>(null);;
 
     const menuItems = isAdmin ? sidebarMenu : sidebarMenuUser;
 
@@ -28,6 +31,20 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    useEffect(() => {
+        
+        const loadUserPosition = async () => {
+
+          if (user?.position_id != null) {
+            await fetchUserPosition(user.position_id);
+          } else {
+            console.warn("user.position_id is null or undefined");
+          }
+        };
+      
+        loadUserPosition();
+      }, [fetchUserPosition, user, user?.position_id ]);
+      
     return (
         <div className="flex min-h-screen">
             {/* Mobile sidebar - visible only when toggled */}
@@ -46,16 +63,31 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                             <img src="./src/assets/logo.webp" alt="" className="max-w-[62px] max-h-[62px]" />
 
                             {/* Profile section */}
-                            <div className="flex w-full gap-8">
-                                <div className="w-[92px] h-[92px] overflow-hidden border-black rounded-full border-[2px]">
-                                    <img src={sidebarProfile.img} alt="Profile" className="object-cover w-full h-full" />
+                            <div className="flex w-full items-center gap-6">
+                                <div className="relative w-[92px] h-[92px]">
+                                    <div className="w-full h-full rounded-full border-2 border-black overflow-hidden">
+                                    <img
+                                        src={sidebarProfile.img}
+                                        alt="Profile"
+                                        className="object-cover w-full h-full"
+                                    />
+                                    </div>
+
+                                    {/* Upload icon button (no functionality yet) */}
+                                    <button
+                                    className="absolute bottom-0 right-0 bg-white border border-gray-300 rounded-full p-1 shadow hover:bg-gray-100 transition"
+                                    title="Upload new image"
+                                    >
+                                    <DocumentUpload className="w-4 h-4 text-gray-600" />
+                                    </button>
                                 </div>
-                                <div className="flex flex-col justify-center text-lg text-[#4E4E53]">
-                                    <p>
-                                        {user?.first_name ? capitalize(user.first_name) : ''}{" "}
-                                        {user?.last_name ? capitalize(user.last_name) : ''}
+
+                                <div className="flex flex-col justify-center text-[#4E4E53]">
+                                    <p className="text-lg font-medium">
+                                    {user?.first_name ? capitalize(user.first_name) : ""}{" "}
+                                    {user?.last_name ? capitalize(user.last_name) : ""}
                                     </p>
-                                    <p>{sidebarProfile.position}</p>
+                                    <p className="text-sm text-gray-500">{userPosition?.position_name ?? ""}</p>
                                 </div>
                             </div>
 
@@ -93,16 +125,31 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                             <img src="./src/assets/logo.webp" alt="" className="max-w-[62px] max-h-[62px]" />
 
                             {/* Profile section */}
-                            <div className="flex w-full gap-8">
-                                <div className="w-[92px] h-[92px] overflow-hidden border-black rounded-full border-[2px]">
-                                    <img src={sidebarProfile.img} alt="Profile" className="object-cover w-full h-full" />
+                            <div className="flex w-full items-center gap-6">
+                                <div className="relative w-[92px] h-[92px]">
+                                    <div className="w-full h-full rounded-full border-2 border-black overflow-hidden">
+                                    <img
+                                        src={sidebarProfile.img}
+                                        alt="Profile"
+                                        className="object-cover w-full h-full"
+                                    />
+                                    </div>
+
+                                    {/* Upload icon button (no functionality yet) */}
+                                    <button
+                                    className="absolute bottom-0 right-0 bg-white border border-gray-300 rounded-full p-1 shadow hover:bg-gray-100 transition"
+                                    title="Upload new image"
+                                    >
+                                    <DocumentUpload className="w-4 h-4 text-gray-600" />
+                                    </button>
                                 </div>
-                                <div className="flex flex-col justify-center text-lg text-[#4E4E53]">
-                                    <p>
-                                        {user?.first_name ? capitalize(user.first_name) : ''}{" "}
-                                        {user?.last_name ? capitalize(user.last_name) : ''}
+
+                                <div className="flex flex-col justify-center text-[#4E4E53]">
+                                    <p className="text-lg font-medium">
+                                    {user?.first_name ? capitalize(user.first_name) : ""}{" "}
+                                    {user?.last_name ? capitalize(user.last_name) : ""}
                                     </p>
-                                    <p>{sidebarProfile.position}</p>
+                                    <p className="text-sm text-gray-500">{userPosition?.position_name ?? ""}</p>
                                 </div>
                             </div>
 
