@@ -5,12 +5,14 @@ import { LogoutCurve, HambergerMenu, DocumentUpload } from "iconsax-react";
 import { HiMiniChevronDoubleLeft } from "react-icons/hi2";
 import { usePositionStore } from "@/store/positionStore";
 import { useImageUploadStore } from "@/store/imageUploadStore";
+import { useUpdateUserStore } from "@/store/userStore";
 interface DashboardLayoutProps {
     children: ReactNode;
 }
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     const { user, logout: handleLogout } = useAuthStore();
+    const {profile_picture, fetchUserProfile} = useUpdateUserStore();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
     const isAdmin = user?.role === "admin";
@@ -27,20 +29,48 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-          const file = e.target.files[0];
-          setSelectedFile(file);
+    // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     if (e.target.files && e.target.files[0]) {
+    //       const file = e.target.files[0];
+    //       setSelectedFile(file);
       
-          // Check if user and userId exist and userId is a number
-          if (user && typeof user.userId === "number") {
-            uploadImage(user.userId, file);
-          } else {
-            console.warn("User ID is missing or not a number");
-          }
+    //       // Check if user and userId exist and userId is a number
+    //       if (user && typeof user.userId === "number") {
+    //         uploadImage(user.userId, file);
+    //       } else {
+    //         console.warn("User ID is missing or not a number");
+    //       }
+    //     }
+    //   };
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setSelectedFile(file);
+    
+            if (user && typeof user.userId === "number") {
+                try {
+                    await uploadImage(user.userId, file); // Wait for image upload
+                    await fetchUserProfile(user.userId);   // Then fetch updated profile
+                } catch (error) {
+                    console.error("Error uploading image or fetching profile:", error);
+                }
+            } else {
+                console.warn("User ID is missing or not a number");
+            }
         }
-      };
-  
+    };
+
+      useEffect(() => {
+        const loadUserProfile = async () => {
+          if (user.userId && !isNaN(Number(user.userId))) {
+            fetchUserProfile(Number(user.userId));
+          }
+        };
+      
+        loadUserProfile();
+      }, [fetchUserProfile, user, user.userId]);
+      
 
     // Handle screen resize
     useEffect(() => {
@@ -88,7 +118,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                                 <div className="relative w-[92px] h-[92px]">
                                     <div className="w-full h-full rounded-full border-2 border-black overflow-hidden">
                                     <img
-                                        src={sidebarProfile.img}
+                                        src={profile_picture}
                                         alt="Profile"
                                         className="object-cover w-full h-full"
                                     />
@@ -161,7 +191,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                                 <div className="relative w-[92px] h-[92px]">
                                     <div className="w-full h-full rounded-full border-2 border-black overflow-hidden">
                                     <img
-                                        src={sidebarProfile.img}
+                                        src={profile_picture}
                                         alt="Profile"
                                         className="object-cover w-full h-full"
                                     />
