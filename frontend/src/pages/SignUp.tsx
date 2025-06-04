@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 
 function SignUp() {
-    const [usernameError, setUsernameError] = useState('');
 
     const navigate =  useNavigate();
     const [formData, setFormData] = useState({
@@ -23,7 +22,6 @@ function SignUp() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setUsernameError(''); // clear previous error
 
         try {
             const response = await fetch(`${base_url}/user/`, {
@@ -40,9 +38,6 @@ function SignUp() {
                 }),
             });
 
-            console.log("response", response);
-            
-
             if (!response.ok) {
                 const errorData = await response.json();
             
@@ -52,10 +47,9 @@ function SignUp() {
                     // Check if it's the "already exists" error and customize it
                     if (originalMessage.toLowerCase().includes("already exists")) {
                         toast.dismiss();
-                        toast.error("Username is already taken.");
-                    } else {
-                        setUsernameError(originalMessage); // fallback for other errors
+                        toast.error("Username is already taken.", );
                     }
+                    
                 } else {
                     throw new Error("Sign Up Failed");
                 }
