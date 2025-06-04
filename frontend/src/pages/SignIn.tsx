@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
 import '@/assets/css/SignIn.css';
 import { motion } from 'framer-motion';
 import Logo from '@/assets/logo.webp';
@@ -17,17 +18,18 @@ function SignIn() {
     });
 
     // Get authentication state and actions from the auth store
-    const { login, loginError, isLoading } = useAuthStore();
+    const { login, isLoading } = useAuthStore();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const success = await login(formData.username, formData.password);
-
-        if (success) {
+        
+        if (!success) {
+            toast.dismiss();
+            toast.error("Your email and password is in correct");
+        } else {
             navigate("/dashboard");
-        } else if (loginError) {
-            alert(loginError);
         }
     };
 
@@ -56,8 +58,7 @@ function SignIn() {
             >
                 <img src={Logo} alt="Logo" className="max-h-[62px] max-w-[61px]" />
                 <div>
-                    <h1 className="mb-2 text-2xl font-bold">Lorem Ipsum dolor Emet</h1>
-                    <p className="mb-4 text-sm">Lorem ipsum dolor sit amet,</p>
+                    <h1 className="flex mb-5 text-2xl font-bold justify-center">Sign In</h1>
                     <form onSubmit={handleSubmit} className="min-w-[300px] flex flex-col gap-4">
                         <div className="relative w-full">
                             <User
@@ -75,6 +76,7 @@ function SignIn() {
                                 required
                             />
                         </div>
+                        <Toaster reverseOrder={false} />
                         <div>
                             <div className="relative w-full">
                                 <Lock1
@@ -94,7 +96,7 @@ function SignIn() {
                                 />
                             </div>
                         </div>
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-sm ">
                             <div className="flex items-center gap-2">
                                 <Checkbox className="rounded-[4px]" />
                                 <p>Remember Me</p>
@@ -105,16 +107,16 @@ function SignIn() {
                         </div>
                         <Button
                             type="submit"
-                            className="w-full bg-[#7BDFF2] min-h-[51px] rounded-[5px]"
+                            className="w-full bg-[#7BDFF2] min-h-[51px] rounded-[5px] mt-5"
                             disabled={isLoading}
                         >
                             <p className="text-md font-bold text-[#4E4E53]">
                                 {isLoading ? "Signing In..." : "Sign In"}
                             </p>
                         </Button>
-                        <div className="flex justify-center mt-8">
+                        <div className="flex justify-center mt-3">
                             <p>Don&apos;t have an account?</p>
-                            <a href="/sign-up" className="text-[#1600DD]">
+                            <a href="/sign-up" className="text-[#1600DD] mx-2">
                                 Create an account
                             </a>
                         </div>
