@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { base_url } from "../config";
 
 interface ImageUploadState {
     uploading: boolean;
@@ -21,7 +22,7 @@ interface ImageUploadState {
       formData.append('profile_picture', file);
   
       try {
-        const response = await fetch(`/api/users/${userId}/upload-profile-picture/`, {
+        const response = await fetch(`${base_url}/user/${userId}/upload-profile/`, {
           method: 'POST',
           body: formData,
         });
@@ -45,7 +46,7 @@ interface ImageUploadState {
       set({ uploading: true, error: null });
   
       try {
-        const response = await fetch(`/api/users/${userId}/remove-profile-picture/`, {
+        const response = await fetch(`${base_url}/user/${userId}/remove-profile/`, {
           method: 'POST',
         });
   

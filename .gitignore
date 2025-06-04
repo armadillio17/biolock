@@ -46,3 +46,5 @@ backend/djangoenv/
 
 # Firebase
 ./backend/user/biolock-a6a5-firebase-adminsdk-fbsvc-8a6e3b1df.json
+
+backend/media

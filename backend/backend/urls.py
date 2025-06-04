@@ -14,6 +14,9 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
+
 from django.contrib import admin
 from django.urls import path
 from user.views import (
@@ -83,8 +86,8 @@ urlpatterns = [
     # Users
     path('api/user/', UserCreateView.as_view(), name='user-create'),
     path('api/users/<int:pk>/', UserUpdateDeleteView.as_view(), name='user-update-delete'),
-    path('api/users/new-registered/', NewRegistrationRegisteredList.as_view(), name='user-count'), # List of Newly Registered Account
-    path('api/users/list/', AcceptedUserList.as_view(), name='user-count'), # List of All Approved Account
+    path('api/users/new-registered/', NewRegistrationRegisteredList.as_view(), name='user-register-count'), # List of Newly Registered Account
+    path('api/users/list/', AcceptedUserList.as_view(), name='user-list-count'), # List of All Approved Account
     path('api/users/user-count/', UserCountView.as_view(), name='user-count'), # User Count
     path('api/<int:user_id>/role/', GetUserRoleView.as_view(), name='get-user-role'),
     
@@ -177,4 +180,8 @@ urlpatterns = [
     # Profile Picture Upload and Removal
     path('api/user/<int:user_id>/upload-profile/', UploadProfilePictureView.as_view(), name='upload_profile'),
     path('api/user/<int:user_id>/remove-profile/', RemoveProfilePictureView.as_view(), name='remove_profile'),
+    
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
-import { base_url } from '../config.ts';
+import { base_url, storage_url } from '../config.ts';
 import { useAuthStore } from './authStore.ts'; // Import auth store
 
 interface AttendanceData {
@@ -25,11 +25,13 @@ interface AttendanceState {
 
 interface UserState {
   user: UserData[];
+  profile_picture: string;
   isLoading: boolean;
   error: string | null;
   
   // Attendance actions
   updateUserPosition: (userId: number, position_id: number) => Promise<void>;
+  fetchUserProfile: (userId: number) => Promise<void>;
 }
 
 // Create Attendance Store
@@ -73,8 +75,32 @@ export const useAttendanceStore = create<AttendanceState>((set) => ({
 
 export const useUpdateUserStore = create<UserState>((set) => ({
   user: [],
+  profile_picture: "",
   isLoading: false,
   error: null,
+
+  fetchUserProfile: async (userId:number,) => {
+    try {
+      const response = await axios.get(`${base_url}/users/${userId}/`, {
+        headers: {
+          "Content-Type": "application/json",
+          // "Authorization": `Bearer ${token}`,
+        },
+      });
+      
+      set({ 
+        profile_picture: `${storage_url}${response.data.profile_picture}`, // response.data is likely a single object
+        isLoading: false 
+      });
+    } catch (error) {
+      console.error("Failed to update position:", error);
+      set({ 
+        error: "Failed to update user position",
+        isLoading: false 
+      });
+    }
+
+  },
 
   updateUserPosition: async (userId: number, position_id: number) => {
     set({ isLoading: true, error: null });

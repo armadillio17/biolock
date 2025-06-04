@@ -10,6 +10,8 @@ from rest_framework.authtoken.models import Token
 from user.utils.notification_history import log_notification
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
+import os
+from django.conf import settings
 
 # from django.contrib.auth.models import User
 
@@ -276,8 +278,14 @@ class UploadProfilePictureView(APIView):
         if 'profile_picture' not in request.FILES:
             return Response({"error": "No file uploaded"}, status=status.HTTP_400_BAD_REQUEST)
 
-        profile_picture = request.FILES['profile_picture']
-        user.profile_picture = profile_picture
+        # Delete the old profile picture if it exists
+        if user.profile_picture:
+            old_picture_path = user.profile_picture.path
+            if os.path.isfile(old_picture_path):
+                os.remove(old_picture_path)
+
+        # Assign and save the new profile picture
+        user.profile_picture = request.FILES['profile_picture']
         user.save()
 
         return Response({
