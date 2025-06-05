@@ -43,7 +43,8 @@ from user.views.report.download_report import (
     DownloadAttendancePDF
 )
 from user.views.holiday import (
-    HolidayListCreateView, HolidayDetailView
+    HolidayListCreateView, HolidayDetailView, HolidayConfigListCreateAPIView, HolidayConfigDetailAPIView
+    
 )
 from user.views.attendance_adjustments import (
     AttendanceAdjustmentsListCreateView, AttendanceAdjustmentsDetailView
@@ -133,7 +134,8 @@ urlpatterns = [
 
     # Holiday Endpoints
     path('api/holidays/', HolidayListCreateView.as_view(), name='holiday-list-create'),
-    path('api/holidays/<int:pk>/', HolidayDetailView.as_view(), name='holiday-detail'),
+    path('api/holiday-configs/', HolidayConfigListCreateAPIView.as_view(), name='holiday-config-list'),
+    path('api/holiday-configs/<int:pk>/', HolidayConfigDetailAPIView.as_view(), name='holiday-config-detail'),
 
     # Attendance Adjustments Endpoints
     path('api/attendance-adjustments/', AttendanceAdjustmentsListCreateView.as_view(), name='attendance-adjustments-list-create'),

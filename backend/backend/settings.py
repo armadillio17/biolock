@@ -184,3 +184,6 @@ SESSION_SAVE_EVERY_REQUEST = True  # Refresh session on each request
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+GOOGLE_CALENDAR_CREDENTIALS_JSON_PATH = os.path.join(BASE_DIR, 'google_credentials', 'credentials.json')
+PHILIPPINE_HOLIDAY_CALENDAR_ID = 'en.philippines#holiday@group.v.calendar.google.com'
