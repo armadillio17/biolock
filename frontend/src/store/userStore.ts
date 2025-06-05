@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 import { base_url, storage_url } from '../config.ts';
-import { useAuthStore } from './authStore.ts'; // Import auth store
+import { useAuthStore } from './authStore.ts';
 
 interface AttendanceData {
     date: string, 

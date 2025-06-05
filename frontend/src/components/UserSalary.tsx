@@ -79,10 +79,11 @@ export default function UserSalary() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+    setError(''); // Reset previous error
+
     try {
       const payload = {
         ...formData,
@@ -93,8 +94,14 @@ export default function UserSalary() {
       await authAxios.post(`${base_url}/user-salary/`, payload);
       await fetchSalaries();
       resetForm();
-    } catch (err) {
-      setError('Failed to save salary');
+    } catch (err: any) {
+      // Try to extract detailed error from response
+      const errorMessage = 
+        err.response?.data?.user?.[0] || 
+        err.response?.data?.detail || 
+        'Failed to save salary';
+
+      setError(errorMessage);
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -170,7 +177,7 @@ export default function UserSalary() {
       <div className="bg-white rounded-lg shadow-sm p-6">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">Add New Salary</h2>
         
-        {error && <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">{error}</div>}
+        {error && <div className="mb-4 p-3 bg-red-100 border capitalize border-red-400 text-red-700 rounded">{error}</div>}
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
