@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.timezone import now
 
 class Holiday(models.Model):
-    holiday_date = models.DateField()
+    holiday_date = models.DateField(unique=True)  
     holiday_name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -1,13 +1,14 @@
 import { useState } from 'react';
+import { Users, Calendar } from 'lucide-react'
 import PayrollPeriod from "@/components/PayrollPeriod";
 import UserSalary from "@/components/UserSalary";
 import PayrollRelease from '@/components/PayrollRelease';
-import { Users, Calendar } from 'lucide-react'
 import DashboardLayout from "@/layouts/DashboardLayout"
 import BenefitsConfig from '@/components/BenefitsConfig'
+import SetHoliday from '@/components/SetHoliday'
 
 export default function PayrollTabs() {
-  const [activeTab, setActiveTab] = useState<'salary' | 'period' | 'release'>('salary');
+  const [activeTab, setActiveTab] = useState<'salary' | 'period' | 'release' | 'setHoliday'>('salary');
   const [showBenefits, setShowBenefits] = useState(false);
 
   return (
@@ -64,12 +65,24 @@ export default function PayrollTabs() {
                     <Users className="w-5 h-5 mr-2" />
                     Payroll Release
                 </button>
+                <button
+                    onClick={() => setActiveTab('setHoliday')}
+                    className={`flex items-center px-4 py-2 rounded-md transition-colors ${
+                    activeTab === 'setHoliday'
+                        ? 'bg-blue-500 text-white'
+                        : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                >
+                    <Calendar className="w-5 h-5 mr-2" />
+                    Holiday Config
+                </button>
             </div>
 
             {/* Content */}
             {activeTab === 'salary' && <UserSalary />}
             {activeTab === 'period' && <PayrollPeriod />}
             {activeTab === 'release' && <PayrollRelease />}
+            {activeTab === 'setHoliday' && <SetHoliday />}
         </div>
         </div>
     </DashboardLayout>

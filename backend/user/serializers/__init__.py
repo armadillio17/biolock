@@ -16,6 +16,7 @@ from .user_salary import UserSalarySerializer
 from .benefits import BenefitsConfigurationSerializer
 from .company import CompanySerializer
 from .request_overtime import OvertimeRequestSerializer
+from .holiday_config import HolidayConfigSerializer
 
 __all__ = [
     "AttendanceSerializer",
@@ -40,5 +41,6 @@ __all__ = [
     "UserSalarySerializer",
     "BenefitsConfigurationSerializer",
     "CompanySerializer",
-    "OvertimeRequestSerializer"
+    "OvertimeRequestSerializer",
+    "HolidayConfigSerializer"
     ]
