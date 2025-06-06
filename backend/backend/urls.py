@@ -106,7 +106,8 @@ urlpatterns = [
     # Leave Request Endpoints
     path('api/leave-requests/', LeaveRequestListCreateView.as_view(), name='leave-request-list'),
     path('api/leave-requests/<int:pk>/<str:date>', LeaveRequestDetailView.as_view(), name='leave-request-detail'),
-    path('api/leave-requests/count/', LeaveRequestCountView.as_view(), name='leave-request-detail'),
+    path('api/leave-requests/<int:pk>/', LeaveRequestDetailView.as_view(), name='leave-request-update-delete'),
+    path('api/leave-requests/count/', LeaveRequestCountView.as_view(), name='leave-request-count'),
 
     # Department Endpoints
     path('api/departments/', DepartmentListCreateView.as_view(), name='department-list'),
@@ -116,7 +117,7 @@ urlpatterns = [
 
     # Position Endpoints
     path('api/positions/', PositionListCreateView.as_view(), name='position-list'),
-    path('api/positions/<int:pk>/', PositionDetailView.as_view(), name='position-detail'),
+    path('api/positions/<int:pk>', PositionDetailView.as_view(), name='position-detail'),
     
     # Assign/Remove Users to/from Positions
     path('api/departments/<int:department_id>/positions/<int:position_id>/assign-user/', AssignUserToPositionView.as_view(), name='assign-user-to-position'),

@@ -5,10 +5,11 @@ User = get_user_model()
 
 def log_notification(user_id, notification_type, data):
     if not user_id:
-        raise ValueError("User ID must be provided")
+        # Skip logging for system operations or unauthenticated requests
+        return
 
     NotificationHistory.objects.create(
-        user_id_id=user_id,  # use _id to assign FK directly
+        user_id_id=user_id,
         type=notification_type,
         data=data
     )

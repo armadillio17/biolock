@@ -38,13 +38,13 @@ class DownloadAttendancePDF(APIView):
                 user = CustomUser.objects.get(id=attendance['user']).get_full_name()
                 data.append([
                     user,
-                    attendance['status'],
-                    attendance['clock_in'] or "-",
-                    attendance['clock_out'] or "-",
-                    attendance['working_hours'],
-                    attendance['overtime_hours']
+                    attendance.get('status', '-'),
+                    attendance.get('clock_in', '-') or "-",
+                    attendance.get('clock_out', '-') or "-",
+                    attendance.get('working_hours', '-'),
+                    attendance.get('overtime_hours', '-')
                 ])
-            
+                            
             # 3. Create Table
             table = Table(data)
             table.setStyle(TableStyle([

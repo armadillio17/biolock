@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Pencil } from 'lucide-react'; // Pencil icon from lucide-react
+import { Pencil } from 'lucide-react';
 import { usePositionStore, PositionData } from '@/store/positionStore';
-import { useUpdateUserStore } from '@/store/userStore'; // Re-added import
+import { useUpdateUserStore } from '@/store/userStore';
 
 export interface User {
   id: number;
@@ -17,53 +17,71 @@ interface UserViewModalProps {
   user: User | null;
 }
 
-
 const UserViewModal: React.FC<UserViewModalProps> = ({ isOpen, onClose, user }) => {
-  const { fetchUserPosition, fetchPosition, position, userPosition, isLoading } = usePositionStore();
+  const {
+    fetchUserPosition,
+    fetchPosition,
+    position,
+    userPosition,
+    isLoading
+  } = usePositionStore();
+
   const { updateUserPosition } = useUpdateUserStore();
 
   const [showPositions, setShowPositions] = useState(false);
   const [selectedPositionId, setSelectedPositionId] = useState<number | null>(null);
 
   useEffect(() => {
-    const loadData = async () => {
-
-      if (!user?.position_id) return;
-
-         await fetchUserPosition(user.position_id);
-
-    };
-  
-    loadData();
+    if (user?.position_id) {
+      fetchUserPosition(user.position_id);
+    }
   }, [fetchUserPosition, user?.position_id]);
-  
 
-  const handlePositionList = () => {
-    fetchPosition();
-    setShowPositions(true);
-  }
+  useEffect(() => {
+    if (showPositions) fetchPosition();
+  }, [showPositions, fetchPosition]);
 
-  const handleUserPositionUpdate = () => {
-    if (user?.id !== undefined && selectedPositionId !== null) {
-      updateUserPosition(user.id, selectedPositionId);
-      setShowPositions(false); // optionally hide dropdown after update
+  const handleUserPositionUpdate = async () => {
+    if (user?.id && selectedPositionId !== null) {
+      await updateUserPosition(user.id, selectedPositionId);
+      setShowPositions(false);
+      await fetchUserPosition(selectedPositionId); // Refresh display
     } else {
       console.warn('Missing user ID or selected position ID');
     }
-
   };
 
   const handleCloseModal = () => {
     onClose();
     setShowPositions(false);
+    setSelectedPositionId(null);
+  };
+
+  // Helper function to render position options without using .map()
+  const renderPositionOptions = () => {
+    if (!Array.isArray(position) || position.length === 0) {
+      return null;
+    }
+
+    const options = [];
+    for (let i = 0; i < position.length; i++) {
+      const pos = position[i] as PositionData;
+      options.push(
+        <option key={pos.id} value={pos.id}>
+          {pos.position_name}
+        </option>
+      );
+    }
+    return options;
   };
 
   if (!isOpen || !user) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white rounded-lg p-6 shadow-lg w-96">
-        <h2 className="text-xl font-bold mb-4">User Information</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="p-6 bg-white rounded-lg shadow-lg w-96 max-h-[90vh] overflow-y-auto">
+        <h2 className="mb-4 text-xl font-bold">User Information</h2>
+
         <div className="space-y-3">
           <div>
             <span className="font-semibold">Name:</span> {user.first_name} {user.last_name}
@@ -72,58 +90,53 @@ const UserViewModal: React.FC<UserViewModalProps> = ({ isOpen, onClose, user }) 
             <span className="font-semibold">Email:</span> {user.email}
           </div>
           <div>
-            <span className="font-semibold">
-                Current Position: {userPosition && user?.position_id === userPosition.id
-                ? userPosition.position_name
-                : 'No position'}
-            </span>
+            <span className="font-semibold">Current Position:</span>{' '}
+            {userPosition?.position_name || 'Position not found'}
             <button
-                onClick={handlePositionList}
-                className="ml-2 text-blue-500 hover:text-blue-700"
-                title="Edit Position"
-                >
-                <Pencil size={16} />
+              onClick={() => {
+                setShowPositions(true);
+                setSelectedPositionId(user.position_id ?? null); // Set default
+              }}
+              className="ml-2 text-blue-500 hover:text-blue-700"
+              title="Edit Position"
+            >
+              <Pencil size={16} />
             </button>
           </div>
-        </div>
 
-        {/* Position List Dropdown */}
-        {showPositions && (
+          {showPositions && (
             <div className="mt-2">
-            {isLoading ? (
+              {isLoading ? (
                 <div>Loading positions...</div>
-            ) : (
-                <select 
-                    className="border rounded px-2 py-1"
-                    onChange={(e) => {
-                        const id = Number(e.target.value);
-                        setSelectedPositionId(id);
-                      }}
+              ) : Array.isArray(position) && position.length > 0 ? (
+                <select
+                  className="w-full px-2 py-1 border rounded"
+                  onChange={(e) => setSelectedPositionId(Number(e.target.value))}
+                  value={selectedPositionId ?? ''}
                 >
-                    <option value="">Select a position</option>
-                    {position.map((pos: PositionData) => (
-                        <option key={pos.id} value={pos.id}>
-                        {pos.position_name}
-                        </option>
-                    ))}
+                  <option value="">Select a position</option>
+                  {renderPositionOptions()}
                 </select>
-            )}
+              ) : (
+                <div className="text-sm text-gray-500">No positions available</div>
+              )}
             </div>
-        )}
+          )}
 
-        <div className="mt-6 flex justify-end space-x-2">
+          <div className="flex justify-end mt-6 space-x-2">
             <button
-                onClick={handleCloseModal}
-                className="bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded"
-              >
-                Cancel
+              onClick={handleCloseModal}
+              className="px-4 py-2 font-bold text-gray-700 bg-gray-300 rounded"
+            >
+              Cancel
             </button>
             <button
-                onClick={handleUserPositionUpdate}
-                className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
-              >
-                Update Position
+              onClick={handleUserPositionUpdate}
+              className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-600"
+            >
+              Update Position
             </button>
+          </div>
         </div>
       </div>
     </div>

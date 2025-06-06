@@ -29,14 +29,15 @@ class UserCreateView(APIView):
         
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
+            
             if 'password' in serializer.validated_data:
                 password = serializer.validated_data['password']
                 serializer.validated_data['password'] = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-            
-            new_user = serializer.save()
+                
+            serializer.save()
 
             log_notification(
-                user_id=new_user.id,
+                user_id=request.user.id,
                 notification_type="Registered Users",
                 data={
                     "status": "Completed",
@@ -250,14 +251,15 @@ class NewRegistrationRegisteredList(APIView):
 
 class AcceptedUserList(APIView):
     def get(self, request):
-        """ Get Newly Registered User Need for Approval"""
+        """ Get Accepted Users"""
         
         user = CustomUser.objects.filter(is_accepted=True, deleted_at__isnull=True)
         serializer = UserSerializer(user, many=True)
 
-        # Log a notification for the created leave request
+        # Get user_id safely for notification logging
+        user_id = request.user.id if hasattr(request, 'user') and request.user.is_authenticated else None
         log_notification(
-            user_id=request.user.id,
+            user_id=user_id,
             notification_type="Registration Request",
             data={
                 "status": "Completed",
