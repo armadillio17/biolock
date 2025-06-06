@@ -12,16 +12,21 @@ interface UserData {
     role: string | null; 
 }
 
-interface AuthState {
-    user: UserData;
-    loginError: string | null;
-    isLoading: boolean;
-    getAuthToken: () => string | null;
+interface LoginResult {
+  success: boolean;
+  error?: string;
+}
 
-    login: (username: string, password: string) => Promise<boolean>;
-    logout: () => void;
-    fetchUserRole: (userId: string) => Promise<void>; // New method
-    fetchUser: (userId: string) => Promise<void>; // New method
+interface AuthState {
+  user: UserData;
+  loginError: string | null;
+  isLoading: boolean;
+  getAuthToken: () => string | null;
+
+  login: (username: string, password: string) => Promise<LoginResult>; // 🔁 Updated type
+  logout: () => void;
+  fetchUserRole: (userId: string) => Promise<void>;
+  fetchUser: (userId: string) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -58,7 +63,7 @@ export const useAuthStore = create<AuthState>()(
 
           const userId = response.data.user_id;
           const position_id = response.data.position_id;
-          
+
           set((state) => ({
             user: {
               ...state.user,
@@ -72,13 +77,21 @@ export const useAuthStore = create<AuthState>()(
           await get().fetchUserRole(userId);
           await get().fetchUser(userId);
 
-          return true;
-        } catch (error) {
-          console.error(error);
-          set({ isLoading: false });
-          return false; // ✅ ensure it returns boolean
+          return { success: true };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          let errorMessage = "Login failed" + " " + error.response.data.error ;
+
+          if (error?.response?.data?.detail) {
+            errorMessage = error.response.data.error;
+            
+          } 
+
+          set({ isLoading: false, loginError: errorMessage });
+
+          return { success: false, error: errorMessage };
         }
-      },
+      },      
 
 
       fetchUserRole: async (userId: string) => {

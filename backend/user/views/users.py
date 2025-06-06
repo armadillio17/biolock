@@ -29,15 +29,14 @@ class UserCreateView(APIView):
         
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            
             if 'password' in serializer.validated_data:
                 password = serializer.validated_data['password']
                 serializer.validated_data['password'] = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-                
-            serializer.save()
+            
+            new_user = serializer.save()
 
             log_notification(
-                user_id=request.user.id,
+                user_id=new_user.id,
                 notification_type="Registered Users",
                 data={
                     "status": "Completed",

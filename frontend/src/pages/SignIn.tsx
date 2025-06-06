@@ -23,15 +23,15 @@ function SignIn() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const success = await login(formData.username, formData.password);
-        
-        if (!success) {
+        const result = await login(formData.username, formData.password);
+
+        if (!result.success) {
             toast.dismiss();
-            toast.error("Your email and password is in correct");
+            toast.error(result.error || "Login failed");
         } else {
             navigate("/dashboard");
         }
-    };
+    };    
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -58,7 +58,7 @@ function SignIn() {
             >
                 <img src={Logo} alt="Logo" className="max-h-[62px] max-w-[61px]" />
                 <div>
-                    <h1 className="flex mb-5 text-2xl font-bold justify-center">Sign In</h1>
+                    <h1 className="flex justify-center mb-5 text-2xl font-bold">Sign In</h1>
                     <form onSubmit={handleSubmit} className="min-w-[300px] flex flex-col gap-4">
                         <div className="relative w-full">
                             <User
