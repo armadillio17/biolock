@@ -2,7 +2,7 @@ import { Element4, Calendar, CalendarAdd } from "iconsax-react";
 import {
   LayoutDashboard,
   FileText,
-  DollarSign,
+    PhilippinePeso,
   Clock,
   BarChart3,
   Users,
@@ -31,7 +31,7 @@ export interface SidebarProfile {
 export const sidebarMenu: SidebarMenuItem[] = [
   { name: "Dashboard", icon: <LayoutDashboard />, path: "/dashboard" },
   { name: "Leave Request", icon: <FileText />, path: "/leave-request" },
-  { name: "Payroll", icon: <DollarSign />, path: "/payroll" },
+    { name: "Payroll", icon: <PhilippinePeso />, path: "/payroll" },
   { name: "Overtime", icon: <Clock />, path: "/overtime" },
   { name: "Reports", icon: <BarChart3 />, path: "/reports" },
   { name: "Users", icon: <Users />, path: "/users" },

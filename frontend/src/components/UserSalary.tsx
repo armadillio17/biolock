@@ -171,21 +171,21 @@ export default function UserSalary() {
   };
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
+    <div className="p-4 space-y-6 md:p-6">
       {/* Add New Salary Card */}
-      <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200 p-6 shadow-md">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Add New Salary</h2>
+      <div className="p-6 border border-gray-200 shadow-md bg-white/80 backdrop-blur-sm rounded-xl">
+        <h2 className="mb-4 text-xl font-bold text-gray-800">Add New Salary</h2>
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm">
+          <div className="p-3 mb-4 text-sm text-red-600 border border-red-200 rounded-md bg-red-50">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">User</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700">User</label>
             <select
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-400"
               value={formData.user}
               onChange={(e) => setFormData({ ...formData, user: e.target.value })}
               required
@@ -200,11 +200,11 @@ export default function UserSalary() {
             </select>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Salary Type</label>
+              <label className="block mb-1 text-sm font-medium text-gray-700">Salary Type</label>
               <select
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-400"
                 value={formData.salary_type}
                 onChange={(e) =>
                   setFormData({ ...formData, salary_type: e.target.value as SalaryType })
@@ -217,12 +217,12 @@ export default function UserSalary() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+              <label className="block mb-1 text-sm font-medium text-gray-700">Amount</label>
               <input
                 type="number"
                 min="0"
                 step="0.01"
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-400"
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                 required
@@ -231,12 +231,12 @@ export default function UserSalary() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Effective Date</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700">Effective Date</label>
             <div className="relative">
-              <Calendar className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+              <Calendar className="absolute w-5 h-5 text-gray-400 left-3 top-3" />
               <input
                 type="date"
-                className="w-full pl-10 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none"
+                className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-400"
                 value={formData.effective_date}
                 onChange={(e) => setFormData({ ...formData, effective_date: e.target.value })}
                 required
@@ -247,10 +247,10 @@ export default function UserSalary() {
           <div className="flex justify-end pt-2">
             <Button
               type="submit"
-              className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white flex items-center gap-2"
+              className="flex items-center gap-2 text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
               disabled={isLoading}
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="w-4 h-4" />
               {isLoading ? "Saving..." : "Add Salary"}
             </Button>
           </div>
@@ -258,44 +258,44 @@ export default function UserSalary() {
       </div>
 
       {/* Salary List Table */}
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white/80 backdrop-blur-sm shadow-md">
-        <div className="px-6 py-4 border-b border-gray-200 font-semibold text-lg text-gray-800">
+      <div className="overflow-hidden border border-gray-200 shadow-md rounded-xl bg-white/80 backdrop-blur-sm">
+        <div className="px-6 py-4 text-lg font-semibold text-gray-800 border-b border-gray-200">
           Salary Records
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">User</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Type</th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Amount</th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Date</th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Actions</th>
+                <th className="px-6 py-3 text-sm font-semibold text-left text-gray-700">User</th>
+                <th className="px-6 py-3 text-sm font-semibold text-left text-gray-700">Type</th>
+                <th className="px-6 py-3 text-sm font-semibold text-right text-gray-700">Amount</th>
+                <th className="px-6 py-3 text-sm font-semibold text-right text-gray-700">Date</th>
+                <th className="px-6 py-3 text-sm font-semibold text-right text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {isLoading && salaryList.length === 0 ? (
                 [...Array(3)].map((_, i) => (
                   <tr key={i} className="animate-pulse">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600"><div className="h-5 bg-gray-200 rounded w-24"></div></td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600"><div className="h-5 bg-gray-200 rounded w-16"></div></td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-600"><div className="h-5 bg-gray-200 rounded w-20 ml-auto"></div></td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-600"><div className="h-5 bg-gray-200 rounded w-20 ml-auto"></div></td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                    <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap"><div className="w-24 h-5 bg-gray-200 rounded"></div></td>
+                    <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap"><div className="w-16 h-5 bg-gray-200 rounded"></div></td>
+                    <td className="px-6 py-4 text-sm text-right text-gray-600 whitespace-nowrap"><div className="w-20 h-5 ml-auto bg-gray-200 rounded"></div></td>
+                    <td className="px-6 py-4 text-sm text-right text-gray-600 whitespace-nowrap"><div className="w-20 h-5 ml-auto bg-gray-200 rounded"></div></td>
+                    <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
                       <div className="inline-flex gap-2">
-                        <div className="h-8 w-8 bg-gray-200 rounded-full"></div>
-                        <div className="h-8 w-8 bg-gray-200 rounded-full"></div>
+                        <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                        <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
                       </div>
                     </td>
                   </tr>
                 ))
               ) : salaryList.length > 0 ? (
                 salaryList.map((salary) => (
-                  <tr key={salary.id} className="hover:bg-gray-50 transition-colors duration-150">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                  <tr key={salary.id} className="transition-colors duration-150 hover:bg-gray-50">
+                    <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                       {editingId === salary.id ? (
                         <select
-                          className="w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400"
+                          className="w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400"
                           value={salary.user}
                           onChange={(e) => handleEditChange(salary.id!, 'user', parseInt(e.target.value))}
                         >
@@ -309,10 +309,10 @@ export default function UserSalary() {
                         getUserName(salary.user)
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                    <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                       {editingId === salary.id ? (
                         <select
-                          className="w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400"
+                          className="w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400"
                           value={salary.salary_type}
                           onChange={(e) => handleEditChange(salary.id!, 'salary_type', e.target.value as SalaryType)}
                         >
@@ -325,32 +325,32 @@ export default function UserSalary() {
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-800">
+                    <td className="px-6 py-4 text-sm text-right text-gray-800 whitespace-nowrap">
                       {editingId === salary.id ? (
                         <input
                           type="number"
                           min="0"
                           step="0.01"
-                          className="w-full text-right rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400"
+                          className="w-full text-right border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400"
                           value={salary.amount}
                           onChange={(e) => handleEditChange(salary.id!, 'amount', e.target.value)}
                         />
                       ) : (
                         parseFloat(salary.amount).toLocaleString(undefined, {
                           style: 'currency',
-                          currency: 'USD',
+                          currency: 'PHP',
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2
                         })
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-800">
+                    <td className="px-6 py-4 text-sm text-right text-gray-800 whitespace-nowrap">
                       {editingId === salary.id ? (
                         <div className="relative max-w-xs mx-auto">
-                          <Calendar className="absolute left-3 top-2 h-5 w-5 text-gray-400" />
+                          <Calendar className="absolute w-5 h-5 text-gray-400 left-3 top-2" />
                           <input
                             type="date"
-                            className="pl-9 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400"
+                            className="w-full border border-gray-300 rounded-lg pl-9 focus:ring-2 focus:ring-indigo-400"
                             value={salary.effective_date}
                             onChange={(e) => handleEditChange(salary.id!, 'effective_date', e.target.value)}
                           />
@@ -359,7 +359,7 @@ export default function UserSalary() {
                         new Date(salary.effective_date).toLocaleDateString()
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right space-x-2 flex justify-end">
+                    <td className="flex justify-end px-6 py-4 space-x-2 text-sm text-right whitespace-nowrap">
                       {editingId === salary.id ? (
                         <>
                           <Button
@@ -369,7 +369,7 @@ export default function UserSalary() {
                             onClick={() => handleSaveEdit(salary)}
                             disabled={isLoading}
                           >
-                            <Check className="h-4 w-4" />
+                            <Check className="w-4 h-4" />
                           </Button>
                           <Button
                             variant="outline"
@@ -378,7 +378,7 @@ export default function UserSalary() {
                             onClick={handleCancelEdit}
                             disabled={isLoading}
                           >
-                            <X className="h-4 w-4" />
+                            <X className="w-4 h-4" />
                           </Button>
                         </>
                       ) : (
@@ -390,7 +390,7 @@ export default function UserSalary() {
                             onClick={() => handleEdit(salary)}
                             disabled={isLoading || editingId !== null}
                           >
-                            <Pencil className="h-4 w-4" />
+                            <Pencil className="w-4 h-4" />
                           </Button>
                           <Button
                             variant="outline"
@@ -399,7 +399,7 @@ export default function UserSalary() {
                             onClick={() => salary.id && handleDelete(salary.id)}
                             disabled={isLoading || editingId !== null}
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="w-4 h-4" />
                           </Button>
                         </>
                       )}

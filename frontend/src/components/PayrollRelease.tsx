@@ -126,15 +126,15 @@ export default function PayrollRelease() {
   };
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
+    <div className="p-4 space-y-6 md:p-6">
       {/* Main Table Card */}
-      <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200 shadow-md">
-        <div className="px-6 py-4 border-b border-gray-200 font-semibold text-lg text-gray-800">
+      <div className="border border-gray-200 shadow-md bg-white/80 backdrop-blur-sm rounded-xl">
+        <div className="px-6 py-4 text-lg font-semibold text-gray-800 border-b border-gray-200">
           Payroll Releases
         </div>
         <div className="p-6">
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm">
+            <div className="p-3 mb-4 text-sm text-red-600 border border-red-200 rounded-md bg-red-50">
               {error}
             </div>
           )}
@@ -142,13 +142,13 @@ export default function PayrollRelease() {
           {isLoading ? (
             // Skeleton Loader
             [...Array(4)].map((_, i) => (
-              <div key={i} className="animate-pulse mb-4">
-                <div className="h-6 bg-gray-200 rounded w-full mb-4"></div>
+              <div key={i} className="mb-4 animate-pulse">
+                <div className="w-full h-6 mb-4 bg-gray-200 rounded"></div>
                 <div className="flex justify-between">
-                  <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                  <div className="h-8 bg-gray-200 rounded w-20"></div>
+                  <div className="w-1/3 h-4 bg-gray-200 rounded"></div>
+                  <div className="w-1/4 h-4 bg-gray-200 rounded"></div>
+                  <div className="w-1/4 h-4 bg-gray-200 rounded"></div>
+                  <div className="w-20 h-8 bg-gray-200 rounded"></div>
                 </div>
               </div>
             ))
@@ -159,25 +159,25 @@ export default function PayrollRelease() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Payroll Period</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Generated On</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Total Amount</th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
+                    <th scope="col" className="px-6 py-3 text-xs font-semibold tracking-wider text-left text-gray-700 uppercase">Payroll Period</th>
+                    <th scope="col" className="px-6 py-3 text-xs font-semibold tracking-wider text-left text-gray-700 uppercase">Generated On</th>
+                    <th scope="col" className="px-6 py-3 text-xs font-semibold tracking-wider text-left text-gray-700 uppercase">Total Amount</th>
+                    <th scope="col" className="px-6 py-3 text-xs font-semibold tracking-wider text-right text-gray-700 uppercase">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {Object.entries(groupedPayslips).map(([key, group]) => (
-                    <tr key={key} className="hover:bg-gray-50 transition-colors duration-150">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                    <tr key={key} className="transition-colors duration-150 hover:bg-gray-50">
+                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                         {new Date(group.period.start_date).toLocaleDateString()} - {new Date(group.period.end_date).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                         {new Date(group.generated_at).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                        ${group.totalAmount.toLocaleString()}
+                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                        ₱{group.totalAmount.toLocaleString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right space-x-2 flex justify-end">
+                      <td className="flex justify-end px-6 py-4 space-x-2 text-sm text-right whitespace-nowrap">
                         <Button
                           variant="outline"
                           size="sm"
@@ -208,8 +208,8 @@ export default function PayrollRelease() {
 
       {/* Expanded Group Details */}
       {selectedPayslipGroup && (
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200 shadow-md overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 font-semibold text-lg text-gray-800 flex justify-between items-center">
+        <div className="overflow-hidden border border-gray-200 shadow-md bg-white/80 backdrop-blur-sm rounded-xl">
+          <div className="flex items-center justify-between px-6 py-4 text-lg font-semibold text-gray-800 border-b border-gray-200">
             <span>
               Payslips for{" "}
               {new Date(selectedPayslipGroup.period.start_date).toLocaleDateString()} -{" "}
@@ -229,29 +229,29 @@ export default function PayrollRelease() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Employee</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Working Hours</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Gross Pay</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Net Pay</th>
-                  <th scope="col" className="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
+                  <th scope="col" className="px-6 py-3 text-xs font-semibold tracking-wider text-left text-gray-700 uppercase">Employee</th>
+                  <th scope="col" className="px-6 py-3 text-xs font-semibold tracking-wider text-left text-gray-700 uppercase">Working Hours</th>
+                  <th scope="col" className="px-6 py-3 text-xs font-semibold tracking-wider text-left text-gray-700 uppercase">Gross Pay</th>
+                  <th scope="col" className="px-6 py-3 text-xs font-semibold tracking-wider text-left text-gray-700 uppercase">Net Pay</th>
+                  <th scope="col" className="px-6 py-3 text-xs font-semibold tracking-wider text-right text-gray-700 uppercase">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {selectedPayslipGroup.payslips.map((payslip) => (
-                  <tr key={payslip.id} className="hover:bg-gray-50 transition-colors duration-150">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                  <tr key={payslip.id} className="transition-colors duration-150 hover:bg-gray-50">
+                    <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                       {payslip.user.first_name} {payslip.user.last_name}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                    <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                       {payslip.total_working_hours} hrs
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                      ${(payslip.gross_pay).toLocaleString()}
+                    <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                      ₱{(payslip.gross_pay).toLocaleString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                      ${(payslip.gross_pay - payslip.deductions).toLocaleString()}
+                    <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                      ₱{(payslip.gross_pay - payslip.deductions).toLocaleString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                    <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
                       <Button
                         variant="outline"
                         size="sm"
@@ -273,9 +273,9 @@ export default function PayrollRelease() {
       {/* Modal - Full Payslip Details */}
       {selectedPayslip && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="relative max-w-4xl w-full mx-auto bg-white/90 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden animate-fadeIn">
+          <div className="relative w-full max-w-4xl mx-auto overflow-hidden shadow-lg bg-white/90 backdrop-blur-sm rounded-xl animate-fadeIn">
             <div className="p-6 border-b border-gray-200">
-              <div className="flex justify-between items-center">
+              <div className="flex items-center justify-between">
                 <h3 className="text-xl font-bold text-gray-800">
                   Payslip for {selectedPayslip.user.first_name} {selectedPayslip.user.last_name}
                 </h3>
@@ -287,7 +287,7 @@ export default function PayrollRelease() {
                 </button>
               </div>
             </div>
-            <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2">
               <div className="space-y-4">
                 <h4 className="font-semibold text-gray-700">Basic Info</h4>
                 <div>
@@ -323,16 +323,16 @@ export default function PayrollRelease() {
                 <h4 className="font-semibold text-gray-700">Earnings & Deductions</h4>
                 <div>
                   <label className="block text-sm text-gray-500">Gross Pay</label>
-                  <p className="text-lg font-medium text-green-600">${selectedPayslip.gross_pay.toLocaleString()}</p>
+                  <p className="text-lg font-medium text-green-600">₱{selectedPayslip.gross_pay.toLocaleString()}</p>
                 </div>
                 <div>
                   <label className="block text-sm text-gray-500">Deductions</label>
-                  <p className="text-lg font-medium text-red-600">${selectedPayslip.deductions.toLocaleString()}</p>
+                  <p className="text-lg font-medium text-red-600">₱{selectedPayslip.deductions.toLocaleString()}</p>
                 </div>
                 <div>
                   <label className="block text-sm text-gray-500">Net Pay</label>
                   <p className="text-2xl font-bold text-blue-600">
-                    ${(selectedPayslip.gross_pay - selectedPayslip.deductions).toLocaleString()}
+                    ₱{(selectedPayslip.gross_pay - selectedPayslip.deductions).toLocaleString()}
                   </p>
                 </div>
 
@@ -342,27 +342,27 @@ export default function PayrollRelease() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm text-gray-500">SSS (Employee)</label>
-                    <p className="text-base font-medium">${selectedPayslip.sss_employee.toLocaleString()}</p>
+                    <p className="text-base font-medium">₱{selectedPayslip.sss_employee.toLocaleString()}</p>
                   </div>
                   <div>
                     <label className="block text-sm text-gray-500">PhilHealth (Employee)</label>
-                    <p className="text-base font-medium">${selectedPayslip.philhealth_employee.toLocaleString()}</p>
+                    <p className="text-base font-medium">₱{selectedPayslip.philhealth_employee.toLocaleString()}</p>
                   </div>
                   <div>
                     <label className="block text-sm text-gray-500">Pag-IBIG (Employee)</label>
-                    <p className="text-base font-medium">${selectedPayslip.pagibig_employee.toLocaleString()}</p>
+                    <p className="text-base font-medium">₱{selectedPayslip.pagibig_employee.toLocaleString()}</p>
                   </div>
                   <div>
                     <label className="block text-sm text-gray-500">SSS (Employer)</label>
-                    <p className="text-base font-medium">${selectedPayslip.sss_employer.toLocaleString()}</p>
+                    <p className="text-base font-medium">₱{selectedPayslip.sss_employer.toLocaleString()}</p>
                   </div>
                   <div>
                     <label className="block text-sm text-gray-500">PhilHealth (Employer)</label>
-                    <p className="text-base font-medium">${selectedPayslip.philhealth_employer.toLocaleString()}</p>
+                    <p className="text-base font-medium">₱{selectedPayslip.philhealth_employer.toLocaleString()}</p>
                   </div>
                   <div>
                     <label className="block text-sm text-gray-500">Pag-IBIG (Employer)</label>
-                    <p className="text-base font-medium">${selectedPayslip.pagibig_employer.toLocaleString()}</p>
+                    <p className="text-base font-medium">₱{selectedPayslip.pagibig_employer.toLocaleString()}</p>
                   </div>
                 </div>
               </div>
