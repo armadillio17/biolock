@@ -11,7 +11,7 @@ const FormattedDate = () => {
     day: "numeric",
   }).format(today);
 
-  return <p className="text-sm">{formattedDate}</p>;
+  return <span className="text-sm">{formattedDate}</span>;
 };
 
 function SuperAdmin() {

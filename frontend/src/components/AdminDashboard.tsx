@@ -1,7 +1,17 @@
 import DashboardLayout from "@/layouts/DashboardLayout";
 // import { adminCards } from "@/data/dashboard-data.tsx";
-import { useDashboardStore } from "@/store/dashboardStore"; // ✅ Import store
+import { useDashboardStore } from "@/store/dashboardStore";
 import { useEffect } from "react";
+import StatCard from '../components/StatCard';
+import { 
+  Users, 
+  FileText, 
+  UserX, 
+  UserCheck, 
+  Home, 
+  Plane,
+  Calendar
+} from 'lucide-react';
 
 const FormattedDate = () => {
   const today = new Date();
@@ -11,12 +21,10 @@ const FormattedDate = () => {
     day: "numeric",
   }).format(today);
 
-  return <p className="text-sm">{formattedDate}</p>;
+  return <span className="text-gray-600 font-medium">{formattedDate}</span>;
 };
 
 function AdminDashboard() {
-  // const { userCount, fetchUserCount } = useDashboardStore();
-
   const fetchUserCount = useDashboardStore((state) => state.fetchUserCount);
   const fetchLeaveCount = useDashboardStore((state) => state.fetchLeaveCount);
   const fetchStatusCount = useDashboardStore((state) => state.fetchStatusCount);
@@ -24,66 +32,133 @@ function AdminDashboard() {
   const approvedLeave = useDashboardStore((state) => state.approvedLeave);
   const status = useDashboardStore((state) => state.status);
 
-  // const requestCount = approvedLeave;
-
   useEffect(() => {
     fetchUserCount();
-    fetchLeaveCount(); // ✅ Fetch on mount
-    fetchStatusCount(); // ✅ Fetch on mount
+    fetchLeaveCount();
+    fetchStatusCount();
   }, [fetchUserCount, fetchLeaveCount, fetchStatusCount]);
 
-  const adminCards = [
-    // { title: "New User", count: userCount.newlyRegisteredUsers , color: "#9E8AFC" },
-    { title: "Employees", count: userCount.approvedUsers, color: "#54CEEE" },
-    { title: "Request", count: approvedLeave.approvedLeaveCount, color: "#E26D5C" },
-    { title: "Absent", count: status.absentCount, color: "#FF9F1C" },
-    { title: "Working", count: status.workingCount, color: "#FFAAC3" },
-    // { title: "On Break", count: status.onBreakCount , color: "#52F76B" },
-    { title: "Day Off", count: status.dayOffCount, color: "#BA6E7B" },
-    { title: "Leave", count: status.onLeaveCount, color: "#FABA6C" },
-];
+  const dashboardCards = [
+    { 
+      title: "Total Employees", 
+      count: userCount.approvedUsers, 
+      icon: Users,
+      gradient: "bg-gradient-to-r from-blue-500 to-cyan-500"
+    },
+    { 
+      title: "Leave Requests", 
+      count: approvedLeave.approvedLeaveCount, 
+      icon: FileText,
+      gradient: "bg-gradient-to-r from-emerald-500 to-teal-500"
+    },
+    { 
+      title: "Absent Today", 
+      count: status.absentCount, 
+      icon: UserX,
+      gradient: "bg-gradient-to-r from-orange-500 to-red-500"
+    },
+    { 
+      title: "Currently Working", 
+      count: status.workingCount, 
+      icon: UserCheck,
+      gradient: "bg-gradient-to-r from-purple-500 to-pink-500"
+    },
+    { 
+      title: "Day Off", 
+      count: status.dayOffCount, 
+      icon: Home,
+      gradient: "bg-gradient-to-r from-indigo-500 to-purple-500"
+    },
+    { 
+      title: "On Leave", 
+      count: status.onLeaveCount, 
+      icon: Plane,
+      gradient: "bg-gradient-to-r from-amber-500 to-orange-500"
+    },
+  ];
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col">
-        {/* Greetings and Date */}
-        <div className="flex flex-col text-[#4E4E53]">
-          <p className="text-2xl font-bold">Welcome Back</p>
-          <FormattedDate />
+      <div className="space-y-8">
+        {/* Welcome Section */}
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-cyan-500/10 rounded-3xl blur-3xl" />
+          <div className="relative bg-white/40 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                  Welcome Back! 👋
+                </h1>
+                <FormattedDate />
+                <p className="text-gray-600 mt-2">Here's what's happening with your team today.</p>
+              </div>
+              <div className="hidden md:block">
+                <div className="w-24 h-24 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-2xl flex items-center justify-center">
+                  <Calendar className="w-12 h-12 text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Attendance Cards & Graphs */}
-        <div className="flex flex-col items-center w-full gap-8 mt-5">
-          <div className="grid w-full max-w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {adminCards.map((card, index) => (
-              <div
-                key={index}
-                className="w-full min-h-[100px] p-4 rounded-xl shadow-md text-center text-[#4E4E53] text-[20px] border border-black flex flex-col items-center justify-center"
-                style={{
-                  backgroundColor: ["#B1E9F4", "#B9E4C9", "#FFF5B2", "#F4B1B1", "#FFB6C1", "#90EE90", "#BC8F8F", "#FFA07A"][index], // Adjusted colors
-                }}
-              >
-                <h3 className="font-bold">{card.title}</h3>
-                <p className="font-semibold">{card.count}</p>
-              </div>
-            ))}
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {dashboardCards.map((card, index) => (
+            <StatCard
+              key={index}
+              title={card.title}
+              count={card.count}
+              icon={card.icon}
+              gradient={card.gradient}
+              delay={index * 100}
+            />
+          ))}
+        </div>
+
+        {/* Additional Sections Placeholder */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Chart Section */}
+          <div className="bg-white/40 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-xl">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Team Performance</h3>
+            <div className="h-64 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center">
+              <p className="text-gray-500">Chart component would go here</p>
+            </div>
           </div>
 
-          {/* Graph & Activity Log */}
-          <div className="flex w-full gap-8">
-            {/* Graph Section */}
-            {/* <div className="flex flex-col justify-center items-center bg-[#A4DDED] rounded-2xl p-5 w-1/2 text-center gap-5 shadow-lg border border-black">
-              <h4 className="text-[24px] font-bold">Lorem Ipsum</h4>
-              <Chart />
-            </div> */}
-
-            {/* Activity Log Section */}
-            {/* <div className="w-full sm:w-1/2 min-h-[250px] rounded-2xl bg-[#A4DDED] p-5 border border-black shadow-lg">
-                <ActivityLog />
-            </div> */}
+          {/* Recent Activity */}
+          <div className="bg-white/40 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-xl">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Recent Activity</h3>
+            <div className="space-y-4">
+              {[
+                "John Doe submitted a leave request",
+                "Sarah Smith checked in at 9:00 AM",
+                "Mike Johnson completed overtime",
+                "Emily Davis updated her profile"
+              ].map((activity, index) => (
+                <div key={index} className="flex items-center gap-3 p-3 bg-white/50 rounded-xl">
+                  <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-full" />
+                  <p className="text-sm text-gray-700">{activity}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
+
+      <style>
+        {`
+          @keyframes slideInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        `}
+      </style>
     </DashboardLayout>
   );
 }

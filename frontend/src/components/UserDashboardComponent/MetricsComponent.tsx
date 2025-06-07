@@ -72,7 +72,7 @@ export const Metrics = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50">
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <main className="flex-1 overflow-auto p-4 md:p-4">
