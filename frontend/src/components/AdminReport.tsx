@@ -1,16 +1,23 @@
 import DashboardLayout from "@/layouts/DashboardLayout";
 import { Button } from "./ui/button";
-import { useReportStore } from '@/store/reportStore.ts';
+import { useReportStore } from '@/store/reportStore';
 import { useEffect } from 'react';
 
 export default function AdminReport() {
-
   const typeMapping: Record<string, string> = {
     daily_attendance: 'Daily Attendance Report',
     monthly_attendance: 'Monthly Attendance Report',
     custom_report: 'Custom Report'
   };
-  const { reportList, fetchReportList, generateDailyReport, downloadReportDataPDF, viewReportDataPDF, isLoading } = useReportStore();
+
+  const {
+    reportList,
+    fetchReportList,
+    generateDailyReport,
+    downloadReportDataPDF,
+    viewReportDataPDF,
+    isLoading
+  } = useReportStore();
 
   useEffect(() => {
     fetchReportList();
@@ -23,66 +30,82 @@ export default function AdminReport() {
     }
   };
 
-  
-
-  const handleDownloadReport = async ($reportId:number) => {
+  const handleDownloadReport = async (reportId: number) => {
     if (!isLoading) {
-      await downloadReportDataPDF($reportId);
+      await downloadReportDataPDF(reportId);
     }
   };
 
-  const handleViewReport = async ($reportId:number) => {
+  const handleViewReport = async (reportId: number) => {
     if (!isLoading) {
-      await viewReportDataPDF($reportId);
+      await viewReportDataPDF(reportId);
     }
   };
+
   return (
     <DashboardLayout>
-      <div className="flex flex-col">
-        {/* Header with Button beside the Title */}
-        <div className="flex items-center justify-between pb-2 border-b border-gray-300">
-          <div className="flex items-center gap-4">
-            <p className="text-lg font-semibold">Reports</p>
-            <Button 
-            className="px-4 py-2 text-white bg-green-500 rounded-md"
+      <div className="p-4 md:p-6 space-y-6">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-gray-200">
+          <h1 className="text-xl font-bold text-gray-800">Reports</h1>
+          <Button
+            className="px-5 py-2 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg shadow hover:shadow-md transition-shadow"
             onClick={handleGenerateReport}
-            >
-              Generate Report
-            </Button>
-          </div>
+            disabled={isLoading}
+          >
+            {isLoading ? "Generating..." : "Generate Daily Report"}
+          </Button>
         </div>
 
-        {/* Table */}
-        <div className="w-full mt-4">
-          <div className="overflow-hidden border border-gray-300 rounded-lg">
-            <table className="w-full border-collapse">
-              <thead className="text-sm border-b border-gray-300">
+        {/* Reports Table */}
+        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white/70 backdrop-blur-sm shadow-md">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
                 <tr>
-                  <th className="p-3 text-center">Date</th>
-                  <th className="p-3 text-center">Type</th>
-                  <th className="p-3 text-center">Download</th>
+                  <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Date</th>
+                  <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Type</th>
+                  <th scope="col" className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                {reportList && reportList.length > 0 ? (
+              <tbody className="divide-y divide-gray-100">
+                {isLoading ? (
+                  // Skeleton Loader
+                  [...Array(4)].map((_, index) => (
+                    <tr key={index}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="h-4 bg-gray-200 rounded w-1/3 animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <div className="inline-block h-8 bg-gray-200 rounded w-16 animate-pulse"></div>
+                      </td>
+                    </tr>
+                  ))
+                ) : reportList && reportList.length > 0 ? (
                   reportList.map((report, index) => (
-                    <tr key={index} className="border-b border-gray-300 hover:bg-gray-100">
-                      <td className="px-6 py-3 text-center">
+                    <tr key={index} className="hover:bg-gray-50 transition-colors duration-150">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         {new Date(report.created_at).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-3 text-center">
-                        {/* Using a type check or fallback for safety */}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         {typeMapping[report.type] || report.type}
                       </td>
-                      <td className="px-6 py-3 text-center">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right space-x-2">
                         <Button
-                          className="px-4 py-1 text-white bg-green-500 rounded"
+                          variant="outline"
+                          size="sm"
+                          className="text-blue-600 border-blue-300 hover:bg-blue-50"
                           onClick={() => handleViewReport(report.id)}
                         >
                           View
                         </Button>
                         <Button
-                          className="px-4 py-1 ml-2 text-white bg-blue-500 rounded"
+                          variant="default"
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700 text-white"
                           onClick={() => handleDownloadReport(report.id)}
                         >
                           Download
@@ -91,8 +114,10 @@ export default function AdminReport() {
                     </tr>
                   ))
                 ) : (
-                  <tr className="border-b border-gray-300">
-                    <td className="px-6 py-3" colSpan={3}>No Generated Report.</td>
+                  <tr>
+                    <td colSpan={3} className="px-6 py-8 text-center text-gray-500">
+                      No reports generated yet.
+                    </td>
                   </tr>
                 )}
               </tbody>

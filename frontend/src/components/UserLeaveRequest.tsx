@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import DashboardLayout from "@/layouts/DashboardLayout";
 import { Button } from "./ui/button";
-// import { Calendar } from "./CalendarComponent";
 import { Calendar } from './LeaveRequestCalendarComponent';
 import LeaveRequestModal from "./UserPrompt/LeaveRequestPrompt";
 import { leaveRequestStore } from '@/store/leaveRequestStore';
-import { useAuthStore } from '@/store/authStore.ts';
+import { useAuthStore } from '@/store/authStore';
+import { Plus } from 'lucide-react';
 
 export default function LeaveRequest() {
   const { userLeaveRequest, fetchUserLeaveRequest } = leaveRequestStore();
@@ -42,86 +42,114 @@ export default function LeaveRequest() {
   };
 
   // Filter leave requests by selected date
-  const leaveRequestList = userLeaveRequest.filter((leave) => leave.start_date === selectedDate || leave.end_date === selectedDate);
+  const leaveRequestList = userLeaveRequest.filter((leave) =>
+    leave.start_date === selectedDate || leave.end_date === selectedDate
+  );
 
   const leaveRequestsByDate = userLeaveRequest.reduce((acc, leave) => {
     const add = (date: string) => {
       if (!acc[date]) acc[date] = [];
       acc[date].push({ status: leave.status });
     };
-  
+
     add(leave.start_date);
     if (leave.end_date && leave.end_date !== leave.start_date) {
       add(leave.end_date);
     }
-  
+
     return acc;
   }, {} as Record<string, { status: string | null }[]>);
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col justify-between h-full">
-        {/* Greetings and time */}
-        <div className="flex flex-col-2 gap-4 pb-5 items-center text-[#4E4E53]">
-          <p className="text-2xl font-bold">Leave Request</p>
+      <div className="p-4 md:p-6 space-y-6">
+        {/* Header */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200 shadow-md p-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Leave Request</h2>
+
+          {/* Add Leave Button */}
           <Button
-            className="w-auto h-auto my-2 border-[1px] border-[#028090] rounded-xl text-[12px] font-medium"
-            onClick={handleOpenModal} // Open modal on button click
+            onClick={handleOpenModal}
+            className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white flex items-center gap-2"
           >
+            <Plus className="w-4 h-4 mr-1" />
             Request Leave
           </Button>
         </div>
-        <div>
-        <Calendar onDateSelect={handleDateSelect} leaveRequestsByDate={leaveRequestsByDate} />
+
+        {/* Calendar */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200 shadow-md p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Leave Calendar</h3>
+          <Calendar onDateSelect={handleDateSelect} leaveRequestsByDate={leaveRequestsByDate} />
         </div>
 
-
-      {/* Table for Leave Requests */}
-      <div className="mt-6 overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-300">
-          <thead>
-            <tr className="text-sm leading-normal text-gray-600 uppercase bg-gray-200">
-              {/* <th className="px-6 py-3 text-center">Name</th> */}
-              <th className="px-6 py-3 text-center">Leave Type</th>
-              <th className="px-6 py-3 text-center">Start Date</th>
-              <th className="px-6 py-3 text-center">End Date</th>
-              <th className="px-6 py-3 text-center">Reason</th>
-              <th className="px-6 py-3 text-center"></th>
-            </tr>
-          </thead>
-          <tbody className="text-sm font-light text-gray-600">
-            {leaveRequestList && leaveRequestList.length > 0 ? (
-              leaveRequestList.map((leave, index) => (
-                <tr key={index} className="border-b border-gray-300 hover:bg-gray-100">
-                  {/* <td className="px-6 py-3 text-center">{leave.id}</td> */}
-                  <td className="px-6 py-3 text-center">{leave.type}</td>
-                  <td className="px-6 py-3 text-center">{leave.start_date}</td>
-                  <td className="px-6 py-3 text-center">{leave.end_date}</td>
-                  <td className="px-6 py-3 text-center">{leave.details}</td>
-                  <td className="px-6 py-3 text-center">
-                      <span className={`px-4 py-2 rounded-full text-[14px] font-medium ${
-                        leave.status === 'approved' 
-                          ? 'bg-green-100 text-green-800' 
-                          : leave.status === 'declined'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-yellow-100 text-gray-800'
-                      }`}>
-                        {leave.status}
-                      </span>
-                    </td>
+        {/* Leave Requests Table */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200 shadow-md overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200 font-semibold text-lg text-gray-800">
+            Leave Requests
+          </div>
+          <div className="p-6 overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Leave Type
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Start Date
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    End Date
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Reason
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
                 </tr>
-              ))
-            ) : (
-              <tr className="border-b border-gray-300 hover:bg-gray-100">
-                <td className="px-6 py-3" colSpan={7}>No Leave Request Found.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {userLeaveRequest.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                      No leave requests found.
+                    </td>
+                  </tr>
+                ) : (
+                  leaveRequestList.map((leave) => (
+                    <tr className="hover:bg-gray-50 transition-colors duration-150">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{leave.type}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {new Date(leave.start_date).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {new Date(leave.end_date).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{leave.details}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-medium rounded-full capitalize ${
+                            leave.status === 'approved'
+                              ? 'bg-green-100 text-green-800'
+                              : leave.status === 'declined'
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-yellow-100 text-gray-800'
+                          }`}
+                        >
+                          {leave.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-      {/* Leave Request Modal */}
-      <LeaveRequestModal isOpen={isModalOpen} onClose={handleCloseModal} />
+        {/* Leave Request Modal */}
+        <LeaveRequestModal isOpen={isModalOpen} onClose={handleCloseModal} />
       </div>
     </DashboardLayout>
   );

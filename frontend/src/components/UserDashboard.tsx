@@ -17,7 +17,7 @@ const FormattedDate = () => {
     day: "numeric",
   }).format(today);
 
-  return <p>{formattedDate}</p>;
+  return <span>{formattedDate}</span>;
 };
 
 const count = 0;
