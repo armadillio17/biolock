@@ -105,117 +105,115 @@ export default function DepartmentView() {
         </div>
 
         {/* Departments Card */}
-        <div className="max-w-3xl mx-auto">
-          <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-gray-200 p-6 shadow-md">
-            {/* Input Field */}
-            {showInput && (
-              <div className="mb-6 flex items-center gap-2">
-                <input
-                  type="text"
-                  value={newDepartment}
-                  onChange={(e) => setNewDepartment(e.target.value)}
-                  placeholder="Enter department name"
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
-                  autoFocus
-                />
-                <Button
-                  onClick={handleAdd}
-                  className="p-2 text-green-600 hover:bg-green-50 rounded-full transition-colors"
-                  title="Save"
-                >
-                  <Check className="w-5 h-5" />
-                </Button>
-                <Button
-                  onClick={() => {
-                    setShowInput(false);
-                    setNewDepartment('');
-                  }}
-                  className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
-                  title="Cancel"
-                >
-                  <X className="w-5 h-5" />
-                </Button>
-              </div>
-            )}
+        <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-gray-200 p-6 shadow-md">
+          {/* Input Field */}
+          {showInput && (
+            <div className="mb-6 flex items-center gap-2">
+              <input
+                type="text"
+                value={newDepartment}
+                onChange={(e) => setNewDepartment(e.target.value)}
+                placeholder="Enter department name"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
+                autoFocus
+              />
+              <Button
+                onClick={handleAdd}
+                className="p-2 text-green-600 hover:bg-green-50 rounded-full transition-colors"
+                title="Save"
+              >
+                <Check className="w-5 h-5" />
+              </Button>
+              <Button
+                onClick={() => {
+                  setShowInput(false);
+                  setNewDepartment('');
+                }}
+                className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                title="Cancel"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+          )}
 
-            {/* Error Message */}
-            {error && (
-              <div className="mb-4 p-3 text-red-600 bg-red-50 rounded-md text-sm">
-                {error}
-              </div>
-            )}
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 p-3 text-red-600 bg-red-50 rounded-md text-sm">
+              {error}
+            </div>
+          )}
 
-            {/* Department List */}
-            <div className="space-y-3">
-              {isLoading ? (
-                // Skeleton loader
-                [...Array(4)].map((_, i) => (
-                  <div key={i} className="flex items-center justify-between p-4 bg-gray-100 rounded-lg animate-pulse">
-                    <div className="h-5 bg-gray-300 rounded w-3/4"></div>
-                    <div className="flex gap-2">
-                      <div className="h-6 w-6 bg-gray-300 rounded-full"></div>
-                      <div className="h-6 w-6 bg-gray-300 rounded-full"></div>
-                    </div>
+          {/* Department List */}
+          <div className="space-y-3">
+            {isLoading ? (
+              // Skeleton loader
+              [...Array(4)].map((_, i) => (
+                <div key={i} className="flex items-center justify-between p-4 bg-gray-100 rounded-lg animate-pulse">
+                  <div className="h-5 bg-gray-300 rounded w-3/4"></div>
+                  <div className="flex gap-2">
+                    <div className="h-6 w-6 bg-gray-300 rounded-full"></div>
+                    <div className="h-6 w-6 bg-gray-300 rounded-full"></div>
                   </div>
-                ))
-              ) : departments.length > 0 ? (
-                departments.map(department => (
-                  <div
-                    key={department.id}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                  >
-                    {editingId === department.id ? (
-                      <div className="flex items-center gap-2 w-full">
-                        <input
-                          type="text"
-                          value={editingName}
-                          onChange={(e) => setEditingName(e.target.value)}
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                          autoFocus
-                        />
+                </div>
+              ))
+            ) : departments.length > 0 ? (
+              departments.map(department => (
+                <div
+                  key={department.id}
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  {editingId === department.id ? (
+                    <div className="flex items-center gap-2 w-full">
+                      <input
+                        type="text"
+                        value={editingName}
+                        onChange={(e) => setEditingName(e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                        autoFocus
+                      />
+                      <Button
+                        onClick={handleSaveEdit}
+                        className="p-2 text-green-600 hover:bg-green-50 rounded-full transition-colors"
+                      >
+                        <Check className="w-5 h-5" />
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setEditingId(null);
+                          setEditingName('');
+                        }}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                      >
+                        <X className="w-5 h-5" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <span className="text-gray-800 font-medium">{department.department_name}</span>
+                      <div className="flex items-center gap-2">
                         <Button
-                          onClick={handleSaveEdit}
-                          className="p-2 text-green-600 hover:bg-green-50 rounded-full transition-colors"
+                          onClick={() => handleEdit(department.id)}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
                         >
-                          <Check className="w-5 h-5" />
+                          <Pencil className="w-5 h-5" />
                         </Button>
                         <Button
-                          onClick={() => {
-                            setEditingId(null);
-                            setEditingName('');
-                          }}
+                          onClick={() => handleDelete(department.id)}
                           className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
                         >
-                          <X className="w-5 h-5" />
+                          <Trash2 className="w-5 h-5" />
                         </Button>
                       </div>
-                    ) : (
-                      <>
-                        <span className="text-gray-800 font-medium">{department.department_name}</span>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            onClick={() => handleEdit(department.id)}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
-                          >
-                            <Pencil className="w-5 h-5" />
-                          </Button>
-                          <Button
-                            onClick={() => handleDelete(department.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
-                          >
-                            <Trash2 className="w-5 h-5" />
-                          </Button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <div className="py-6 text-center text-gray-500">
-                  No departments found. Click "+" to add one.
+                    </>
+                  )}
                 </div>
-              )}
-            </div>
+              ))
+            ) : (
+              <div className="py-6 text-center text-gray-500">
+                No departments found. Click "+" to add one.
+              </div>
+            )}
           </div>
         </div>
       </div>
