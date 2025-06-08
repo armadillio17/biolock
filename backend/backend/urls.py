@@ -24,7 +24,7 @@ from user.views import (
     AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView, GetUserRoleView, LogoutView, UserCountView, DailyAttendanceCountView,
     NewRegistrationRegisteredList, AcceptedUserList, UploadProfilePictureView, RemoveProfilePictureView
 ) 
-from user.views.leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView
+from user.views.leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView, LeaveRequestListView
 from user.views.department import (
     DepartmentListCreateView, DepartmentDetailView, 
     AssignUserToDepartmentView, RemoveUserFromDepartmentView
@@ -72,8 +72,13 @@ from user.views.request_overtime import (
     ApproveOvertimeView
 )
 from user.views import location
+
 from user.views.company import (
     CompanyListView, CompanyUpdateDeleteView
+)
+
+from user.views.ping_company import (
+    PingCompany
 )
 
 urlpatterns = [
@@ -107,6 +112,7 @@ urlpatterns = [
     path('api/leave-requests/', LeaveRequestListCreateView.as_view(), name='leave-request-list'),
     path('api/leave-requests/<int:pk>/<str:date>', LeaveRequestDetailView.as_view(), name='leave-request-detail'),
     path('api/leave-requests/<int:pk>/', LeaveRequestDetailView.as_view(), name='leave-request-update-delete'),
+    path('api/leave-requests/<int:pk>/list', LeaveRequestListView.as_view(), name='leave-request-list'),
     path('api/leave-requests/count/', LeaveRequestCountView.as_view(), name='leave-request-count'),
 
     # Department Endpoints
@@ -183,6 +189,9 @@ urlpatterns = [
     # Profile Picture Upload and Removal
     path('api/user/<int:user_id>/upload-profile/', UploadProfilePictureView.as_view(), name='upload_profile'),
     path('api/user/<int:user_id>/remove-profile/', RemoveProfilePictureView.as_view(), name='remove_profile'),
+    
+    #Ping Company Ip
+    path('api/ping/company/', PingCompany.as_view(), name='ping_company'),
     
 ]
 

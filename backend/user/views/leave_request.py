@@ -147,3 +147,28 @@ class LeaveRequestCountView(APIView):
         return Response({
             "approvedLeaveCount": approved_count
             }, status=status.HTTP_200_OK)
+        
+class LeaveRequestListView(APIView):
+    """Retrieve leave requests for a specific user"""
+    
+    def get(self, request, user_id):
+        """Get all leave requests for a user"""
+        date_param = request.query_params.get('date')
+        
+        queryset = LeaveRequest.objects.filter(
+            user_id=user_id, 
+            deleted_at__isnull=True
+        )
+        
+        if date_param:
+            try:
+                formatted_date = datetime.strptime(date_param, '%Y-%m-%d')
+                queryset = queryset.filter(start_date__lte=formatted_date)
+            except ValueError:
+                return Response(
+                    {"error": "Invalid date format. Use YYYY-MM-DD."}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        
+        serializer = LeaveRequestSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
