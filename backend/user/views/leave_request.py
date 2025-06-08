@@ -96,8 +96,8 @@ class LeaveRequestDetailView(APIView):
             return Response({"error": "Invalid date format. Use YYYY-MM-DD."}, status=status.HTTP_400_BAD_REQUEST)
         
         leave_request = LeaveRequest.objects.filter(user_id=pk, start_date__lte=formatted_date, deleted_at__isnull=True)
-        if not leave_request:
-            return Response({"error": "Leave request not found"}, status=status.HTTP_404_NOT_FOUND)
+        # if not leave_request:
+        #     return Response({"error": "Leave request not found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = LeaveRequestSerializer(leave_request, many=True)
         # return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.data, status=status.HTTP_200_OK)
