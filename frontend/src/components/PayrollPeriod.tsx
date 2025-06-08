@@ -49,6 +49,7 @@ export default function PayrollPeriod() {
 
     try {
       const response = await authAxios.post(`${base_url}/payroll-period/`, payrollPeriod);
+      console.log(response);
       setSuccessMessage('Payroll period saved successfully!');
       setPayrollPeriod({
         start_date: '',
@@ -57,11 +58,13 @@ export default function PayrollPeriod() {
       });
       await fetchPayrollPeriods(); // Refresh list
     } catch (err: any) {
+
       const errorMessage =
         err.response?.data?.detail ||
         'Failed to save payroll period';
       setError(errorMessage);
       console.error(err);
+      
     } finally {
       setIsLoading(false);
     }

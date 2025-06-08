@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base_url } from '../config';
 import { authAxios } from "@/lib/secured-axios-instance";
 import { Button } from "./ui/button";
-import { CheckCircle, Trash2, Calendar } from "lucide-react";
+import { CheckCircle, Trash2 } from "lucide-react";
 
 interface HolidayOption {
   id: number;
