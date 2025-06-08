@@ -118,7 +118,7 @@ export default function LeaveRequest() {
                   </tr>
                 ) : (
                   leaveRequestList.map((leave) => (
-                    <tr className="hover:bg-gray-50 transition-colors duration-150">
+                    <tr key={leave.id.toString()} className="hover:bg-gray-50 transition-colors duration-150">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{leave.type}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {new Date(leave.start_date).toLocaleDateString()}
