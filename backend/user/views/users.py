@@ -9,6 +9,7 @@ from user.serializers import UserSerializer, UserProfileSerializer
 from rest_framework.authtoken.models import Token
 from user.utils.notification_history import log_notification
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 from rest_framework.parsers import MultiPartParser, FormParser
 import os
 from django.conf import settings
@@ -296,9 +297,14 @@ class UploadProfilePictureView(APIView):
 
 class RemoveProfilePictureView(APIView):
     def post(self, request, user_id):
-        user = get_object_or_404(CustomUser, id=user_id)
+        user = get_object_or_404(get_user_model(), id=user_id)
 
-        if user.profile_picture and user.profile_picture.name != 'default_profile.png':
+        if user.profile_picture:
+            # Delete the current image from storage
             user.profile_picture.delete()
-            user.profile_picture = 'default_profile.png'
-            user
+
+        # Clear the profile picture field
+        user.profile_picture = None
+        user.save()
+
+        return Response({"message": "Profile picture removed successfully."}, status=200)

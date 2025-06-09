@@ -29,7 +29,7 @@ const PositionsView = () => {
     await createPosition(newPosition);
     setNewPosition('');
     setShowInput(false);
-    await fetchPosition(); // Refresh list
+    await fetchPosition();
   };
 
   const handleUpdate = async (id: number) => {
@@ -37,7 +37,7 @@ const PositionsView = () => {
     await updatePosition(id, editingName);
     setEditingId(null);
     setEditingName('');
-    await fetchPosition(); // Refresh list
+    await fetchPosition();
   };
 
   // Helper function to render position items with loading state
@@ -118,7 +118,7 @@ const PositionsView = () => {
                 onClick={async () => {
                   if (window.confirm('Are you sure you want to delete this position?')) {
                     await deletePosition(pos.id);
-                    await fetchPosition(); // Refresh after deletion
+                    await fetchPosition();
                   }
                 }}
                 variant="outline"
