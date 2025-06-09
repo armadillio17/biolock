@@ -3,7 +3,7 @@ import { base_url } from '../config';
 
 export const authAxios = axios.create({
   baseURL: base_url,
-  withCredentials: true  // Sends cookies with every request
+  withCredentials: true
 });
 
 // Use this instance for authenticated requests

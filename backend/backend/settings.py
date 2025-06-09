@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
+import dj_database_url
+from dotenv import load_dotenv
+
 # from user.models.users import CustomUser
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -81,6 +84,11 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# Load environment variables from .env file
+load_dotenv()
+
+supabase_db_url = os.getenv("SUPABASE_DB_URL")
+
 DATABASES = {
     # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',
@@ -90,12 +98,22 @@ DATABASES = {
     #     'HOST': '127.0.0.1',
     #     'PORT': '3306',
     # },
+
+    #Previosly used database configuration for local development with SQLite
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',  # or a different path if needed
     }
+
+    #NEW DATABASE CONFIGURATION SUPABASE
+    # 'default': dj_database_url.parse(
+    #     os.getenv('SUPABASE_DB_URL'),
+    #     conn_max_age=600,
+    #     ssl_require=True
+    # )
 }
 
+SUPABASE_DB_URL = os.environ.get("SUPABASE_DB_URL")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
