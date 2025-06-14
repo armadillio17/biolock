@@ -1,4 +1,5 @@
 from decimal import Decimal
+from venv import logger
 from django.db.models import Sum
 from user.models import BenefitsConfiguration, AttendanceSummary, HolidayConfig
 
@@ -8,7 +9,10 @@ class PayslipCalculator:
         summaries = AttendanceSummary.objects.filter(
             user=user,
             date__range=(payroll_period.start_date, payroll_period.end_date)
-        ).select_related('attendance__holiday')
+        ).select_related(
+            'attendance__holiday',
+            'attendance__custom_holiday'
+        )
 
         return {
             'working_hours': summaries.aggregate(Sum('total_working_hours'))['total_working_hours__sum'] or 0,
@@ -18,45 +22,84 @@ class PayslipCalculator:
             'holiday_hours': sum(
                 summary.total_working_hours
                 for summary in summaries
-                if summary.attendance and summary.attendance.holiday
+                if summary.attendance and (summary.attendance.holiday or summary.attendance.custom_holiday)
             )
         }
-
+    #TODO : calculate_gross_pay not working properly, need to check the logic
     @staticmethod
-    def calculate_gross_pay(salary, hours_data):
-        total_regular_hours = Decimal(hours_data['working_hours']) - Decimal(hours_data['holiday_hours'])
-        total_holiday_hours = Decimal(hours_data['holiday_hours'])
+    def calculate_gross_pay(salary, payroll_period, hours_data):
+        print("calculate_gross_pay: salary amount:", salary.amount)
+        print("calculate_gross_pay: payroll period:", payroll_period)
+        print("calculate_gross_pay: hours_data:", hours_data)
+
+        working_hours = Decimal(hours_data['working_hours'])
         overtime_hours = Decimal(hours_data['overtime_hours'])
+
+        hourly_rate = Decimal(0)
 
         if salary.salary_type == "hourly":
             hourly_rate = salary.amount
         elif salary.salary_type == "monthly":
-            standard_work_days = 22
-            daily_rate = salary.amount / Decimal(standard_work_days)
+            standard_work_days = Decimal(22)
+            daily_rate = salary.amount / standard_work_days
             hourly_rate = daily_rate / Decimal(8)
         else:
             raise ValueError("Unsupported salary type")
 
-        regular_pay = total_regular_hours * hourly_rate
-        holiday_pay = Decimal(0)
-        overtime_pay = overtime_hours * hourly_rate * Decimal(1.5)  # e.g., 50% extra for OT
+        # ✅ Fixed: Do NOT subtract holiday hours from working hours
+        regular_pay = working_hours * hourly_rate
+        overtime_pay = overtime_hours * hourly_rate * Decimal('1.5')
+        holiday_pay = Decimal('0')
 
-        # Now apply holiday pay adjustments
+        # Calculate holiday pay based on AttendanceSummary
         summaries = AttendanceSummary.objects.filter(
             user=salary.user,
-            date__range=(salary.period.start_date, salary.period.end_date)
-        ).select_related('attendance__holiday__config')
+            date__range=(payroll_period.start_date, payroll_period.end_date)
+        ).select_related(
+            'attendance__holiday',
+            'attendance__custom_holiday'
+        )
 
         for summary in summaries:
-            if summary.attendance and summary.attendance.holiday:
-                holiday = summary.attendance.holiday
-                if hasattr(holiday, 'config'):
-                    cfg = holiday.config
-                    multiplier = Decimal(1) + (cfg.pay_percentage / Decimal(100))
-                    effective_rate = hourly_rate * multiplier
-                    holiday_pay += summary.total_working_hours * effective_rate
+            attendance = summary.attendance
+            if not attendance:
+                continue
 
-        return regular_pay + holiday_pay + overtime_pay
+            total_hours = summary.total_working_hours or Decimal(0)
+            cfg = PayslipCalculator.get_holiday_config(attendance)
+
+            if cfg:
+                multiplier = Decimal(1) + (cfg.pay_percentage / Decimal(100))
+                effective_rate = hourly_rate * multiplier
+                holiday_pay += total_hours * effective_rate
+                print(f"Holiday pay added for {summary.date}: {total_hours} hours × {effective_rate} = {total_hours * effective_rate}")
+
+        gross_pay = regular_pay + holiday_pay + overtime_pay
+
+        print("regular_pay:", regular_pay)
+        print("holiday_pay:", holiday_pay)
+        print("overtime_pay:", overtime_pay)
+        print("gross_pay:", gross_pay)
+
+        return gross_pay
+
+    @staticmethod
+    def get_holiday_config(attendance):
+        """
+        Helper to safely retrieve config from either Holiday or CustomHoliday.
+        Returns HolidayConfig object or None.
+        """
+        if attendance.holiday:
+            configs = getattr(attendance.holiday, 'configs', None)
+            if configs and configs.exists():
+                return configs.first()
+
+        elif attendance.custom_holiday:
+            custom_configs = getattr(attendance.custom_holiday, 'custom_configs', None)
+            if custom_configs and custom_configs.exists():
+                return custom_configs.first()
+
+        return None
 
     @staticmethod
     def calculate_benefits(user, gross_pay):

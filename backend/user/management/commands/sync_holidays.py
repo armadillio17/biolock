@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from user.utils.google_holiday import get_philippine_holidays
-from user.models.holiday import Holiday
+from user.models.holiday.holiday import Holiday
 
 class Command(BaseCommand):
     help = 'Sync Philippine holidays from Google Calendar into the database'
