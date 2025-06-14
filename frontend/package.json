@@ -21,6 +21,7 @@
     "date-fns": "^2.29.3",
     "dayjs": "^1.11.13",
     "iconsax-react": "^0.0.8",
+    "inspirational-quotes": "^2.0.1",
     "lucide-react": "^0.473.0",
     "motion": "^11.18.1",
     "react": "^18.3.1",
