@@ -4,7 +4,8 @@ from rest_framework import status
 from django.utils.timezone import now
 from user.models.attendance import Attendance
 from user.models.attendance_summary import AttendanceSummary
-from user.models.holiday import Holiday
+from user.models.holiday.holiday import Holiday
+from user.models.holiday.custom_holiday import CustomHoliday
 from user.serializers import AttendanceSerializer, ClockInSerializer, ClockOutSerializer
 from user.models.request_overtime import OvertimeRequest
 from django.utils import timezone
@@ -153,15 +154,19 @@ class UserClockInView(APIView):
                 else:
                     return Response({"error": "Already clocked in and not yet clocked out."}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Check if today is a holiday
+            # Determine if today is a holiday or custom holiday
             holiday = Holiday.objects.filter(holiday_date=today).first()
+            custom_holiday = None
 
-            # Prepare data for serializer
             data = request.data.copy()
 
             if holiday:
-                print(f"Today is a holiday: {holiday.holiday_name}")
+                print(f"Today is a regular holiday: {holiday.holiday_name}")
                 data['holiday'] = holiday.id
+            elif CustomHoliday.objects.filter(custom_holiday_date=today).exists():
+                custom_holiday = CustomHoliday.objects.get(custom_holiday_date=today)
+                print(f"Today is a custom holiday: {custom_holiday.custom_holiday_name}")
+                data['custom_holiday'] = custom_holiday.id
             else:
                 print("Today is not a holiday.")
 

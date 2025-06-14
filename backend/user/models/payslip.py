@@ -5,17 +5,31 @@ from user.models.payroll_period import PayrollPeriod
 User = get_user_model()
 
 class Payslip(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="payslips", null=True, blank=True)
-    payroll_period = models.ForeignKey(PayrollPeriod, on_delete=models.CASCADE, related_name="payslips")
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="payslips", null=True, blank=True
+    )
+    payroll_period = models.ForeignKey(
+        PayrollPeriod, on_delete=models.CASCADE, related_name="payslips"
+    )
 
-    total_working_hours = models.IntegerField(default=0)
-    total_overtime_hours = models.IntegerField(default=0)
-    total_leave_hours = models.IntegerField(default=0)
+    total_working_hours = models.FloatField(default=0.0)
+    total_overtime_hours = models.FloatField(default=0.0)
+    total_leave_hours = models.FloatField(default=0.0)
     total_absences = models.IntegerField(default=0)
 
     gross_pay = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     deductions = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     net_pay = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    # Employee contributions
+    sss_employee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    philhealth_employee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    pagibig_employee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    # Employer contributions
+    sss_employer = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    philhealth_employer = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    pagibig_employer = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     # Government contributions - Employee Share
     sss_employee = models.DecimalField(
