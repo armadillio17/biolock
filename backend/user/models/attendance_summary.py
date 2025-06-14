@@ -1,11 +1,13 @@
 from django.db import models
 from django.utils.timezone import now
 from django.contrib.auth import get_user_model
+from user.models.attendance import Attendance  # Adjust the import based on your project structure
 
 User = get_user_model()
 
 class AttendanceSummary(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendance_summaries", null=True, blank=True)
+    attendance = models.ForeignKey(Attendance, on_delete=models.SET_NULL, null=True, blank=True, related_name='summary')
     date = models.DateField()
 
     total_working_hours = models.FloatField(default=0.0)

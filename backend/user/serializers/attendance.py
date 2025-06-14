@@ -104,11 +104,12 @@ class ClockOutSerializer(serializers.ModelSerializer):
             # Ensure we're updating the correct record (already filtered in view)
             # instance.clock_out = now()  # Set the clock-out time
             # instance.clock_out = now().astimezone(tz)
-            instance.clock_out = datetime(2025, 3, 1, 22, 30, 0, tzinfo=tz)
+            instance.clock_out = now()
             
             clock_in_time = instance.clock_in.astimezone(tz)
             clock_out_time = instance.clock_out.astimezone(tz)
             
+            print(f"today {today}")
             print(f"clock_in_time {clock_in_time}")
             print(f"clock_out_time {clock_out_time}")
             
@@ -116,7 +117,7 @@ class ClockOutSerializer(serializers.ModelSerializer):
             total_hours = time_difference.total_seconds() // 3600
             instance.working_hours = min(total_hours, 8)
             instance.overtime_hours = max(total_hours - 8, 0)
-            
+            instance.is_clockOut = True
             
             instance.save()
             

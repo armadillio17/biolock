@@ -14,9 +14,6 @@ class PayrollPeriodListCreateView(APIView):
 
     def post(self, request, *args, **kwargs):
         """Create a new payroll period."""
-        # First check if user is authenticated
-        if not request.user.is_authenticated:
-            return Response({"error": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
 
         serializer = PayrollPeriodSerializer(data=request.data)
         if serializer.is_valid():

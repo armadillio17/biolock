@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Button } from "./ui/button"
-import { Calendar, Plus, Pencil, Trash2, X, Check } from 'lucide-react'
+import { Button } from "./ui/button";
+import { Calendar, Plus, Pencil, Trash2, X, Check } from 'lucide-react';
 import { authAxios } from "@/lib/secured-axios-instance";
 import { base_url } from '../config';
 
-type SalaryType = 'monthly' | 'hourly'
+type SalaryType = 'monthly' | 'hourly';
 
 interface User {
   id: number;
@@ -18,27 +18,28 @@ interface UserSalary {
   user: number;
   salary_type: SalaryType; 
   amount: string;
-  effective_date: string; 
+  effective_date: string;
 }
 
 export default function UserSalary() {
   const [formData, setFormData] = useState<{
-    id?: number;
     user: string;
     salary_type: SalaryType;
     amount: string;
     effective_date: string;
   }>({
     user: '',
-    salary_type: 'monthly' as SalaryType,
+    salary_type: 'monthly',
     amount: '',
     effective_date: ''
   });
+
   const [salaryList, setSalaryList] = useState<UserSalary[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string>('');
+  const [, setIsFormOpen] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -72,7 +73,7 @@ export default function UserSalary() {
       const response = await authAxios.get(`${base_url}/user-salary/`);
       setSalaryList(response.data);
     } catch (err) {
-      setError('Failed to fetch salaries');
+      setError('Failed to fetch salary data');
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -82,7 +83,8 @@ export default function UserSalary() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+    setError('');
+
     try {
       const payload = {
         ...formData,
@@ -93,9 +95,12 @@ export default function UserSalary() {
       await authAxios.post(`${base_url}/user-salary/`, payload);
       await fetchSalaries();
       resetForm();
-    } catch (err) {
-      setError('Failed to save salary');
-      console.error(err);
+    } catch (err: any) {
+      const errorMessage =
+        err.response?.data?.user?.[0] ||
+        err.response?.data?.detail ||
+        'Failed to save salary';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -114,7 +119,6 @@ export default function UserSalary() {
         amount: parseFloat(salary.amount),
         effective_date: salary.effective_date
       };
-
       await authAxios.put(`${base_url}/user-salary/${salary.id}/`, payload);
       setEditingId(null);
       await fetchSalaries();
@@ -131,24 +135,24 @@ export default function UserSalary() {
   };
 
   const handleDelete = async (id: number) => {
-    if (window.confirm('Are you sure you want to delete this salary record?')) {
-      setIsLoading(true);
-      try {
-        await authAxios.delete(`${base_url}/user-salary/${id}/`);
-        await fetchSalaries();
-      } catch (err) {
-        setError('Failed to delete salary');
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
+    if (!window.confirm('Are you sure you want to delete this salary?')) return;
+
+    setIsLoading(true);
+    try {
+      await authAxios.delete(`${base_url}/user-salary/${id}/`);
+      setSalaryList(prev => prev.filter(item => item.id !== id));
+    } catch (err) {
+      setError('Failed to delete salary');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleEditChange = (id: number, field: string, value: string | number) => {
-    setSalaryList(prev => prev.map(item => 
-      item.id === id ? { ...item, [field]: value } : item
-    ));
+  const handleEditChange = (id: number, field: keyof UserSalary, value: string | number) => {
+    setSalaryList(prev =>
+      prev.map(item => (item.id === id ? { ...item, [field]: value } : item))
+    );
   };
 
   const resetForm = () => {
@@ -158,6 +162,7 @@ export default function UserSalary() {
       amount: '',
       effective_date: ''
     });
+    setIsFormOpen(false);
   };
 
   const getUserName = (userId: number) => {
@@ -166,24 +171,28 @@ export default function UserSalary() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Add New Salary</h2>
-        
-        {error && <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">{error}</div>}
-        
+    <div className="p-4 space-y-6 md:p-6">
+      {/* Add New Salary Card */}
+      <div className="p-6 border border-gray-200 shadow-md bg-white/80 backdrop-blur-sm rounded-xl">
+        <h2 className="mb-4 text-xl font-bold text-gray-800">Add New Salary</h2>
+        {error && (
+          <div className="p-3 mb-4 text-sm text-red-600 border border-red-200 rounded-md bg-red-50">
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">User</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700">User</label>
             <select
-              className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-400"
               value={formData.user}
-              onChange={(e) => setFormData({...formData, user: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, user: e.target.value })}
               required
               disabled={isLoading}
             >
               <option value="">{isLoading ? 'Loading...' : 'Select User'}</option>
-              {users.map((user) => (
+              {users.map(user => (
                 <option key={user.id} value={user.id}>
                   {user.first_name} {user.last_name}
                 </option>
@@ -191,81 +200,102 @@ export default function UserSalary() {
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Salary Type</label>
-            <select
-              className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              value={formData.salary_type}
-              onChange={(e) => setFormData({...formData, salary_type: e.target.value as SalaryType})}
-              required
-            >
-              <option value="monthly">Monthly</option>
-              <option value="hourly">Hourly</option>
-            </select>
-          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700">Salary Type</label>
+              <select
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-400"
+                value={formData.salary_type}
+                onChange={(e) =>
+                  setFormData({ ...formData, salary_type: e.target.value as SalaryType })
+                }
+                required
+              >
+                <option value="monthly">Monthly</option>
+                <option value="hourly">Hourly</option>
+              </select>
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              value={formData.amount}
-              onChange={(e) => setFormData({...formData, amount: e.target.value})}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Effective Date</label>
-            <div className="relative">
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700">Amount</label>
               <input
-                type="date"
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-10"
-                value={formData.effective_date}
-                onChange={(e) => setFormData({...formData, effective_date: e.target.value})}
+                type="number"
+                min="0"
+                step="0.01"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-400"
+                value={formData.amount}
+                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                 required
               />
-              <Calendar className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
             </div>
           </div>
 
-          <div className="flex space-x-3">
-            <Button type="submit" className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" disabled={isLoading}>
-              {isLoading ? 'Saving...' : (
-                <><Plus className="mr-2 h-4 w-4" /> Add Salary</>
-              )}
+          <div>
+            <label className="block mb-1 text-sm font-medium text-gray-700">Effective Date</label>
+            <div className="relative">
+              <Calendar className="absolute w-5 h-5 text-gray-400 left-3 top-3" />
+              <input
+                type="date"
+                className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-400"
+                value={formData.effective_date}
+                onChange={(e) => setFormData({ ...formData, effective_date: e.target.value })}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end pt-2">
+            <Button
+              type="submit"
+              className="flex items-center gap-2 text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
+              disabled={isLoading}
+            >
+              <Plus className="w-4 h-4" />
+              {isLoading ? "Saving..." : "Add Salary"}
             </Button>
           </div>
         </form>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Salary List</h3>
-        {isLoading && salaryList.length === 0 ? (
-          <div className="text-center py-4">Loading...</div>
-        ) : salaryList.length === 0 ? (
-          <div className="text-center py-4 text-gray-500">No records found</div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">User</th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Type</th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Amount</th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Date</th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {salaryList.map((salary) => (
-                  <tr key={salary.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+      {/* Salary List Table */}
+      <div className="overflow-hidden border border-gray-200 shadow-md rounded-xl bg-white/80 backdrop-blur-sm">
+        <div className="px-6 py-4 text-lg font-semibold text-gray-800 border-b border-gray-200">
+          Salary Records
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-sm font-semibold text-left text-gray-700">User</th>
+                <th className="px-6 py-3 text-sm font-semibold text-left text-gray-700">Type</th>
+                <th className="px-6 py-3 text-sm font-semibold text-right text-gray-700">Amount</th>
+                <th className="px-6 py-3 text-sm font-semibold text-right text-gray-700">Date</th>
+                <th className="px-6 py-3 text-sm font-semibold text-right text-gray-700">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {isLoading && salaryList.length === 0 ? (
+                [...Array(3)].map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap"><div className="w-24 h-5 bg-gray-200 rounded"></div></td>
+                    <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap"><div className="w-16 h-5 bg-gray-200 rounded"></div></td>
+                    <td className="px-6 py-4 text-sm text-right text-gray-600 whitespace-nowrap"><div className="w-20 h-5 ml-auto bg-gray-200 rounded"></div></td>
+                    <td className="px-6 py-4 text-sm text-right text-gray-600 whitespace-nowrap"><div className="w-20 h-5 ml-auto bg-gray-200 rounded"></div></td>
+                    <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
+                      <div className="inline-flex gap-2">
+                        <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                        <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : salaryList.length > 0 ? (
+                salaryList.map((salary) => (
+                  <tr key={salary.id} className="transition-colors duration-150 hover:bg-gray-50">
+                    <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                       {editingId === salary.id ? (
                         <select
-                          className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                          className="w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400"
                           value={salary.user}
                           onChange={(e) => handleEditChange(salary.id!, 'user', parseInt(e.target.value))}
                         >
@@ -279,10 +309,10 @@ export default function UserSalary() {
                         getUserName(salary.user)
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize text-center">
+                    <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                       {editingId === salary.id ? (
                         <select
-                          className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                          className="w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400"
                           value={salary.salary_type}
                           onChange={(e) => handleEditChange(salary.id!, 'salary_type', e.target.value as SalaryType)}
                         >
@@ -290,92 +320,107 @@ export default function UserSalary() {
                           <option value="hourly">Hourly</option>
                         </select>
                       ) : (
-                        salary.salary_type
+                        <span className={`capitalize ${salary.salary_type === 'monthly' ? 'text-blue-600' : 'text-green-600'}`}>
+                          {salary.salary_type}
+                        </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                    <td className="px-6 py-4 text-sm text-right text-gray-800 whitespace-nowrap">
                       {editingId === salary.id ? (
                         <input
                           type="number"
                           min="0"
                           step="0.01"
-                          className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                          className="w-full text-right border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400"
                           value={salary.amount}
                           onChange={(e) => handleEditChange(salary.id!, 'amount', e.target.value)}
                         />
                       ) : (
                         parseFloat(salary.amount).toLocaleString(undefined, {
                           style: 'currency',
-                          currency: 'USD',
+                          currency: 'PHP',
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2
                         })
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                    <td className="px-6 py-4 text-sm text-right text-gray-800 whitespace-nowrap">
                       {editingId === salary.id ? (
-                        <div className="relative">
+                        <div className="relative max-w-xs mx-auto">
                           <input
                             type="date"
-                            className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-10"
+                            className="w-full border border-gray-300 rounded-lg pl-9 focus:ring-2 focus:ring-indigo-400"
                             value={salary.effective_date}
                             onChange={(e) => handleEditChange(salary.id!, 'effective_date', e.target.value)}
                           />
-                          <Calendar className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 text-center" />
                         </div>
                       ) : (
                         new Date(salary.effective_date).toLocaleDateString()
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                    <td className="flex justify-end px-6 py-4 space-x-2 text-sm text-right whitespace-nowrap">
                       {editingId === salary.id ? (
-                        <div className="flex space-x-2 justify-center">
+                        <>
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
+                            className="text-green-600 border-green-300 hover:bg-green-50"
                             onClick={() => handleSaveEdit(salary)}
                             disabled={isLoading}
                           >
-                            <Check className="h-4 w-4 text-green-500 items-center" />
+                            <Check className="w-4 h-4" />
                           </Button>
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
+                            className="text-red-600 border-red-300 hover:bg-red-50"
                             onClick={handleCancelEdit}
                             disabled={isLoading}
                           >
-                            <X className="h-4 w-4 text-red-500" />
+                            <X className="w-4 h-4" />
                           </Button>
-                        </div>
+                        </>
                       ) : (
-                        <div className="flex space-x-2 justify-center">
+                        <>
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
+                            className="text-blue-600 border-blue-300 hover:bg-blue-50"
                             onClick={() => handleEdit(salary)}
                             disabled={isLoading || editingId !== null}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
                           >
-                            <Pencil className="h-4 w-4" />
+                            <Pencil className="w-4 h-4" />
                           </Button>
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
+                            className="text-red-600 border-red-300 hover:bg-red-50"
                             onClick={() => salary.id && handleDelete(salary.id)}
                             disabled={isLoading || editingId !== null}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
                           >
-                            <Trash2 className="h-4 w-4 text-red-500" />
+                            <Trash2 className="w-4 h-4" />
                           </Button>
-                        </div>
+                        </>
                       )}
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                ))
+              ) : isLoading ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                    Loading...
+                  </td>
+                </tr>
+              ) : (
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                    No salary records found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

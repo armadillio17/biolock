@@ -17,3 +17,4 @@ from .benefits import BenefitsConfiguration
 from .location import Location
 from .company import Company
 from .request_overtime import OvertimeRequest
+from .holiday_config import HolidayConfig

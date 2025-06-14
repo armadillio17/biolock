@@ -9,7 +9,10 @@ from user.serializers import UserSerializer, UserProfileSerializer
 from rest_framework.authtoken.models import Token
 from user.utils.notification_history import log_notification
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 from rest_framework.parsers import MultiPartParser, FormParser
+import os
+from django.conf import settings
 
 # from django.contrib.auth.models import User
 
@@ -178,8 +181,10 @@ class UserAuthenticationView(APIView):
             response = Response({
                 "first_name": user.first_name,
                 "last_name" : user.last_name,
+                "position_id" : user.position_id,
                 "user_id": user.id,
-                "token": token.key,  # ✅ Include the token here
+                "token": token.key,
+                "profileImage": request.build_absolute_uri(user.profile_picture.url) if user.profile_picture else None,
                 "success": True
             }, status=status.HTTP_200_OK)
             
@@ -247,14 +252,15 @@ class NewRegistrationRegisteredList(APIView):
 
 class AcceptedUserList(APIView):
     def get(self, request):
-        """ Get Newly Registered User Need for Approval"""
+        """ Get Accepted Users"""
         
         user = CustomUser.objects.filter(is_accepted=True, deleted_at__isnull=True)
         serializer = UserSerializer(user, many=True)
 
-        # Log a notification for the created leave request
+        # Get user_id safely for notification logging
+        user_id = request.user.id if hasattr(request, 'user') and request.user.is_authenticated else None
         log_notification(
-            user_id=request.user.id,
+            user_id=user_id,
             notification_type="Registration Request",
             data={
                 "status": "Completed",
@@ -274,8 +280,14 @@ class UploadProfilePictureView(APIView):
         if 'profile_picture' not in request.FILES:
             return Response({"error": "No file uploaded"}, status=status.HTTP_400_BAD_REQUEST)
 
-        profile_picture = request.FILES['profile_picture']
-        user.profile_picture = profile_picture
+        # Delete the old profile picture if it exists
+        if user.profile_picture:
+            old_picture_path = user.profile_picture.path
+            if os.path.isfile(old_picture_path):
+                os.remove(old_picture_path)
+
+        # Assign and save the new profile picture
+        user.profile_picture = request.FILES['profile_picture']
         user.save()
 
         return Response({
@@ -285,9 +297,14 @@ class UploadProfilePictureView(APIView):
 
 class RemoveProfilePictureView(APIView):
     def post(self, request, user_id):
-        user = get_object_or_404(CustomUser, id=user_id)
+        user = get_object_or_404(get_user_model(), id=user_id)
 
-        if user.profile_picture and user.profile_picture.name != 'default_profile.png':
+        if user.profile_picture:
+            # Delete the current image from storage
             user.profile_picture.delete()
-            user.profile_picture = 'default_profile.png'
-            user
+
+        # Clear the profile picture field
+        user.profile_picture = None
+        user.save()
+
+        return Response({"message": "Profile picture removed successfully."}, status=200)

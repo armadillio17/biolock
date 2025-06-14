@@ -28,6 +28,7 @@ class Attendance(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     scheduled_start = models.DateTimeField(null=True, blank=True)
     scheduled_end = models.DateTimeField(null=True, blank=True)
+    is_clockOut = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)

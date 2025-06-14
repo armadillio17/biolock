@@ -4,8 +4,10 @@ from rest_framework import status
 from django.utils.timezone import now
 from user.models.attendance import Attendance
 from user.models.attendance_summary import AttendanceSummary
+from user.models.holiday import Holiday
 from user.serializers import AttendanceSerializer, ClockInSerializer, ClockOutSerializer
 from user.models.request_overtime import OvertimeRequest
+from django.utils import timezone
 
 class AttendanceListCreateView(APIView):
     def get(self, request):
@@ -81,30 +83,102 @@ class UserAttendanceView(APIView):
 #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserClockInView(APIView):
+    def get(self, request, pk):
+        """Check if the user has clocked in today and return clock-out status."""
+        try:
+            today = now().date()
+
+            attendance = Attendance.objects.filter(
+                user_id=pk,
+                clock_in__date=today,
+                clock_in__isnull=False,
+                deleted_at__isnull=True
+            ).first()
+
+            if attendance:
+                return Response({
+                    "has_clocked_in": True,
+                    "is_clockOut": attendance.is_clockOut,
+                    "clock_in": attendance.clock_in,
+                    "clock_out": attendance.clock_out
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({
+                    "has_clocked_in": False,
+                    "is_clockOut": False
+                }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            print(f"Unexpected Error: {str(e)}")
+            return Response({
+                "error": "An unexpected error occurred.",
+                "is_clockOut": None,
+                "has_clocked_in": False
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        except Exception as e:
+            print(f"Unexpected Error: {str(e)}")
+            return Response({
+                "error": "An unexpected error occurred.",
+                "is_clockOut": None
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
     def post(self, request):
-        """Create a new clock-in record"""
+        """Create a new clock-in record and link to AttendanceSummary"""
 
         try:
             user_id = request.data.get("user_id")
-            today = now().date()
-            
-            print("user_id:", user_id)  # Log validation errors
+            now = timezone.localtime()
+            today = now.date()
+
+            print("user_id:", user_id)
             print("Incoming request data:", request.data)
 
-            # Check for an open attendance (already clocked in)
+            # Check for existing open attendance
             existing = Attendance.objects.filter(
                 user_id=user_id,
-                # clock_in__date=today,
+                clock_in__date=today,
                 clock_out__isnull=True
             ).first()
 
             if existing:
-                return Response({"error": "Already clocked in and not yet clocked out."}, status=status.HTTP_400_BAD_REQUEST)
+                is_clocked_out = Attendance.objects.filter(
+                    user_id=user_id,
+                    clock_in__date=today,
+                    is_clockOut=True
+                ).exists()
 
-            # Create a new attendance record
-            serializer = ClockInSerializer(data=request.data)
+                if is_clocked_out:
+                    return Response({"error": "Already clocked out."}, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    return Response({"error": "Already clocked in and not yet clocked out."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Check if today is a holiday
+            holiday = Holiday.objects.filter(holiday_date=today).first()
+
+            # Prepare data for serializer
+            data = request.data.copy()
+
+            if holiday:
+                print(f"Today is a holiday: {holiday.holiday_name}")
+                data['holiday'] = holiday.id
+            else:
+                print("Today is not a holiday.")
+
+            # Serialize and save the Attendance
+            serializer = ClockInSerializer(data=data)
             if serializer.is_valid():
-                serializer.save()
+                attendance = serializer.save()  # Save returns the Attendance instance
+
+                # Now create or update the AttendanceSummary with this attendance
+                AttendanceSummary.objects.update_or_create(
+                    user=attendance.user,
+                    date=today,
+                    defaults={
+                        'attendance': attendance,
+                    }
+                )
+
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
 
             print("Validation Errors:", serializer.errors)
@@ -121,7 +195,7 @@ class UserClockOutView(APIView):
         today = now().date()
         user_id = request.data["user_id"]
         REGULAR_HOURS = 8
-        MIN_OVERTIME_MINUTES = 30  # Minimum overtime to count (30 minutes)
+        MIN_OVERTIME_MINUTES = 30
         
         attendance = Attendance.objects.filter(
             user_id=user_id,

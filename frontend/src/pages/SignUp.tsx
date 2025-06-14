@@ -7,8 +7,10 @@ import { Button } from '@/components/ui/button';
 import { User, Lock1, Sms, UserEdit } from 'iconsax-react';
 import { base_url } from '@/config'
 import { useNavigate } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
 
 function SignUp() {
+
     const navigate =  useNavigate();
     const [formData, setFormData] = useState({
         firstName: '',
@@ -20,28 +22,48 @@ function SignUp() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
 
-        const response = await fetch(`${base_url}/user/`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                first_name: formData.firstName,
-                last_name: formData.lastName,
-                username: formData.username,
-                email: formData.email,
-                password: formData.password,
-            }),
-        });
+        try {
+            const response = await fetch(`${base_url}/user/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    first_name: formData.firstName,
+                    last_name: formData.lastName,
+                    username: formData.username,
+                    email: formData.email,
+                    password: formData.password,
+                }),
+            });
 
-        if (!response) {
-            const error = response;
-            throw new Error(error || "Sign Up Failed");
+            if (!response.ok) {
+                const errorData = await response.json();
+            
+                if (errorData?.username) {
+                    const originalMessage = errorData.username[0];
+            
+                    // Check if it's the "already exists" error and customize it
+                    if (originalMessage.toLowerCase().includes("already exists")) {
+                        toast.dismiss();
+                        toast.error("Username is already taken.", );
+                    }
+                    
+                } else {
+                    throw new Error("Sign Up Failed");
+                }
+                return;
+            }
+
+            navigate('/');
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                console.error("Error:", err.message);
+            } else {
+                console.error("An unknown error occurred");
+            }
         }
-
-        navigate('/');
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,8 +91,7 @@ function SignUp() {
             >
                 <img src={Logo} alt="Logo" className="max-h-[62px] max-w-[61px]" />
                 <div>
-                    <h1 className="mb-2 text-2xl font-bold">Lorem Ipsum dolor Emet</h1>
-                    <p className="mb-4 text-sm">Lorem ipsum dolor sit amet,</p>
+                    <h1 className="flex mb-5 text-2xl font-bold justify-center">Register</h1>
                     <form onSubmit={handleSubmit} className="min-w-[300px] flex flex-col gap-4">
                         <div className="relative w-full">
                             <UserEdit
@@ -104,6 +125,9 @@ function SignUp() {
                                 required
                             />
                         </div>
+                        
+                        <Toaster reverseOrder={false} />
+
                         <div className="relative w-full">
                             <User
                                 size="18"
@@ -120,6 +144,7 @@ function SignUp() {
                                 required
                             />
                         </div>
+                        
                         <div className="relative w-full">
                             <Sms
                                 size="18"
@@ -154,10 +179,10 @@ function SignUp() {
                                 required
                             />
                         </div>
-                        <Button type="submit" className="w-full bg-[#7BDFF2] min-h-[51px] rounded-[5px]">
+                        <Button type="submit" className="w-full bg-[#7BDFF2] min-h-[51px] rounded-[5px] mt-5">
                             <p className="text-md font-bold text-[#4E4E53]">Sign Up</p>
                         </Button>
-                        <div className="flex justify-center gap-2 mt-8">
+                        <div className="flex justify-center gap-2 mt-3">
                             <p>Already have an account?</p>
                             <a href="/" className="text-[#1600DD]">
                                 Sign In

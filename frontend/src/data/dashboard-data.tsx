@@ -1,4 +1,16 @@
-import { Element4, Calendar, CalendarAdd, CalendarEdit, DocumentText1, Profile2User, Activity, Hierarchy, MoneySend, People, DocumentText } from "iconsax-react";
+import { Element4, Calendar, CalendarAdd } from "iconsax-react";
+import {
+  LayoutDashboard,
+  FileText,
+    PhilippinePeso,
+  Clock,
+  BarChart3,
+  Users,
+  Building2,
+  UserCheck,
+  Activity as LucideActivity,
+} from "lucide-react";
+
 import dummyPic from "@/assets/dummy person.jpg";
 // Define a type for the menu items
 export interface SidebarMenuItem {
@@ -15,22 +27,17 @@ export interface SidebarProfile {
     img: string;
 }
 
-// Sidebar Menu Array
+// Sidebar Menu Array (Admin)
 export const sidebarMenu: SidebarMenuItem[] = [
-    { name: "Dashboard", icon: <Element4 size="27" color= "#0F217D" />, path: "/dashboard" },
-    // { name: "Events", icon: <CalendarTick size="27" color= "#E26D5C" />, path: "/events" },
-    // { name: "Inbox", icon: <CalendarAdd size="27" color= "#F988AA" />, path: "/inbox" },
-    { name: "Leave Request", icon: <CalendarAdd size="27" color= "#F988AA" />, path: "/leave-request" },
-    { name: "Payroll", icon: <MoneySend size="27" color= "#723D46" />, path: "/payroll" },
-    { name: "Overtime", icon: <CalendarEdit size="27" color= "#53CDED" />, path: "/overtime" },
-    { name: "Reports", icon: <DocumentText1 size="27" color= "#13A89E" />, path: "/reports" },
-    { name: "Users", icon: <Profile2User size="27" color= "#FABA6C" />, path: "/users" },
-    { name: "Departments", icon: <Hierarchy size="27" color="#6C4AB6" />, path: "/department" },
-    { name: "Position", icon: <People size="27" color="#FA4AB6" />, path: "/position" },
-    // { name: "Payroll", icon: <MoneyRecive size="27" color="#6C4AB6" />, path: "/department" },
-    { name: "Activity Logs", icon: <Activity size="27" color= "#723D46" />, path: "/activity-logs" },
-    
-
+  { name: "Dashboard", icon: <LayoutDashboard />, path: "/dashboard" },
+  { name: "Leave Request", icon: <FileText />, path: "/leave-request" },
+    { name: "Payroll", icon: <PhilippinePeso />, path: "/payroll" },
+  { name: "Overtime", icon: <Clock />, path: "/overtime" },
+  { name: "Reports", icon: <BarChart3 />, path: "/reports" },
+  { name: "Users", icon: <Users />, path: "/users" },
+  { name: "Departments", icon: <Building2 />, path: "/department" },
+  { name: "Position", icon: <UserCheck />, path: "/position" },
+  { name: "Activity Logs", icon: <LucideActivity />, path: "/activity-logs" },
 ];
 
 export const sidebarMenuUser: SidebarMenuItem[] = [

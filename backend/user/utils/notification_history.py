@@ -4,14 +4,12 @@ from user.models.notification_history import NotificationHistory
 User = get_user_model()
 
 def log_notification(user_id, notification_type, data):
-    """Helper function to log a notification"""
-    try:
-        user = User.objects.get(pk=user_id)
-    except User.DoesNotExist:
-        raise ValueError(f"User with ID {user_id} does not exist")
+    if not user_id:
+        # Skip logging for system operations or unauthenticated requests
+        return
 
     NotificationHistory.objects.create(
-        user_id=user,
+        user_id_id=user_id,
         type=notification_type,
         data=data
     )

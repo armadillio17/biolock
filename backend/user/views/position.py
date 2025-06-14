@@ -58,8 +58,13 @@ class PositionDetailView(APIView):
         position = self.get_object(pk)
         if not position:
             return Response({"error": "Position not found"}, status=status.HTTP_404_NOT_FOUND)
-        position.delete()
-        return Response({"message": "Position deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+        try:
+            position.delete()
+            return Response({"message": "Position deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({"error": f"Failed to delete position: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 class AssignUserToPositionView(APIView):

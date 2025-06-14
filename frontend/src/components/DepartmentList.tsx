@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import DashboardLayout from "@/layouts/DashboardLayout"
-import { Button } from "./ui/button"
+import DashboardLayout from "@/layouts/DashboardLayout";
+import { Button } from "./ui/button";
 import { authAxios } from "@/lib/secured-axios-instance";
 import { base_url } from '../config';
-import { Plus, Pencil, Trash2, X, Check } from 'lucide-react'
+import { Plus, Pencil, Trash2, X, Check } from 'lucide-react';
 
 interface Department {
   id: number;
@@ -19,17 +19,17 @@ export default function DepartmentView() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch departments on component mount
+  // Fetch departments on mount
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
         const response = await authAxios.get(`${base_url}/departments/`);
         setDepartments(response.data);
-        setIsLoading(false);
       } catch (err) {
-        setError('Failed to fetch departments');
-        setIsLoading(false);
+        setError('Failed to load departments');
         console.error('Error fetching departments:', err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -41,9 +41,8 @@ export default function DepartmentView() {
 
     try {
       const response = await authAxios.post(`${base_url}/departments/`, {
-        department_name: newDepartment
+        department_name: newDepartment,
       });
-      
       setDepartments([...departments, response.data]);
       setNewDepartment('');
       setShowInput(false);
@@ -66,7 +65,7 @@ export default function DepartmentView() {
 
     try {
       const response = await authAxios.put(`${base_url}/departments/${editingId}/`, {
-        department_name: editingName
+        department_name: editingName,
       });
 
       setDepartments(departments.map(dept =>
@@ -90,89 +89,94 @@ export default function DepartmentView() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <DashboardLayout>
-        <div className="min-h-screen flex items-center justify-center">
-          <p>Loading departments...</p>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  if (error) {
-    return (
-      <DashboardLayout>
-        <div className="min-h-screen flex items-center justify-center">
-          <p className="text-red-500">{error}</p>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <div className="flex items-center justify-between mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">Departments</h1>
+      <div className="p-4 md:p-6 space-y-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-gray-200">
+          <h1 className="text-2xl font-bold text-gray-800">Departments</h1>
+          <Button
+            onClick={() => setShowInput(true)}
+            className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg shadow hover:shadow-md transition-shadow"
+          >
+            <Plus className="w-4 h-4 mr-1" />
+            Add Department
+          </Button>
+        </div>
+
+        {/* Departments Card */}
+        <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-gray-200 p-6 shadow-md">
+          {/* Input Field */}
+          {showInput && (
+            <div className="mb-6 flex items-center gap-2">
+              <input
+                type="text"
+                value={newDepartment}
+                onChange={(e) => setNewDepartment(e.target.value)}
+                placeholder="Enter department name"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
+                autoFocus
+              />
               <Button
-                onClick={() => setShowInput(true)}
-                className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors"
+                onClick={handleAdd}
+                className="p-2 text-green-600 hover:bg-green-50 rounded-full transition-colors"
+                title="Save"
               >
-                <Plus className="h-6 w-6" />
+                <Check className="w-5 h-5" />
+              </Button>
+              <Button
+                onClick={() => {
+                  setShowInput(false);
+                  setNewDepartment('');
+                }}
+                className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                title="Cancel"
+              >
+                <X className="w-5 h-5" />
               </Button>
             </div>
+          )}
 
-            {showInput && (
-              <div className="mb-6 flex items-center gap-2">
-                <input
-                  type="text"
-                  value={newDepartment}
-                  onChange={(e) => setNewDepartment(e.target.value)}
-                  placeholder="Department name"
-                  className="flex-1 rounded-md border-gray-300 border p-2 focus:border-indigo-500 focus:ring-indigo-500"
-                  autoFocus
-                />
-                <Button
-                  onClick={handleAdd}
-                  className="p-2 text-green-600 hover:bg-green-50 rounded-full transition-colors"
-                >
-                  <Check className="h-5 w-5" />
-                </Button>
-                <Button
-                  onClick={() => {
-                    setShowInput(false);
-                    setNewDepartment('');
-                  }}
-                  className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
-                >
-                  <X className="h-5 w-5" />
-                </Button>
-              </div>
-            )}
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 p-3 text-red-600 bg-red-50 rounded-md text-sm">
+              {error}
+            </div>
+          )}
 
-            <div className="space-y-3">
-              {departments.map(department => (
+          {/* Department List */}
+          <div className="space-y-3">
+            {isLoading ? (
+              // Skeleton loader
+              [...Array(4)].map((_, i) => (
+                <div key={i} className="flex items-center justify-between p-4 bg-gray-100 rounded-lg animate-pulse">
+                  <div className="h-5 bg-gray-300 rounded w-3/4"></div>
+                  <div className="flex gap-2">
+                    <div className="h-6 w-6 bg-gray-300 rounded-full"></div>
+                    <div className="h-6 w-6 bg-gray-300 rounded-full"></div>
+                  </div>
+                </div>
+              ))
+            ) : departments.length > 0 ? (
+              departments.map(department => (
                 <div
                   key={department.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                 >
                   {editingId === department.id ? (
-                    <div className="flex items-center gap-2 flex-1">
+                    <div className="flex items-center gap-2 w-full">
                       <input
                         type="text"
                         value={editingName}
                         onChange={(e) => setEditingName(e.target.value)}
-                        className="flex-1 rounded-md border-gray-300 border p-2 focus:border-indigo-500 focus:ring-indigo-500"
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
                         autoFocus
                       />
                       <Button
                         onClick={handleSaveEdit}
                         className="p-2 text-green-600 hover:bg-green-50 rounded-full transition-colors"
                       >
-                        <Check className="h-5 w-5" />
+                        <Check className="w-5 h-5" />
                       </Button>
                       <Button
                         onClick={() => {
@@ -181,31 +185,35 @@ export default function DepartmentView() {
                         }}
                         className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
                       >
-                        <X className="h-5 w-5" />
+                        <X className="w-5 h-5" />
                       </Button>
                     </div>
                   ) : (
                     <>
-                      <span className="text-gray-900 font-medium">{department.department_name}</span>
+                      <span className="text-gray-800 font-medium">{department.department_name}</span>
                       <div className="flex items-center gap-2">
                         <Button
                           onClick={() => handleEdit(department.id)}
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
                         >
-                          <Pencil className="h-5 w-5" />
+                          <Pencil className="w-5 h-5" />
                         </Button>
                         <Button
                           onClick={() => handleDelete(department.id)}
                           className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
                         >
-                          <Trash2 className="h-5 w-5" />
+                          <Trash2 className="w-5 h-5" />
                         </Button>
                       </div>
                     </>
                   )}
                 </div>
-              ))}
-            </div>
+              ))
+            ) : (
+              <div className="py-6 text-center text-gray-500">
+                No departments found. Click "+" to add one.
+              </div>
+            )}
           </div>
         </div>
       </div>

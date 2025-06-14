@@ -53,9 +53,15 @@ export default function PayrollPeriod() {
         end_date: '',
         is_processed: false
       });
-    } catch (err) {
-      setError('Failed to save payroll period');
+      await fetchPayrollPeriods(); // Refresh list
+    } catch (err: any) {
+
+      const errorMessage =
+        err.response?.data?.detail ||
+        'Failed to save payroll period';
+      setError(errorMessage);
       console.error(err);
+      
     } finally {
       setIsLoading(false);
     }
@@ -157,7 +163,7 @@ const handleGeneratePayslip = async (period: PayrollPeriod) => {
 
           <Button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
             disabled={isLoading}
           >
             {isLoading ? 'Saving...' : 'Save Payroll Period'}
@@ -176,10 +182,10 @@ const handleGeneratePayslip = async (period: PayrollPeriod) => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Start Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">End Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">

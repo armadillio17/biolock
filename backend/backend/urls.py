@@ -14,6 +14,9 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
+
 from django.contrib import admin
 from django.urls import path
 from user.views import (
@@ -21,7 +24,7 @@ from user.views import (
     AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView, GetUserRoleView, LogoutView, UserCountView, DailyAttendanceCountView,
     NewRegistrationRegisteredList, AcceptedUserList, UploadProfilePictureView, RemoveProfilePictureView
 ) 
-from user.views.leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView
+from user.views.leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView, LeaveRequestListView
 from user.views.department import (
     DepartmentListCreateView, DepartmentDetailView, 
     AssignUserToDepartmentView, RemoveUserFromDepartmentView
@@ -40,7 +43,8 @@ from user.views.report.download_report import (
     DownloadAttendancePDF
 )
 from user.views.holiday import (
-    HolidayListCreateView, HolidayDetailView
+    HolidayListCreateView, HolidayDetailView, HolidayConfigListCreateAPIView, HolidayConfigDetailAPIView
+    
 )
 from user.views.attendance_adjustments import (
     AttendanceAdjustmentsListCreateView, AttendanceAdjustmentsDetailView
@@ -68,8 +72,13 @@ from user.views.request_overtime import (
     ApproveOvertimeView
 )
 from user.views import location
+
 from user.views.company import (
     CompanyListView, CompanyUpdateDeleteView
+)
+
+from user.views.ping_company import (
+    PingCompany
 )
 
 urlpatterns = [
@@ -83,8 +92,8 @@ urlpatterns = [
     # Users
     path('api/user/', UserCreateView.as_view(), name='user-create'),
     path('api/users/<int:pk>/', UserUpdateDeleteView.as_view(), name='user-update-delete'),
-    path('api/users/new-registered/', NewRegistrationRegisteredList.as_view(), name='user-count'), # List of Newly Registered Account
-    path('api/users/list/', AcceptedUserList.as_view(), name='user-count'), # List of All Approved Account
+    path('api/users/new-registered/', NewRegistrationRegisteredList.as_view(), name='user-register-count'), # List of Newly Registered Account
+    path('api/users/list/', AcceptedUserList.as_view(), name='user-list-count'), # List of All Approved Account
     path('api/users/user-count/', UserCountView.as_view(), name='user-count'), # User Count
     path('api/<int:user_id>/role/', GetUserRoleView.as_view(), name='get-user-role'),
     
@@ -96,12 +105,15 @@ urlpatterns = [
     
     # User Clock In
     path('api/clock-in/', UserClockInView.as_view(), name='user-clock-in'),
+    path('api/clock-in/<int:pk>', UserClockInView.as_view(), name='check-user-clock-in'),
     path('api/clock-out/', UserClockOutView.as_view(), name='user-clock-out'),
 
     # Leave Request Endpoints
     path('api/leave-requests/', LeaveRequestListCreateView.as_view(), name='leave-request-list'),
     path('api/leave-requests/<int:pk>/<str:date>', LeaveRequestDetailView.as_view(), name='leave-request-detail'),
-    path('api/leave-requests/count/', LeaveRequestCountView.as_view(), name='leave-request-detail'),
+    path('api/leave-requests/<int:pk>/', LeaveRequestDetailView.as_view(), name='leave-request-update-delete'),
+    path('api/leave-requests/<int:pk>/list', LeaveRequestListView.as_view(), name='leave-request-list'),
+    path('api/leave-requests/count/', LeaveRequestCountView.as_view(), name='leave-request-count'),
 
     # Department Endpoints
     path('api/departments/', DepartmentListCreateView.as_view(), name='department-list'),
@@ -111,7 +123,7 @@ urlpatterns = [
 
     # Position Endpoints
     path('api/positions/', PositionListCreateView.as_view(), name='position-list'),
-    path('api/positions/<int:pk>/', PositionDetailView.as_view(), name='position-detail'),
+    path('api/positions/<int:pk>', PositionDetailView.as_view(), name='position-detail'),
     
     # Assign/Remove Users to/from Positions
     path('api/departments/<int:department_id>/positions/<int:position_id>/assign-user/', AssignUserToPositionView.as_view(), name='assign-user-to-position'),
@@ -129,7 +141,8 @@ urlpatterns = [
 
     # Holiday Endpoints
     path('api/holidays/', HolidayListCreateView.as_view(), name='holiday-list-create'),
-    path('api/holidays/<int:pk>/', HolidayDetailView.as_view(), name='holiday-detail'),
+    path('api/holiday-configs/', HolidayConfigListCreateAPIView.as_view(), name='holiday-config-list'),
+    path('api/holiday-configs/<int:pk>/', HolidayConfigDetailAPIView.as_view(), name='holiday-config-detail'),
 
     # Attendance Adjustments Endpoints
     path('api/attendance-adjustments/', AttendanceAdjustmentsListCreateView.as_view(), name='attendance-adjustments-list-create'),
@@ -176,4 +189,11 @@ urlpatterns = [
     # Profile Picture Upload and Removal
     path('api/user/<int:user_id>/upload-profile/', UploadProfilePictureView.as_view(), name='upload_profile'),
     path('api/user/<int:user_id>/remove-profile/', RemoveProfilePictureView.as_view(), name='remove_profile'),
+    
+    #Ping Company Ip
+    path('api/ping/company/', PingCompany.as_view(), name='ping_company'),
+    
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
