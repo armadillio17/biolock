@@ -3,6 +3,7 @@ import { Button } from "./ui/button";
 import { Eye, Download, X } from 'lucide-react';
 import { authAxios } from "@/lib/secured-axios-instance";
 import { base_url } from '../config';
+import { Modal } from '@/components/base/BaseModal'; // Import reusable modal
 
 interface Payslip {
   id: string;
@@ -25,6 +26,9 @@ interface Payslip {
   pagibig_employer: number;
   employer_contributions: number;
   employee_contributions: number;
+  total_holidays_worked: number;
+  total_holiday_pay: number;
+  total_overtime_pay: number;
   payroll_period: {
     id: string;
     start_date: string;
@@ -272,103 +276,170 @@ export default function PayrollRelease() {
 
       {/* Modal - Full Payslip Details */}
       {selectedPayslip && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="relative w-full max-w-4xl mx-auto overflow-hidden shadow-lg bg-white/90 backdrop-blur-sm rounded-xl animate-fadeIn">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-bold text-gray-800">
-                  Payslip for {selectedPayslip.user.first_name} {selectedPayslip.user.last_name}
-                </h3>
-                <button
-                  onClick={() => setSelectedPayslip(null)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+        <Modal
+          isOpen={!!selectedPayslip}
+          onClose={() => setSelectedPayslip(null)}
+          title={`Payslip - ${selectedPayslip.user.first_name} ${selectedPayslip.user.last_name}`}
+          className="max-w-3xl w-full"
+        >
+          {/* Period Info */}
+          <div className="mb-4 text-sm text-gray-600">
+            <span className="font-medium">Payroll Period:</span>{" "}
+            {new Date(selectedPayslip.payroll_period.start_date).toLocaleDateString()} -{" "}
+            {new Date(selectedPayslip.payroll_period.end_date).toLocaleDateString()}
+            <br />
+            <span className="font-medium">Generated On:</span>{" "}
+            {new Date(selectedPayslip.generated_at).toLocaleDateString()}
+          </div>
+
+          {/* Net Pay Card */}
+          <div className="p-6 mb-6 text-center bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">
+            <h4 className="text-sm font-medium text-gray-600 mb-1">Net Pay</h4>
+            <p className="text-3xl font-bold text-green-600">
+              ₱{(selectedPayslip.gross_pay - selectedPayslip.deductions).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </p>
+          </div>
+
+          {/* Earnings Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="p-4 bg-green-50 rounded-lg">
+              <p className="text-sm text-gray-600">Base Salary</p>
+              <p className="text-xl font-bold text-green-700">
+                ₱{selectedPayslip.gross_pay.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </p>
             </div>
-            <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2">
-              <div className="space-y-4">
-                <h4 className="font-semibold text-gray-700">Basic Info</h4>
-                <div>
-                  <label className="block text-sm text-gray-500">Payroll Period</label>
-                  <p className="text-lg font-medium">
-                    {new Date(selectedPayslip.payroll_period.start_date).toLocaleDateString()} -{" "}
-                    {new Date(selectedPayslip.payroll_period.end_date).toLocaleDateString()}
-                  </p>
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-500">Generated On</label>
-                  <p className="text-lg font-medium">{new Date(selectedPayslip.generated_at).toLocaleDateString()}</p>
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-500">Working Hours</label>
-                  <p className="text-lg font-medium">{selectedPayslip.total_working_hours} hours</p>
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-500">Overtime</label>
-                  <p className="text-lg font-medium">{selectedPayslip.total_overtime_hours} hours</p>
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-500">Leave Hours</label>
-                  <p className="text-lg font-medium">{selectedPayslip.total_leave_hours} hours</p>
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-500">Absences</label>
-                  <p className="text-lg font-medium">{selectedPayslip.total_absences} days</p>
-                </div>
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">Overtime ({selectedPayslip.total_overtime_hours} hours)</p>
+              <p className="text-xl font-bold">
+                ₱{selectedPayslip.total_overtime_pay.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </p>
+            </div>
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">Holiday Pay ({selectedPayslip.total_holidays_worked} holiday{selectedPayslip.total_holidays_worked !== 1 ? "s" : ""})</p>
+              <p className="text-xl font-bold">
+                ₱{selectedPayslip.total_holiday_pay.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </p>
+            </div>
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">Gross Total</p>
+              <p className="text-xl font-bold text-gray-800">
+                ₱{(selectedPayslip.gross_pay + selectedPayslip.total_overtime_pay + selectedPayslip.total_holiday_pay).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </p>
+            </div>
+          </div>
+
+          {/* Working Hours Summary */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="text-center p-3 bg-gray-50 rounded-lg">
+              <p className="text-lg font-bold">{selectedPayslip.total_working_hours}</p>
+              <p className="text-xs text-gray-500">Regular Hours</p>
+            </div>
+            <div className="text-center p-3 bg-gray-50 rounded-lg">
+              <p className="text-lg font-bold">{selectedPayslip.total_overtime_hours}</p>
+              <p className="text-xs text-gray-500">Overtime</p>
+            </div>
+            <div className="text-center p-3 bg-gray-50 rounded-lg">
+              <p className="text-lg font-bold">{selectedPayslip.total_leave_hours}</p>
+              <p className="text-xs text-gray-500">Leave Hours</p>
+            </div>
+            <div className="text-center p-3 bg-gray-50 rounded-lg">
+              <p className="text-lg font-bold">{selectedPayslip.total_absences}</p>
+              <p className="text-xs text-gray-500">Absences</p>
+            </div>
+          </div>
+
+          {/* Deductions */}
+          <div className="space-y-3 mb-6">
+            <h4 className="font-semibold text-gray-700">Deductions</h4>
+            <div className="flex justify-between p-3 bg-red-50 rounded-lg">
+              <span>Total Deductions</span>
+              <span className="font-bold text-red-700">
+                ₱{selectedPayslip.deductions.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 gap-3">
+              <div className="flex justify-between p-3 bg-gray-50 rounded-md">
+                <span>SSS (Employee)</span>
+                <span>
+                  ₱{selectedPayslip.sss_employee.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
               </div>
-
-              <div className="space-y-4">
-                <h4 className="font-semibold text-gray-700">Earnings & Deductions</h4>
-                <div>
-                  <label className="block text-sm text-gray-500">Gross Pay</label>
-                  <p className="text-lg font-medium text-green-600">₱{selectedPayslip.gross_pay.toLocaleString()}</p>
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-500">Deductions</label>
-                  <p className="text-lg font-medium text-red-600">₱{selectedPayslip.deductions.toLocaleString()}</p>
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-500">Net Pay</label>
-                  <p className="text-2xl font-bold text-blue-600">
-                    ₱{(selectedPayslip.gross_pay - selectedPayslip.deductions).toLocaleString()}
-                  </p>
-                </div>
-
-                <hr className="my-4 border-gray-200" />
-
-                <h4 className="font-semibold text-gray-700">Government Contributions</h4>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm text-gray-500">SSS (Employee)</label>
-                    <p className="text-base font-medium">₱{selectedPayslip.sss_employee.toLocaleString()}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm text-gray-500">PhilHealth (Employee)</label>
-                    <p className="text-base font-medium">₱{selectedPayslip.philhealth_employee.toLocaleString()}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm text-gray-500">Pag-IBIG (Employee)</label>
-                    <p className="text-base font-medium">₱{selectedPayslip.pagibig_employee.toLocaleString()}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm text-gray-500">SSS (Employer)</label>
-                    <p className="text-base font-medium">₱{selectedPayslip.sss_employer.toLocaleString()}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm text-gray-500">PhilHealth (Employer)</label>
-                    <p className="text-base font-medium">₱{selectedPayslip.philhealth_employer.toLocaleString()}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm text-gray-500">Pag-IBIG (Employer)</label>
-                    <p className="text-base font-medium">₱{selectedPayslip.pagibig_employer.toLocaleString()}</p>
-                  </div>
-                </div>
+              <div className="flex justify-between p-3 bg-gray-50 rounded-md">
+                <span>PhilHealth (Employee)</span>
+                <span>
+                  ₱{selectedPayslip.philhealth_employee.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
+              </div>
+              <div className="flex justify-between p-3 bg-gray-50 rounded-md">
+                <span>Pag-IBIG (Employee)</span>
+                <span>
+                  ₱{selectedPayslip.pagibig_employee.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
               </div>
             </div>
           </div>
-        </div>
+
+          {/* Employer Contributions */}
+          <div className="space-y-3">
+            <h4 className="font-semibold text-gray-700">Employer Contributions</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="text-center p-3 bg-gray-50 rounded-lg">
+                <p className="font-bold">
+                  ₱{selectedPayslip.sss_employer.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </p>
+                <p className="text-xs text-gray-600">SSS</p>
+              </div>
+              <div className="text-center p-3 bg-gray-50 rounded-lg">
+                <p className="font-bold">
+                  ₱{selectedPayslip.philhealth_employer.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </p>
+                <p className="text-xs text-gray-600">PhilHealth</p>
+              </div>
+              <div className="text-center p-3 bg-gray-50 rounded-lg">
+                <p className="font-bold">
+                  ₱{selectedPayslip.pagibig_employer.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </p>
+                <p className="text-xs text-gray-600">Pag-IBIG</p>
+              </div>
+            </div>
+          </div>
+        </Modal>
       )}
     </div>
   );
