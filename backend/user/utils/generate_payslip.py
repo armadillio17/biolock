@@ -8,7 +8,7 @@ def generate_payslip(user, payroll_period):
     hours_data = PayslipCalculator.calculate_working_hours(user, payroll_period)
     
     # Calculate amounts
-    gross_pay = PayslipCalculator.calculate_gross_pay(salary, hours_data)
+    gross_pay = PayslipCalculator.calculate_gross_pay(salary, payroll_period, hours_data)
     benefits = PayslipCalculator.calculate_benefits(user, gross_pay)
     absence_deductions = PayslipCalculator.calculate_absence_deductions(hours_data['absences'])
     

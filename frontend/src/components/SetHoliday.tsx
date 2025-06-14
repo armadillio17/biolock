@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { base_url } from '../config';
 import { authAxios } from "@/lib/secured-axios-instance";
 import { Button } from "./ui/button";
-import { CheckCircle, Trash2 } from "lucide-react";
+import { CheckCircle, Trash2, Settings } from "lucide-react";
+import CustomHolidaySettings from '@/components/CustomHoliday';
 
 interface HolidayOption {
   id: number;
@@ -16,6 +17,9 @@ interface HolidayConfigResponse {
   type: HolidayType;
   pay_percentage: number;
   holiday_name: string;
+  holiday_date: string;
+  custom_holiday_name?: string;
+  custom_holiday_date?: string;
 }
 
 type HolidayType = 'regular' | 'special' | 'non-holiday';
@@ -28,7 +32,13 @@ export default function HolidayConfig() {
   const [savedConfigs, setSavedConfigs] = useState<HolidayConfigResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showSettings, setShowSettings] = useState(false)
 
+const closeSettings = () => {
+  setShowSettings(false);
+};
+
+  
   // Load all available holidays
   useEffect(() => {
     const fetchHolidays = async () => {
@@ -132,6 +142,7 @@ export default function HolidayConfig() {
             <thead className="bg-gray-50">
               <tr>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Holiday</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Date</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Pay Rate (%)</th>
                 <th scope="col" className="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
               </tr>
@@ -139,7 +150,8 @@ export default function HolidayConfig() {
             <tbody className="divide-y divide-gray-100">
               {items.map((item) => (
                 <tr key={item.id} className="hover:bg-gray-50 transition-colors duration-150">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{item.holiday_name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{item.holiday_name || item.custom_holiday_name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{item.holiday_date || item.custom_holiday_date}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{item.pay_percentage}%</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right space-x-2 flex justify-end">
                     <Button
@@ -166,10 +178,20 @@ export default function HolidayConfig() {
   );
 
   return (
+    <>
     <div className="p-4 md:p-6 space-y-6">
       {/* Add New Holiday Card */}
       <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200 p-6 shadow-md">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Configure Holidays</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Configure Holidays</h2>
+          <button
+            onClick={() => setShowSettings(true)}
+            className="flex items-center bg-gray-500 text-white px-3 py-2 rounded-md bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
+          >
+            <Settings className="w-4 h-4 mr-1" />
+            Settings
+          </button>
+        </div>
 
         {/* Error Message */}
         {error && (
@@ -253,10 +275,18 @@ export default function HolidayConfig() {
         </form>
       </div>
 
+      {/* CustomHolidaySettings component */}
+
+      <CustomHolidaySettings
+        showSettings={showSettings}
+        onClose={closeSettings}
+      />
 
       <HolidayTable type="regular" items={filterConfigsByType('regular')} />
       <HolidayTable type="special" items={filterConfigsByType('special')} />
       <HolidayTable type="non-holiday" items={filterConfigsByType('non-holiday')} />
     </div>
+    </>
+    
   );
 }

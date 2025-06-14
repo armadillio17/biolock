@@ -4,7 +4,7 @@ from .department import DepartmentListCreateView, DepartmentDetailView, AssignUs
 from .leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView, LeaveRequestDetailView
 from .notification_history import NotificationHistoryListCreateView, NotificationHistoryDetailView
 from .report.report import ReportListCreateView, ReportDetailView, GenerateDailyReport
-from .holiday import HolidayListCreateView, HolidayDetailView
+from .holiday.holiday import HolidayListCreateView, HolidayDetailView
 from .attendance_adjustments import AttendanceAdjustmentsListCreateView, AttendanceAdjustmentsDetailView
 from .position import PositionListCreateView, PositionDetailView, AssignUserToPositionView, RemoveUserFromPositionView
 from .logs import LogsListCreateView, LogsDetailView

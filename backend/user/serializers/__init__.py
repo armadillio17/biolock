@@ -6,7 +6,7 @@ from .position import PositionSerializer, AssignUserPositionSerializer
 from .leave_request import LeaveRequestSerializer
 from .notification_history import NotificationHistorySerializer
 from .report import ReportSerializer
-from .holiday import HolidaySerializer
+from .holiday.holiday import HolidaySerializer
 from .attendance_adjustments import AttendanceAdjustmentsSerializer
 from .logs import LogsSerializer
 from .attendance_summary import AttendanceSummarySerializer
@@ -16,7 +16,8 @@ from .user_salary import UserSalarySerializer
 from .benefits import BenefitsConfigurationSerializer
 from .company import CompanySerializer
 from .request_overtime import OvertimeRequestSerializer
-from .holiday_config import HolidayConfigSerializer
+from .holiday.holiday_config import HolidayConfigSerializer
+from .holiday.custom_holiday import CustomHolidaySerializer
 
 __all__ = [
     "AttendanceSerializer",
@@ -42,5 +43,6 @@ __all__ = [
     "BenefitsConfigurationSerializer",
     "CompanySerializer",
     "OvertimeRequestSerializer",
-    "HolidayConfigSerializer"
+    "HolidayConfigSerializer",
+    "CustomHolidaySerializer"
     ]

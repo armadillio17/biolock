@@ -6,7 +6,7 @@ from .position import Position, PositionUser, DepartmentPosition
 from .leave_request import LeaveRequest
 from .notification_history import NotificationHistory
 from .report import Report
-from .holiday import Holiday
+from .holiday.holiday import Holiday
 from .attendance_adjustments import AttendanceAdjustments
 from .logs import Logs
 from .attendance_summary import AttendanceSummary
@@ -17,4 +17,5 @@ from .benefits import BenefitsConfiguration
 from .location import Location
 from .company import Company
 from .request_overtime import OvertimeRequest
-from .holiday_config import HolidayConfig
+from .holiday.holiday_config import HolidayConfig
+from .holiday.custom_holiday import CustomHoliday

@@ -1,7 +1,8 @@
 from django.db import models
 from django.utils.timezone import now
 from django.contrib.auth import get_user_model
-from user.models.holiday import Holiday
+from user.models.holiday.holiday import Holiday
+from user.models.holiday.custom_holiday import CustomHoliday
 
 User = get_user_model()
 
@@ -19,6 +20,7 @@ class Attendance(models.Model):
     # user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendances") 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendances", null=True, blank=True) 
     holiday = models.ForeignKey(Holiday, on_delete=models.SET_NULL, null=True, blank=True, related_name="attendances") 
+    custom_holiday = models.ForeignKey(CustomHoliday, on_delete=models.SET_NULL, null=True, blank=True, related_name="attendance_records")
 
     date = models.DateField()
     clock_in = models.DateTimeField(null=True, blank=True)

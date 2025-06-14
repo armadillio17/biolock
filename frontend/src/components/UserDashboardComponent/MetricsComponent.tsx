@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useAttendanceStore } from "@/store/attendanceStore";
 import { Timer } from "lucide-react";
 import { Button } from "../ui/button";
+import TimeTracker from '@/components/UserDashboardComponent/TimeTracker';
 
 export const Metrics = () => {
   const {
@@ -71,15 +72,55 @@ export const Metrics = () => {
     setShowConfirmModal(false);
   };
 
+  const workQuotes = [
+    "Success is not final, failure is not fatal: It is the courage to continue that counts.",
+    "The best way to get started is to quit talking and begin doing.",
+    "Don't let yesterday take up too much of today.",
+    "You learn more from failure than from success.",
+    "Hard times create strong people.",
+    "Effort is what leads you to mastery.",
+    "Work hard in silence, let success make the noise.",
+    "Opportunities don't happen, you create them.",
+    "Your time is limited, so don’t waste it living someone else’s life.",
+    "Start where you are. Use what you have. Do what you can."
+  ];
+
+  const getRandomQuote = () => {
+    const randomIndex = Math.floor(Math.random() * workQuotes.length);
+    return workQuotes[randomIndex];
+  };
+
   return (
-    <div className="flex h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50">
+    <div className="h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50">
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <main className="flex-1 overflow-auto p-4 md:p-4">
           {/* Clock In/Out Section */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="bg-white rounded-2xl shadow-md p-6 mb-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <h2 className="text-xl font-semibold">Time Tracking</h2>
+              {/* Motivational Quote */}
+              <div className="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded">
+                <p className="italic text-gray-700">"{getRandomQuote()}"</p>
+              </div>
+
+              {/* {!startTime && (
+                <p className="text-gray-600">
+                  You're not currently clocked in.
+                </p>
+              )}
+
+              {startTime && !endTime && (
+                <p className="text-green-600 font-medium">
+                  You're currently clocked in.
+                </p>
+              )}
+
+              {startTime && endTime && (
+                <p className="text-red-600 font-medium">
+                  You're currently clocked out.
+                </p>
+              )} */}
+              
               <Button
                 onClick={handleClockInOut}
                 disabled={isLoading || isClockOut}
@@ -93,18 +134,6 @@ export const Metrics = () => {
                 {isClockIn ? "Clock Out" : "Clock In"}
               </Button>
             </div>
-
-            {startTime && (
-              <p className="mt-4 text-gray-600">
-                Clocked in at: <strong>{startTime.toLocaleTimeString()}</strong>
-              </p>
-            )}
-
-            {endTime && (
-              <p className="mt-4 text-gray-600">
-                Clocked out at: <strong>{endTime.toLocaleTimeString()}</strong>
-              </p>
-            )}
           </div>
 
           {showConfirmModal && (
@@ -125,6 +154,12 @@ export const Metrics = () => {
           )}
         </main>
       </div>
+      {/* Additional Content */}
+      <TimeTracker
+        clockInTime={startTime}
+        clockOutTime={endTime}
+        isTracking={isClockIn}
+      />
     </div>
   );
 };
