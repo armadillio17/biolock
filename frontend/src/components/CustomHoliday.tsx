@@ -64,7 +64,7 @@ export default function CustomHolidaySettings({
       isOpen={showSettings}
       onClose={onClose}
       title="Add Custom Holiday"
-      className="bg-white rounded-lg shadow-md p-6 max-w-md w-full"
+      className="bg-white rounded-lg shadow-md p-2 max-w-md w-full"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Holiday Name */}

@@ -34,7 +34,7 @@ export const Modal: React.FC<ModalProps> = ({
         onClick={onClose} // Optional: close on backdrop click only
       >
         <div
-          className={`bg-white rounded-xl shadow-lg w-full max-w-md mx-auto ${className}`}
+          className={`bg-white rounded-xl shadow-lg w-full mx-auto ${className}`}
           onClick={(e) => e.stopPropagation()} // Prevent clicks inside modal from closing
         >
           {/* Modal Header */}
