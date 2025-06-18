@@ -101,9 +101,9 @@ function SignIn() {
                                 <Checkbox className="rounded-[4px]" />
                                 <p>Remember Me</p>
                             </div>
-                            <div>
+                            {/* <div>
                                 <p>Forgot password?</p>
-                            </div>
+                            </div> */}
                         </div>
                         <Button
                             type="submit"
