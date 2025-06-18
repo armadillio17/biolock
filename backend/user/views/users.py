@@ -13,6 +13,8 @@ from django.contrib.auth import get_user_model
 from rest_framework.parsers import MultiPartParser, FormParser
 import os
 from django.conf import settings
+import re
+
 
 # from django.contrib.auth.models import User
 
@@ -23,18 +25,50 @@ class UserCreateView(APIView):
         serializer = UserSerializer(user, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    # def post(self, request):
+    #     """Create a new user record"""
+        
+    #     request.data.setdefault("role_id", 2)
+        
+    #     serializer = UserSerializer(data=request.data)
+    #     if serializer.is_valid():
+            
+            
+    #         if 'password' in serializer.validated_data:
+    #             password = serializer.validated_data['password']
+    #             serializer.validated_data['password'] = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+                
+    #         serializer.save()
+
+    #         log_notification(
+    #             user_id=request.user.id,
+    #             notification_type="Registered Users",
+    #             data={
+    #                 "status": "Completed",
+    #                 "details": "New Created User",
+    #             }
+    #         )
+
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
     def post(self, request):
         """Create a new user record"""
-        
         request.data.setdefault("role_id", 2)
-        
+
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
+            password = serializer.validated_data.get('password')
             
-            if 'password' in serializer.validated_data:
-                password = serializer.validated_data['password']
-                serializer.validated_data['password'] = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+            if password:  # Only validate if password exists
+                if not re.match(r'^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$', password):
+                    return Response(
+                        {"password": ["Password must contain at least 1 uppercase letter, 1 number, and 1 special character."]},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
                 
+                serializer.validated_data['password'] = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+
             serializer.save()
 
             log_notification(

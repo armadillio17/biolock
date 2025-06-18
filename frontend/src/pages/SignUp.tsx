@@ -4,24 +4,35 @@ import { motion } from 'framer-motion';
 import Logo from '@/assets/logo.webp';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { User, Lock1, Sms, UserEdit } from 'iconsax-react';
+import { User, Lock1, Sms, UserEdit, Calendar } from 'iconsax-react';
 import { base_url } from '@/config'
 import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
+import { useRef } from 'react';
 
 function SignUp() {
 
     const navigate =  useNavigate();
+    const dateInputRef = useRef(null);
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
         username: '',
         email: '',
         password: '',
+        confirmPassword: '',
+        dateOfBirth: '',
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (formData.password !== formData.confirmPassword) {
+            toast.dismiss();
+            toast.error("Passwords do not match");
+            return;
+        }
+
 
         try {
             const response = await fetch(`${base_url}/user/`, {
@@ -40,6 +51,12 @@ function SignUp() {
 
             if (!response.ok) {
                 const errorData = await response.json();
+
+                if (errorData?.password) {
+                    toast.dismiss();
+                    toast.error(errorData.password[0]);
+                    return;
+                }
             
                 if (errorData?.username) {
                     const originalMessage = errorData.username[0];
@@ -53,6 +70,10 @@ function SignUp() {
                 } else {
                     throw new Error("Sign Up Failed");
                 }
+
+                // Catch-all error
+                toast.dismiss();
+                toast.error("Sign Up Failed");
                 return;
             }
 
@@ -109,6 +130,7 @@ function SignUp() {
                                 required
                             />
                         </div>
+
                         <div className="relative w-full">
                             <UserEdit
                                 size="18"
@@ -127,6 +149,25 @@ function SignUp() {
                         </div>
                         
                         <Toaster reverseOrder={false} />
+
+                        <div className="relative w-full">
+                            <Calendar
+                                size="18"
+                                color="#7582FA"
+                                className="absolute transform -translate-y-1/2 left-3 top-1/2 cursor-pointer"
+                            />
+                            <input
+                                ref={dateInputRef}
+                                type="date"
+                                id="dateOfBirth"
+                                name="dateOfBirth"
+                                value={formData.dateOfBirth}
+                                onChange={handleChange}
+                                placeholder="Date of Birth"
+                                className="pl-9 pr-3 h-[51px] w-full bg-white rounded-[5px] placeholder:text-md placeholder:text-[#4E4E53] border border-[#000000]"
+                                required
+                            />
+                        </div>
 
                         <div className="relative w-full">
                             <User
@@ -162,6 +203,7 @@ function SignUp() {
                                 required
                             />
                         </div>
+
                         <div className="relative w-full">
                             <Lock1
                                 size="18"
@@ -179,6 +221,25 @@ function SignUp() {
                                 required
                             />
                         </div>
+
+                        <div className="relative w-full">
+                            <Lock1
+                                size="18"
+                                color="#FABA6C"
+                                className="absolute transform -translate-y-1/2 left-3 top-1/2"
+                            />
+                            <Input
+                                type="password"
+                                className="pl-9 h-[51px] bg-white rounded-[5px] placeholder:text-md placeholder:text-[#4E4E53] border-[#000000]"
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                placeholder="Confirm Password"
+                                required
+                            />
+                        </div>
+
                         <Button type="submit" className="w-full bg-[#7BDFF2] min-h-[51px] rounded-[5px] mt-5">
                             <p className="text-md font-bold text-[#4E4E53]">Sign Up</p>
                         </Button>
