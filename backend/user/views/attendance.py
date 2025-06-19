@@ -233,9 +233,7 @@ class UserClockInView(APIView):
         except Exception as e:
             print(f"Unexpected Error: {str(e)}")
             return Response({"error": "An unexpected error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 class UserClockOutView(APIView):
-    #TODO This code is bloated need to refactor this
     def put(self, request):
         """Update clock out and update attendance summary with total working hours"""
         
@@ -256,60 +254,59 @@ class UserClockOutView(APIView):
         
         serializer = ClockOutSerializer(attendance, data=request.data, partial=True)
         
-        if serializer.is_valid():
-            attendance = serializer.save()
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            if attendance.clock_in and attendance.clock_out:
-                duration = attendance.clock_out - attendance.clock_in
-                total_seconds = duration.total_seconds()
-                total_hours = round(total_seconds / 3600, 2)
+        # Save clock-out time
+        attendance = serializer.save()
 
-                # ---- Base working hours ----
-                attendance.working_hours = total_hours
+        if attendance.clock_in and attendance.clock_out:
+            duration = attendance.clock_out - attendance.clock_in
+            total_seconds = duration.total_seconds()
+            total_hours = round(total_seconds / 3600, 2)
 
-                overtime_hours = 0.0
+            base_regular_hours = 8.0
+            minimum_overtime_threshold = 0.5  # 30 minutes
 
-                # ---- Overtime Calculation (only if is_overtime_clock_in is True) ----
-                if attendance.is_overtime_clock_in:
-                    base_regular_hours = 8.0
-                    if total_hours > base_regular_hours:
-                        potential_overtime = total_hours - base_regular_hours
-                        minimum_overtime_threshold = 0.5
+            # Initialize fields
+            regular_hours = 0.0
+            overtime_hours = 0.0
 
-                        if potential_overtime >= minimum_overtime_threshold:
-                            overtime_hours = round(potential_overtime, 2)
-                            attendance.overtime_hours = overtime_hours
-                            print(f"Overtime recorded: {overtime_hours} hours")
-                        else:
-                            attendance.overtime_hours = 0.0
-                            print("No overtime recorded: less than 30 minutes.")
+            # Determine if session is part of approved overtime
+            is_overtime_session = getattr(attendance, 'is_overtime_clock_in', False)
+
+            if is_overtime_session:
+                # Allow recording of overtime
+                if total_hours > base_regular_hours:
+                    potential_overtime = total_hours - base_regular_hours
+                    if potential_overtime >= minimum_overtime_threshold:
+                        overtime_hours = round(potential_overtime, 2)
+                        regular_hours = base_regular_hours
                     else:
-                        attendance.overtime_hours = 0.0
-                        print("No overtime recorded: under 8 hours.")
+                        # Not enough to count as overtime
+                        regular_hours = total_hours
                 else:
-                    print("Not an overtime session. No overtime recorded.")
+                    regular_hours = total_hours
+            else:
+                # No overtime allowed — cap at 8 hours
+                regular_hours = min(total_hours, base_regular_hours)
 
-                attendance.save()
+            # Update attendance record
+            attendance.working_hours = regular_hours
+            attendance.overtime_hours = overtime_hours
+            attendance.save()
 
-                # ---- Create/update summary ----
-                summary, created = AttendanceSummary.objects.get_or_create(
-                    user=attendance.user,
-                    date=today,
-                    defaults={
-                        "total_working_hours": total_hours,
-                        "total_overtime_hours": overtime_hours,
-                        "total_leave_hours": 0,
-                        "total_absences": 0,
-                    }
-                )
-                if not created:
-                    summary.total_working_hours = total_hours
-                    summary.total_overtime_hours = overtime_hours
-                    summary.save()
+            # Update or create attendance summary
+            summary, created = AttendanceSummary.objects.update_or_create(
+                user=attendance.user,
+                date=today,
+                defaults={
+                    "total_working_hours": regular_hours,
+                    "total_overtime_hours": overtime_hours,
+                }
+            )
 
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
 class DailyAttendanceView(APIView):
     def get(self, request):
