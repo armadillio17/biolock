@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.db import models
 from django.contrib.auth import get_user_model
 from user.models.payroll_period import PayrollPeriod
@@ -12,10 +13,14 @@ class Payslip(models.Model):
         PayrollPeriod, on_delete=models.CASCADE, related_name="payslips"
     )
 
-    total_working_hours = models.FloatField(default=0.0)
-    total_overtime_hours = models.FloatField(default=0.0)
-    total_leave_hours = models.FloatField(default=0.0)
+    total_working_hours = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    total_overtime_hours = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    total_leave_hours = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    total_absences = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     total_absences = models.IntegerField(default=0)
+    total_overtime_pay = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_holidays_worked = models.PositiveIntegerField(default=0)
+    total_holiday_pay = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     gross_pay = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     deductions = models.DecimalField(max_digits=10, decimal_places=2, default=0)

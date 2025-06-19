@@ -6,6 +6,7 @@ from django.utils import timezone
 import pytz
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth import get_user_model
+from user.models.request_overtime import OvertimeRequest  # Adjust based on your app structure
 
 User = get_user_model()
 
@@ -18,41 +19,12 @@ class UserAttendanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendance
         fields = 'user_id'
-    
-# class ClockInSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Attendance
-#         fields = '__all__'
-#         extra_kwargs = {
-#             'date': {'required': False},
-#             'status': {'required': False},
-#             'scheduled_start': {'required': False},
-#             'scheduled_end': {'required': False}
-#         }
-        
-#     # def create(instance, validated_data):
-        
-#     #     try:
-#     #         # today = now().date()
-#     #         # user = instance.user_id  # Get user from instance (attendance record)
-            
-#     #         tz = pytz.timezone('Asia/Manila')
-
-#     #         # Ensure we're updating the correct record (already filtered in view)
-#     #         # instance.clock_out = now()  # Set the clock-out time
-#     #         instance.clock_in = now().astimezone(tz)
-#     #         instance.save()
-#     #         return instance
-
-#     #     except Exception as e:
-#     #         print(f"Error updating attendance record: {e}")
-#     #         raise serializers.ValidationError(f"Update failed: {str(e)}")
 
 class ClockInSerializer(serializers.ModelSerializer):
     
     user_id = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(),
-        source='user',  # maps this to the model's 'user' field
+        source='user',
         write_only=True
     )
     
@@ -68,20 +40,45 @@ class ClockInSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         today = now().date()
-        
-        # No need to extract user_id separately since it's already mapped to 'user'
-        
-        try:
-            # Set additional required fields
+        user = validated_data['user']
+
+        # Check if the user already has a clock-in record for today
+        existing_attendance = Attendance.objects.filter(
+            user=user,
+            clock_in__date=today
+        ).first()
+
+        # Check for approved overtime
+        has_approved_overtime = OvertimeRequest.objects.filter(
+            user=user,
+            date=today,
+            status='approved'
+        ).exists()
+
+        # If already clocked in and no approved overtime → prevent duplicate
+        if existing_attendance and not has_approved_overtime:
+            raise serializers.ValidationError({
+                "error": "You’ve already clocked in today and don’t have an approved overtime request.",
+                "has_clocked_in": True,
+                "is_clockOut": existing_attendance.is_clockOut
+            })
+
+        # If clocked out but has approved overtime → allow new clock-in
+        if existing_attendance and existing_attendance.is_clockOut and has_approved_overtime:
             validated_data['date'] = today
-            validated_data['status'] = 'working'  # Changed from 'pending' to match your STATUS_CHOICES
+            validated_data['status'] = 'working'
             validated_data['clock_in'] = now()
-            
-            # Create and return the attendance record
+            validated_data['clock_out'] = None  # Reset clock-out if needed
+            validated_data['is_clockOut'] = False
+
             return Attendance.objects.create(**validated_data)
-        except Exception as e:
-            print(f"Create Error: {str(e)}")
-            raise serializers.ValidationError({"error": f"Error creating attendance record: {str(e)}"})
+
+        # If no attendance or still working → proceed normally
+        validated_data['date'] = today
+        validated_data['status'] = 'working'
+        validated_data['clock_in'] = now()
+
+        return Attendance.objects.create(**validated_data)
         
 class ClockOutSerializer(serializers.ModelSerializer):
     class Meta:

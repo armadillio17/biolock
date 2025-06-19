@@ -13,8 +13,9 @@ class OvertimeRequest(models.Model):
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    used = models.BooleanField(default=False)
     date = models.DateField()
-    requested_hours = models.FloatField()
+    # requested_hours = models.FloatField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     approved_by = models.ForeignKey(
         User,

@@ -25,6 +25,7 @@ interface UserStore {
     fetchNewUserList: () => Promise<void>; 
     fetchApprovedUserList: () => Promise<void>; 
     approvedRegisteredUser: (userId: number, is_accepted:boolean) => Promise<void>;
+    declineRegisteredUser: (userId: number) => Promise<void>;
     
 }
 
@@ -39,7 +40,7 @@ export const useUserStore = create<UserStore>((set) => ({
         try {
             const response = await authAxios.get(`${base_url}/user/`, {
                 withCredentials: true
-            });
+            });     
 
             set(() => ({ userList: response.data })); // Update Zustand state with fetched users
         } catch (error) {
@@ -78,6 +79,19 @@ export const useUserStore = create<UserStore>((set) => ({
             const response = await authAxios.put(`${base_url}/users/${userId}/`,{
                 is_accepted: is_accepted
             },{
+                withCredentials: true
+            });
+
+            set(() => ({ approvedUser: response.data }));
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
+    },
+
+    declineRegisteredUser: async (userId: number) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await authAxios.delete(`${base_url}/users/${userId}/`,{
                 withCredentials: true
             });
 

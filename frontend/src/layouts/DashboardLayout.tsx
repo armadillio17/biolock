@@ -23,7 +23,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { user, logout: handleLogout } = useAuthStore();
   const { profile_picture, fetchUserProfile } = useUpdateUserStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
   const isAdmin = user?.role === "admin";
   const { userPosition, fetchUserPosition } = usePositionStore();
   const { uploadImage } = useImageUploadStore();
@@ -79,7 +79,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   // Handle screen resize
   useEffect(() => {
     const handleResize = () => {
-      setIsDesktop(window.innerWidth >= 768);
+      setIsDesktop(window.innerWidth >= 1024);
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
@@ -123,7 +123,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                     onClick={() => fileInputRef.current?.click()}
                     >
                     {profile_picture ? (
-                        <img src={profile_picture} alt="Profile" className="object-cover w-full h-full" />
+                        <img src={profile_picture ?? ''} alt="Profile" className="object-cover w-full h-full" />
                     ) : (
                         <span className="text-white font-semibold text-sm">
                         {user?.first_name?.charAt(0) || "U"}

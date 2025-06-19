@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.db import models
 from django.utils.timezone import now
 from django.contrib.auth import get_user_model
@@ -10,9 +11,9 @@ class AttendanceSummary(models.Model):
     attendance = models.ForeignKey(Attendance, on_delete=models.SET_NULL, null=True, blank=True, related_name='summary')
     date = models.DateField()
 
-    total_working_hours = models.FloatField(default=0.0)
-    total_overtime_hours = models.FloatField(default=0.0)
-    total_leave_hours = models.FloatField(default=0.0)
+    total_working_hours = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    total_overtime_hours = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    total_leave_hours = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     total_absences = models.IntegerField(default=0)
 
     created_at = models.DateTimeField(auto_now_add=True)

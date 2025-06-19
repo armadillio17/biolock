@@ -13,6 +13,7 @@ export default function UserLists() {
     fetchNewUserList,
     fetchApprovedUserList,
     approvedRegisteredUser,
+    declineRegisteredUser
   } = useUserStore();
 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -35,19 +36,38 @@ export default function UserLists() {
   }, [fetchNewUserList, fetchApprovedUserList]);
 
   const handleApprove = async (userId: number) => {
-    await approvedRegisteredUser(userId, true);
-    await fetchNewUserList();
-    await fetchApprovedUserList();
+    setLoading(true);
+    try {
+      await approvedRegisteredUser(userId, true);
+      await Promise.all([fetchNewUserList(), fetchApprovedUserList()]);
+    } catch (err) {
+      console.error("Error approving user:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDecline = async (userId: number) => {
-    await approvedRegisteredUser(userId, false);
-    await fetchNewUserList();
-    await fetchApprovedUserList();
+    setLoading(true);
+    try {
+      await declineRegisteredUser(userId);
+      await fetchNewUserList();
+      await fetchApprovedUserList(); // Also refresh approved list in case something changed
+    } catch (err) {
+      console.error("Error declining user:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const formatDate = (dateStr: string): string => {
-    return new Date(dateStr).toLocaleDateString();
+    // return new Date(dateStr).toLocaleDateString();
+    return new Date(dateStr).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  
   };
 
   const handleOpenModal = (user: User) => {
@@ -58,6 +78,7 @@ export default function UserLists() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+  
 
   return (
     <DashboardLayout>
@@ -74,10 +95,12 @@ export default function UserLists() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
+                  <th scope="col" className="px-3 py-3 text-left text-sm font-semibold text-gray-700"></th>
                   <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Date</th>
                   <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
+                  <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Username</th>
                   <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
-                  <th scope="col" className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Actions</th>
+                  <th scope="col" className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -104,10 +127,12 @@ export default function UserLists() {
                 ) : newRegisteredUser.length > 0 ? (
                   newRegisteredUser.map((request) => (
                     <tr key={request.id} className="hover:bg-gray-50 transition-colors duration-150">
+                      <td className="flex justify-center px-3 py-4 whitespace-nowrap text-sm text-gray-600">{request.id}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{formatDate(request.created_at)}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         {request.first_name} {request.last_name}
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{request.username}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{request.email}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-right space-x-2 flex justify-end">
                         <Button
@@ -131,7 +156,7 @@ export default function UserLists() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
+                    <td colSpan={4} className="px-6 py-8 text-left text-gray-500">
                       No pending registration requests.
                     </td>
                   </tr>
@@ -150,8 +175,10 @@ export default function UserLists() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
+                  <th scope="col" className="px-3  py-3 text-left text-sm font-semibold text-gray-700"></th>
                   <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Date</th>
                   <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
+                  <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Username</th>
                   <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
                   <th scope="col" className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Actions</th>
                 </tr>
@@ -177,10 +204,12 @@ export default function UserLists() {
                 ) : approvedUser.length > 0 ? (
                   approvedUser.map((user) => (
                     <tr key={user.id} className="hover:bg-gray-50 transition-colors duration-150">
+                      <td className="flex justify-center px-3 py-4 whitespace-nowrap text-sm text-gray-600">{user.id}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{formatDate(user.created_at)}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         {user.first_name} {user.last_name}
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{user.username}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{user.email}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
                         <Button
@@ -196,7 +225,7 @@ export default function UserLists() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
+                    <td colSpan={4} className="px-6 py-8 text-left text-gray-500">
                       No approved users found.
                     </td>
                   </tr>

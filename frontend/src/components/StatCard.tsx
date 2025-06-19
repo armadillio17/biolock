@@ -1,5 +1,6 @@
 import React from 'react';
 import { DivideIcon as LucideIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface StatCardProps {
   title: string;
@@ -7,9 +8,17 @@ interface StatCardProps {
   icon: typeof LucideIcon;
   gradient: string;
   delay?: number;
+  link?: string;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ title, count, icon: Icon, gradient, delay = 0 }) => {
+const StatCard: React.FC<StatCardProps> = ({ title, count, icon: Icon, gradient, delay = 0, link }) => {
+
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (link) navigate(link);
+  };
+
   return (
     <div 
       className="group relative bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-1"
@@ -28,7 +37,9 @@ const StatCard: React.FC<StatCardProps> = ({ title, count, icon: Icon, gradient,
           <p className="text-3xl font-bold text-gray-900 tabular-nums">{count}</p>
         </div>
         <div className={`w-12 h-12 ${gradient} rounded-xl flex items-center justify-center shadow-lg`}>
-          <Icon className="w-6 h-6 text-white" />
+          <Icon 
+            className="w-6 h-6 text-white"
+            onClick={handleClick} />
         </div>
       </div>
 
@@ -36,6 +47,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, count, icon: Icon, gradient,
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-gray-200 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
     </div>
   );
+
 };
 
 export default StatCard;

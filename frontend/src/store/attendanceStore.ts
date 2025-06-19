@@ -43,6 +43,7 @@ interface AttendanceState {
   clockInUser: () => Promise<void>;  
   clockOutUser: () => Promise<void>;
   checkUserClockIn: () => Promise<CheckClockin | null>;
+  requestOvertime: (date: string) => Promise<void>;
 }
 
 export const useAttendanceStore = create<AttendanceState>((set) => ({
@@ -263,8 +264,57 @@ export const useAttendanceStore = create<AttendanceState>((set) => ({
 
       // console.error("Clock-in error response:", err);
     }
-  }
-  
+  },
 
+  requestOvertime: async (date: string) => {
+    set({ isLoading: true, error: null });
+    
+    try {
+      const user = useAuthStore.getState().user;
 
+      if (!user || !user.userId) {
+        throw new Error("User ID not found");
+      }
+
+      const response = await axios.post(`${base_url}/approve-overtime/`, {
+        date,
+        user_id: user.userId
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      // Optional: You can return or update state based on response
+      set({ isLoading: false });
+      console.log("Overtime requested successfully:", response.data);
+      return response.data;
+
+    } catch (err) {
+      set({ isLoading: false });
+
+      if (axios.isAxiosError(err)) {
+        const responseData = err.response?.data;
+        console.error("Overtime request error response:", responseData);
+
+        if (responseData?.error) {
+          set({ error: responseData.error });
+        } else if (responseData?.errors) {
+          const errorMsg = Object.entries(responseData.errors)
+            .map(([field, msgs]) => `${field}: ${(msgs as string[]).join(", ")}`)
+            .join(" | ");
+          set({ error: errorMsg });
+        } else {
+          set({ error: "Failed to request overtime" });
+        }
+
+      } else if (err instanceof Error) {
+        set({ error: err.message });
+      } else {
+        set({ error: "Unexpected error occurred" });
+      }
+
+      throw err;
+    }
+  },
 }));

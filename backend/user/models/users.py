@@ -40,7 +40,7 @@ class CustomUser(AbstractUser):
     role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True, blank=True, db_column='role_id')
     department_id = models.IntegerField(null=True, blank=True)
     position_id = models.IntegerField(null=True, blank=True)
-    username = models.CharField(max_length=150, unique=True)
+    username = models.CharField(max_length=150)
     password = models.CharField(max_length=255)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
@@ -50,6 +50,12 @@ class CustomUser(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
+
+    date_of_birth = models.DateField(null=True, blank=True)
+    fcm_token = models.CharField(max_length=255, null=True, blank=True)
+    registration_token = models.CharField(max_length=255, null=True, blank=True)
+    is_token_used = models.BooleanField(default=False)
+
 
     # Government identification numbers only
     sss_number = models.CharField(max_length=20, null=True, blank=True, verbose_name="SSS Number", unique=True)
