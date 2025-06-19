@@ -1,9 +1,9 @@
-from .users import UserCreateView, UserUpdateDeleteView, UserAuthenticationView, GetUserRoleView, LogoutView, UserCountView, NewRegistrationRegisteredList, AcceptedUserList, UploadProfilePictureView, RemoveProfilePictureView
+from .users import UserCreateView, UserUpdateDeleteView, UserAuthenticationView, GetUserRoleView, LogoutView, UserCountView, NewRegistrationRegisteredList, AcceptedUserList, UploadProfilePictureView, RemoveProfilePictureView, SendRegistrationLink
 from .attendance import AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView, DailyAttendanceCountView
 from .department import DepartmentListCreateView, DepartmentDetailView, AssignUserToDepartmentView, RemoveUserFromDepartmentView
 from .leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView, LeaveRequestDetailView
 from .notification_history import NotificationHistoryListCreateView, NotificationHistoryDetailView
-from .report.report import ReportListCreateView, ReportDetailView, GenerateDailyReport
+from .report.report import ReportListCreateView, ReportDetailView, GenerateDailyReport, GenerateDateRangeReport
 from .holiday.holiday import HolidayListCreateView, HolidayDetailView
 from .attendance_adjustments import AttendanceAdjustmentsListCreateView, AttendanceAdjustmentsDetailView
 from .position import PositionListCreateView, PositionDetailView, AssignUserToPositionView, RemoveUserFromPositionView
@@ -60,5 +60,7 @@ __all__ = [
     "UploadProfilePictureView",
     "RemoveProfilePictureView",
     "PingCompany",
-    "LeaveRequestDetailView"
+    "LeaveRequestDetailView",
+    "SendRegistrationLink",
+    "GenerateDateRangeReport"
     ]

@@ -22,7 +22,7 @@ from django.urls import path
 from user.views import (
     UserCreateView, UserUpdateDeleteView, UserAuthenticationView,
     AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView, GetUserRoleView, LogoutView, UserCountView, DailyAttendanceCountView,
-    NewRegistrationRegisteredList, AcceptedUserList, UploadProfilePictureView, RemoveProfilePictureView
+    NewRegistrationRegisteredList, AcceptedUserList, UploadProfilePictureView, RemoveProfilePictureView, SendRegistrationLink
 ) 
 from user.views.leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView, LeaveRequestListView
 from user.views.department import (
@@ -37,7 +37,7 @@ from user.views.notification_history import (
     NotificationHistoryListCreateView, NotificationHistoryDetailView
 )
 from user.views.report.report import (
-    ReportListCreateView, ReportDetailView, GenerateDailyReport
+    ReportListCreateView, ReportDetailView, GenerateDailyReport, GenerateDateRangeReport
 )
 from user.views.report.download_report import (
     DownloadAttendancePDF
@@ -142,6 +142,7 @@ urlpatterns = [
     path('api/reports/', ReportListCreateView.as_view(), name='report-list'),
     path('api/reports/<int:pk>/', ReportDetailView.as_view(), name='report-detail'),
     path('api/reports/daily-report/', GenerateDailyReport.as_view(), name='report-detail'),
+    path('api/reports/date-range-report/', GenerateDateRangeReport.as_view(), name='report-detail'),
     path('api/reports/download-pdf/<int:report_id>/', DownloadAttendancePDF.as_view(), name='download-report'),
 
     # Holiday Endpoints
@@ -198,6 +199,9 @@ urlpatterns = [
     
     #Ping Company Ip
     path('api/ping/company/', PingCompany.as_view(), name='ping_company'),
+    
+    #Send One Time Register
+    path('api/register/', SendRegistrationLink.as_view(), name='one_time_registration'),
     
 ]
 

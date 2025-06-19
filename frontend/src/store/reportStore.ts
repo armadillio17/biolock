@@ -12,6 +12,8 @@ interface ReportData {
   status: string;
   date: string;
   created_at: string;
+  start_date: string;
+  end_date: string;
 }
 
 interface DailyReportData {
@@ -25,12 +27,14 @@ interface ReportState {
   createMonthlyReport: DailyReportData[];
   isLoading: boolean;
   error: string | null;
+  pdfBlobUrl: string | null; // <- ADD this
 
   fetchReportList: () => Promise<void>;
   generateDailyReport: () => Promise<void>;
-  generateMonthlyReport: () => Promise<void>;
+  generateDateRangeReport: (startDate: string, endDate: string) => Promise<void>;
   downloadReportDataPDF: (report_id: number) => Promise<void>;
   viewReportDataPDF: (report_id: number) => Promise<void>;
+  setPdfBlobUrl: (url: string | null) => void; // <- ADD this
 }
 
 export const useReportStore = create<ReportState>((set) => ({
@@ -39,6 +43,8 @@ export const useReportStore = create<ReportState>((set) => ({
   createMonthlyReport: [],
   isLoading: false,
   error: null,
+  pdfBlobUrl: null,
+  setPdfBlobUrl: (url: string | null) => set({ pdfBlobUrl: url }),
 
   fetchReportList: async () => {
     set({ isLoading: true, error: null });
@@ -90,18 +96,22 @@ export const useReportStore = create<ReportState>((set) => ({
     }
   },
 
-  generateMonthlyReport: async () => {
+  generateDateRangeReport: async (startDate: string, endDate: string) => {
     set({ isLoading: true, error: null });
-
+  
     try {
-      const response = await axios.get(`${base_url}/reports/monthly-report/`, {
+      const response = await axios.get(`${base_url}/reports/date-range-report/`, {
+        params: {
+          start_date: startDate,
+          end_date: endDate,
+        },
         headers: {
           "Content-Type": "application/json",
         },
       });
-
+  
       const reports = response.data;
-
+  
       set({
         createMonthlyReport: reports,
         isLoading: false,
@@ -114,7 +124,7 @@ export const useReportStore = create<ReportState>((set) => ({
       });
     }
   },
-
+  
   downloadReportDataPDF: async (report_id: number) => {
     set({ isLoading: true, error: null });
 
@@ -146,7 +156,7 @@ export const useReportStore = create<ReportState>((set) => ({
 
   viewReportDataPDF: async (report_id: number) => {
     set({ isLoading: true, error: null });
-
+  
     try {
       const response = await axios.get(`${base_url}/reports/download-pdf/${report_id}`, {
         responseType: 'blob',
@@ -154,12 +164,11 @@ export const useReportStore = create<ReportState>((set) => ({
           "Content-Type": "application/json",
         },
       });
-
+  
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
-      window.open(url, '_blank'); // Opens the PDF in a new tab
-
-      set({ isLoading: false });
+  
+      set({ pdfBlobUrl: url, isLoading: false }); // ✅ Set it here
     } catch (error: unknown) {
       console.error("Error fetching report:", error);
       set({
@@ -167,5 +176,6 @@ export const useReportStore = create<ReportState>((set) => ({
         isLoading: false,
       });
     }
-  }
+  },
+  
 }));
