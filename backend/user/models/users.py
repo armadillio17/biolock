@@ -51,6 +51,12 @@ class CustomUser(AbstractUser):
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
 
+    date_of_birth = models.DateField(null=True, blank=True)
+    fcm_token = models.CharField(max_length=255, null=True, blank=True)
+    registration_token = models.CharField(max_length=255, null=True, blank=True)
+    is_token_used = models.BooleanField(default=False)
+
+
     # Government identification numbers only
     sss_number = models.CharField(max_length=20, null=True, blank=True, verbose_name="SSS Number", unique=True)
     pagibig_number = models.CharField(max_length=20, null=True, blank=True, verbose_name="Pag-IBIG Number", unique=True)
