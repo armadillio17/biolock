@@ -49,7 +49,7 @@ export default function TimeTracker({ clockInTime, clockOutTime, isTracking }: T
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-      second: '2-digit'
+      // second: '2-digit'
     });
   };
 
@@ -99,7 +99,7 @@ export default function TimeTracker({ clockInTime, clockOutTime, isTracking }: T
               {new Date(clockOutTime || clockInTime).toLocaleTimeString('en-US', {
                 hour: '2-digit',
                 minute: '2-digit',
-                second: '2-digit'
+                // second: '2-digit'
               })}
             </p>
             <p className={clockOutTime ? 'text-red-600 text-sm mt-1' : 'text-green-600 text-sm mt-1'}>
@@ -112,7 +112,14 @@ export default function TimeTracker({ clockInTime, clockOutTime, isTracking }: T
       {/* Today's Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
-          <div className="text-2xl font-bold text-blue-600">8.5h</div>
+          {/* <div className="text-2xl font-bold text-blue-600">8.5h</div> */}
+          <div className="text-2xl font-bold text-green-600">
+            {clockOutTime
+              ? `${(totalWorkTimeInSeconds / 3600).toFixed(1)}h`
+              : isTracking
+              ? `${(elapsedTime / 3600).toFixed(1)}h`
+              : '0.0h'}
+          </div>
           <div className="text-blue-800 text-sm font-medium">Target Hours</div>
         </div>
         <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
@@ -126,7 +133,14 @@ export default function TimeTracker({ clockInTime, clockOutTime, isTracking }: T
           <div className="text-green-800 text-sm font-medium">Hours Today</div>
         </div>
         <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 text-center">
-          <div className="text-2xl font-bold text-orange-600">42.5h</div>
+          {/* <div className="text-2xl font-bold text-orange-600">42.5h</div> */}
+          <div className="text-2xl font-bold text-green-600">
+            {clockOutTime
+              ? `${(totalWorkTimeInSeconds / 3600).toFixed(1)}h`
+              : isTracking
+              ? `${(elapsedTime / 3600).toFixed(1)}h`
+              : '0.0h'}
+          </div>
           <div className="text-orange-800 text-sm font-medium">This Week</div>
         </div>
       </div>
