@@ -7,7 +7,9 @@ import { sidebarMenu, sidebarMenuUser } from "@/data/dashboard-data.tsx";
 import { usePositionStore } from "@/store/positionStore";
 import { useImageUploadStore } from "@/store/imageUploadStore";
 import { useUpdateUserStore } from "@/store/userStore";
-
+import { leaveRequestStore } from '@/store/leaveRequestStore';
+import { useOvertimeRequestStore } from '@/store/overtimeRequestStore.ts';
+import { useUserStore } from '@/store/userlistStore.ts';
 // Lucide Icons
 import {
   LogOut,
@@ -29,9 +31,12 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { uploadImage } = useImageUploadStore();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
+  const { leaveRequest  } = leaveRequestStore();
   const menuItems = isAdmin ? sidebarMenu : sidebarMenuUser;
-
+  const leaveRequestCount = Array.isArray(leaveRequest) ? leaveRequest.length : 0;
+  const count = useOvertimeRequestStore((state) => state.getPendingCount());
+  const Userstore = useUserStore();
+  const UnapprovedUsersCount = Userstore.newRegisteredUserCount;
   const capitalize = (str: string): string =>
     str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
@@ -90,7 +95,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+            className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden"
             onClick={() => setSidebarOpen(false)}
         />
     )}
@@ -105,11 +110,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     >
         <div className="flex flex-col h-full">
             {/* Logo Section */}
-            <div className="flex justify-center items-center gap-3 p-6 border-b border-gray-200/50">
+            <div className="flex items-center justify-center gap-3 p-6 border-b border-gray-200/50">
                 <img src="./src/assets/logo.webp" alt="" className="max-w-[62px] max-h-[62px]" />
                 <button
                     onClick={() => setSidebarOpen(false)}
-                    className="ml-auto lg:hidden p-1 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="p-1 ml-auto transition-colors rounded-lg lg:hidden hover:bg-gray-100"
                 >
                     <X className="w-5 h-5" />
                 </button>
@@ -119,20 +124,20 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <div className="p-6 border-b border-gray-200/50">
                 <div className="flex items-center gap-3">
                     <div 
-                    className="relative w-12 h-12 overflow-hidden rounded-full bg-gradient-to-r from-pink-400 to-purple-500 flex items-center justify-center cursor-pointer group"
+                    className="relative flex items-center justify-center w-12 h-12 overflow-hidden rounded-full cursor-pointer bg-gradient-to-r from-pink-400 to-purple-500 group"
                     onClick={() => fileInputRef.current?.click()}
                     >
                     {profile_picture ? (
                         <img src={profile_picture ?? ''} alt="Profile" className="object-cover w-full h-full" />
                     ) : (
-                        <span className="text-white font-semibold text-sm">
+                        <span className="text-sm font-semibold text-white">
                         {user?.first_name?.charAt(0) || "U"}
                         {user?.last_name?.charAt(0) || ""}
                         </span>
                     )}
                     
                     {/* Pen Overlay on Hover */}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
+                    <div className="absolute inset-0 flex items-center justify-center transition-opacity duration-200 opacity-0 bg-black/40 group-hover:opacity-100">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -178,6 +183,21 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                     {/* ✅ Render icon directly */}
                     <span className="flex-shrink-0">
                         {item.icon}
+                      {item.name === "Leave Request" && leaveRequestCount > 0 &&(
+                        <span className="absolute top-[277px] right-[190px] bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-md">
+                          {leaveRequestCount}
+                        </span>
+                      )}
+                      {item.name === "Overtime" && count > 0 &&(
+                        <span className="absolute top-[382px] right-[190px] bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-md">
+                          {count}
+                        </span>
+                      )}
+                      {item.name === "Users" && UnapprovedUsersCount > 0 && (
+                        <span className="absolute top-[486px] right-[190px] bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-md">
+                          {UnapprovedUsersCount}
+                        </span>
+                      )}
                     </span>
 
                     <span className="font-medium">{item.name}</span>
@@ -189,7 +209,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <div className="p-4 border-t border-gray-200/50">
                 <button
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all duration-200"
+                    className="flex items-center w-full gap-3 px-4 py-3 text-gray-600 transition-all duration-200 hover:bg-red-50 hover:text-red-600 rounded-xl"
                 >
                     <LogOut className="w-5 h-5" />
                     <span className="font-medium">Log-out</span>
@@ -202,10 +222,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <main className="lg:ml-64">
             {/* Mobile Header */}
             {!isDesktop && !sidebarOpen && (
-                <div className="lg:hidden bg-white/80 backdrop-blur-xl border-b border-gray-200/50 p-4">
+                <div className="p-4 border-b lg:hidden bg-white/80 backdrop-blur-xl border-gray-200/50">
                 <button
                     onClick={() => setSidebarOpen(true)}
-                    className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="p-2 transition-colors rounded-lg hover:bg-gray-100"
                 >
                     <Menu className="w-6 h-6" />
                 </button>
