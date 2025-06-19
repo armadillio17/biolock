@@ -3,6 +3,7 @@ import DashboardLayout from "@/layouts/DashboardLayout";
 import { useDashboardStore } from "@/store/dashboardStore";
 import { useEffect } from "react";
 import StatCard from '../components/StatCard';
+import RealTimeClock from "./utils/RealTimeClock";
 import { 
   Users, 
   FileText, 
@@ -22,7 +23,7 @@ const FormattedDate = () => {
     day: "numeric",
   }).format(today);
 
-  return <span className="text-gray-600 font-medium">{formattedDate}</span>;
+  return <span >{formattedDate}</span>;
 };
 
 function AdminDashboard() {
@@ -90,17 +91,21 @@ function AdminDashboard() {
         {/* Welcome Section */}
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-cyan-500/10 rounded-3xl blur-3xl" />
-          <div className="relative bg-white/40 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-xl">
+          <div className="relative p-8 border shadow-xl bg-white/40 backdrop-blur-xl rounded-3xl border-white/20">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                <h1 className="mb-2 text-4xl font-bold text-gray-900">
                   Welcome Back! 👋
                 </h1>
-                <FormattedDate />
-                {/* <p className="text-gray-600 mt-2">Here's what's happening with your team today.</p> */}
+                <div className="flex justify-between w-56 text-xl font-medium text-gray-600">
+                  <FormattedDate />
+                  -
+                <RealTimeClock/>
+                </div>
+                <p className="mt-2 text-gray-600">Here&apos;s what&apos;s happening with your team today.</p>
               </div>
               <div className="hidden md:block">
-                <div className="w-24 h-24 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-2xl flex items-center justify-center">
+                <div className="flex items-center justify-center w-24 h-24 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-2xl">
                   <Calendar className="w-12 h-12 text-white" />
                 </div>
               </div>
@@ -109,7 +114,7 @@ function AdminDashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {dashboardCards.map((card, index) => (
             <StatCard
               key={index}
@@ -124,18 +129,18 @@ function AdminDashboard() {
         </div>
 
         {/* Additional Sections Placeholder */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Chart Section */}
-          {/* <div className="bg-white/40 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-xl">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Team Performance</h3>
-            <div className="h-64 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center">
+          <div className="p-8 border shadow-xl bg-white/40 backdrop-blur-xl rounded-3xl border-white/20">
+            <h3 className="mb-4 text-xl font-bold text-gray-900">Team Performance</h3>
+            <div className="flex items-center justify-center h-64 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl">
               <p className="text-gray-500">Chart component would go here</p>
             </div>
-          </div> */}
+          </div> 
 
           {/* Recent Activity */}
-          {/* <div className="bg-white/40 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-xl">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Recent Activity</h3>
+          <div className="p-8 border shadow-xl bg-white/40 backdrop-blur-xl rounded-3xl border-white/20">
+            <h3 className="mb-4 text-xl font-bold text-gray-900">Recent Activity</h3>
             <div className="space-y-4">
               {[
                 "John Doe submitted a leave request",
@@ -144,12 +149,12 @@ function AdminDashboard() {
                 "Emily Davis updated her profile"
               ].map((activity, index) => (
                 <div key={index} className="flex items-center gap-3 p-3 bg-white/50 rounded-xl">
-                  <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-full" />
+                  <div className="w-2 h-2 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500" />
                   <p className="text-sm text-gray-700">{activity}</p>
                 </div>
               ))}
             </div>
-          </div> */}
+          </div> 
         </div>
       </div>
 
