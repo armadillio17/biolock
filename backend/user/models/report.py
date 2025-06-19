@@ -6,6 +6,8 @@ class Report(models.Model):
     # attendance_id = models.ForeignKey(Attendance, on_delete=models.CASCADE)
     type = models.CharField(max_length=255)
     data = models.JSONField()
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
