@@ -1,7 +1,7 @@
 from decimal import Decimal
 from venv import logger
 from django.db.models import Sum
-from user.models import BenefitsConfiguration, AttendanceSummary, HolidayConfig
+from user.models import BenefitsConfiguration, AttendanceSummary
 
 class PayslipCalculator:
     @staticmethod
@@ -66,10 +66,7 @@ class PayslipCalculator:
                 holiday_pay += total_hours * effective_rate
 
         gross_pay = regular_pay + holiday_pay + overtime_pay
-        print("regular_pay:", regular_pay)
-        print("holiday_pay:", holiday_pay)
-        print("overtime_pay:", overtime_pay)
-        print("gross_pay:", gross_pay)
+
         return {
             'gross_pay': gross_pay,
             'regular_pay': regular_pay,

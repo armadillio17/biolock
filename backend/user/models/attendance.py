@@ -17,7 +17,6 @@ class Attendance(models.Model):
         ('day_off', 'Day Off'),
     ]
 
-    # user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendances") 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attendances", null=True, blank=True) 
     holiday = models.ForeignKey(Holiday, on_delete=models.SET_NULL, null=True, blank=True, related_name="attendances") 
     custom_holiday = models.ForeignKey(CustomHoliday, on_delete=models.SET_NULL, null=True, blank=True, related_name="attendance_records")
@@ -26,11 +25,12 @@ class Attendance(models.Model):
     clock_in = models.DateTimeField(null=True, blank=True)
     clock_out = models.DateTimeField(null=True, blank=True)
     working_hours = models.FloatField(default=0.0)
-    # overtime_hours = models.FloatField(default=0.0)
+    overtime_hours = models.FloatField(default=0.0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     scheduled_start = models.DateTimeField(null=True, blank=True)
     scheduled_end = models.DateTimeField(null=True, blank=True)
     is_clockOut = models.BooleanField(default=False)
+    is_overtime_clock_in = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
@@ -44,6 +44,14 @@ class Attendance(models.Model):
     def is_deleted(self):
         """Check if the record is soft-deleted."""
         return self.deleted_at is not None
+    
+    @property
+    def is_overtime_session(self):
+        return hasattr(self, '_is_overtime_session') and self._is_overtime_session
+
+    @is_overtime_session.setter
+    def is_overtime_session(self, value):
+        self._is_overtime_session = value
 
     # def __str__(self):
     #     return f"Attendance #{self.id} for {self.user}"
