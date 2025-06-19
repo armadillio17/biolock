@@ -13,6 +13,7 @@ import {
   Calendar
 } from 'lucide-react';
 
+
 const FormattedDate = () => {
   const today = new Date();
   const formattedDate = new Intl.DateTimeFormat("en-US", {
@@ -43,37 +44,43 @@ function AdminDashboard() {
       title: "Total Employees", 
       count: userCount.approvedUsers, 
       icon: Users,
-      gradient: "bg-gradient-to-r from-blue-500 to-cyan-500"
+      gradient: "bg-gradient-to-r from-blue-500 to-cyan-500",
+      link: "/users"
     },
     { 
       title: "Leave Requests", 
       count: approvedLeave.approvedLeaveCount, 
       icon: FileText,
-      gradient: "bg-gradient-to-r from-emerald-500 to-teal-500"
+      gradient: "bg-gradient-to-r from-emerald-500 to-teal-500",
+      link: "/leave-request"
     },
     { 
       title: "Absent Today", 
       count: status.absentCount, 
       icon: UserX,
-      gradient: "bg-gradient-to-r from-orange-500 to-red-500"
+      gradient: "bg-gradient-to-r from-orange-500 to-red-500",
+      link: "/timesheet"
     },
     { 
       title: "Currently Working", 
       count: status.workingCount, 
       icon: UserCheck,
-      gradient: "bg-gradient-to-r from-purple-500 to-pink-500"
+      gradient: "bg-gradient-to-r from-purple-500 to-pink-500",
+      link: "/timesheet"
     },
     { 
       title: "Day Off", 
       count: status.dayOffCount, 
       icon: Home,
-      gradient: "bg-gradient-to-r from-indigo-500 to-purple-500"
+      gradient: "bg-gradient-to-r from-indigo-500 to-purple-500",
+      link: "/timesheet"
     },
     { 
       title: "On Leave", 
       count: status.onLeaveCount, 
       icon: Plane,
-      gradient: "bg-gradient-to-r from-amber-500 to-orange-500"
+      gradient: "bg-gradient-to-r from-amber-500 to-orange-500",
+      link: "/timesheet"
     },
   ];
 
@@ -90,7 +97,7 @@ function AdminDashboard() {
                   Welcome Back! 👋
                 </h1>
                 <FormattedDate />
-                <p className="text-gray-600 mt-2">Here's what's happening with your team today.</p>
+                {/* <p className="text-gray-600 mt-2">Here's what's happening with your team today.</p> */}
               </div>
               <div className="hidden md:block">
                 <div className="w-24 h-24 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-2xl flex items-center justify-center">
@@ -111,6 +118,7 @@ function AdminDashboard() {
               icon={card.icon}
               gradient={card.gradient}
               delay={index * 100}
+              link={card.link}
             />
           ))}
         </div>
@@ -118,15 +126,15 @@ function AdminDashboard() {
         {/* Additional Sections Placeholder */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Chart Section */}
-          <div className="bg-white/40 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-xl">
+          {/* <div className="bg-white/40 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-xl">
             <h3 className="text-xl font-bold text-gray-900 mb-4">Team Performance</h3>
             <div className="h-64 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center">
               <p className="text-gray-500">Chart component would go here</p>
             </div>
-          </div>
+          </div> */}
 
           {/* Recent Activity */}
-          <div className="bg-white/40 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-xl">
+          {/* <div className="bg-white/40 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-xl">
             <h3 className="text-xl font-bold text-gray-900 mb-4">Recent Activity</h3>
             <div className="space-y-4">
               {[
@@ -141,7 +149,7 @@ function AdminDashboard() {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 

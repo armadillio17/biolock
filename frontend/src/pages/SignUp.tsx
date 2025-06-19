@@ -243,12 +243,12 @@ function SignUp() {
                         <Button type="submit" className="w-full bg-[#7BDFF2] min-h-[51px] rounded-[5px] mt-5">
                             <p className="text-md font-bold text-[#4E4E53]">Sign Up</p>
                         </Button>
-                        <div className="flex justify-center gap-2 mt-3">
+                        {/* <div className="flex justify-center gap-2 mt-3">
                             <p>Already have an account?</p>
                             <a href="/" className="text-[#1600DD]">
                                 Sign In
                             </a>
-                        </div>
+                        </div> */}
                     </form>
                 </div>
             </motion.div>

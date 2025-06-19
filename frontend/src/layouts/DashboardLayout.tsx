@@ -123,7 +123,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                     onClick={() => fileInputRef.current?.click()}
                     >
                     {profile_picture ? (
-                        <img src={profile_picture} alt="Profile" className="object-cover w-full h-full" />
+                        <img src={profile_picture ?? ''} alt="Profile" className="object-cover w-full h-full" />
                     ) : (
                         <span className="text-white font-semibold text-sm">
                         {user?.first_name?.charAt(0) || "U"}

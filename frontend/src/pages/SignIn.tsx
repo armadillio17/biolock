@@ -114,12 +114,12 @@ function SignIn() {
                                 {isLoading ? "Signing In..." : "Sign In"}
                             </p>
                         </Button>
-                        <div className="flex justify-center mt-3">
+                        {/* <div className="flex justify-center mt-3">
                             <p>Don&apos;t have an account?</p>
                             <a href="/sign-up" className="text-[#1600DD] mx-2">
                                 Create an account
                             </a>
-                        </div>
+                        </div> */}
                     </form>
                 </div>
             </motion.div>
