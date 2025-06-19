@@ -23,6 +23,8 @@ class RegistrationLink(models.Model):
     )
 
     deleted_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def delete(self, *args, **kwargs):
         """Soft delete by setting the deleted_at field."""
