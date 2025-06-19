@@ -18,6 +18,7 @@ from .company import CompanySerializer
 from .request_overtime import OvertimeRequestSerializer
 from .holiday.holiday_config import HolidayConfigSerializer
 from .holiday.custom_holiday import CustomHolidaySerializer
+from .registration_link import RegistrationLinkSerializer
 
 __all__ = [
     "AttendanceSerializer",
@@ -44,5 +45,6 @@ __all__ = [
     "CompanySerializer",
     "OvertimeRequestSerializer",
     "HolidayConfigSerializer",
-    "CustomHolidaySerializer"
+    "CustomHolidaySerializer",
+    "RegistrationLinkSerializer"
     ]

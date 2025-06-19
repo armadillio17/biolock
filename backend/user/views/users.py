@@ -5,7 +5,8 @@ from rest_framework import status
 from django.utils.timezone import now
 from user.models.users import CustomUser
 from user.models.roles import Role
-from user.serializers import UserSerializer, UserProfileSerializer
+from user.models.registration_link import RegistrationLink
+from user.serializers import UserSerializer, UserProfileSerializer, RegistrationLinkSerializer
 from rest_framework.authtoken.models import Token
 from user.utils.notification_history import log_notification
 from django.shortcuts import get_object_or_404
@@ -14,6 +15,11 @@ from rest_framework.parsers import MultiPartParser, FormParser
 import os
 from django.conf import settings
 import re
+import secrets
+from django.utils.crypto import get_random_string
+from django.core.mail import send_mail
+from django.utils import timezone
+
 
 
 # from django.contrib.auth.models import User
@@ -55,6 +61,22 @@ class UserCreateView(APIView):
     def post(self, request):
         """Create a new user record"""
         request.data.setdefault("role_id", 2)
+        
+        token = request.data.get("registration_token")
+        if not token:
+            return Response({'error': 'Registration token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Validate token
+        try:
+            registration_link = RegistrationLink.objects.get(registration_token=token, is_token_used=False, deleted_at__isnull=True)
+        except RegistrationLink.DoesNotExist:
+            return Response({'error': 'Invalid or already used registration token.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if token expired
+        token_age = timezone.now() - registration_link.created_at
+        if token_age > registration_link.is_alive_hours:
+            return Response({'error': 'Registration token has expired.'}, status=status.HTTP_400_BAD_REQUEST)
+        
 
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -342,3 +364,35 @@ class RemoveProfilePictureView(APIView):
         user.save()
 
         return Response({"message": "Profile picture removed successfully."}, status=200)
+    
+class SendRegistrationLink(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        base_url = os.getenv("APP_URL")
+
+        if not email:
+            return Response({'error': 'Email is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        token = get_random_string(32)
+        registration_url = f"{base_url}sign-up?token={token}"
+        
+        serializer = RegistrationLinkSerializer(data={
+            'email': email,  # you need to add this field in your serializer + model
+            'registration_token': token
+        })
+        
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        send_mail(
+            subject="Your Registration Link",
+            message=f"Click here to register: {registration_url}",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
+        )
+
+        # Optional: Save token in DB or cache with an expiration time
+
+        return Response({'message': 'Registration link sent successfully.'}, status=status.HTTP_200_OK)

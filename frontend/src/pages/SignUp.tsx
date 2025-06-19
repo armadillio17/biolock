@@ -12,6 +12,9 @@ import { useRef } from 'react';
 
 function SignUp() {
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const registrationToken = urlParams.get("token");
+
     const navigate =  useNavigate();
     const dateInputRef = useRef(null);
     const [formData, setFormData] = useState({
@@ -46,6 +49,7 @@ function SignUp() {
                     username: formData.username,
                     email: formData.email,
                     password: formData.password,
+                    registration_token: registrationToken 
                 }),
             });
 
