@@ -9,7 +9,6 @@ interface OvertimeRequest {
   id: number;
   full_name: string;
   date: string;
-  requested_hours: number;
   status: string;
   created_at: string;
 }
@@ -99,7 +98,6 @@ export default function OvertimeRequest() {
                     <tr key={req.id} className="hover:bg-gray-50 transition-colors duration-150">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{req.date}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{req.full_name}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{req.requested_hours} hours</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         {new Date(req.created_at).toLocaleString()}
                       </td>

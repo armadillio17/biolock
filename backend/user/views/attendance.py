@@ -17,14 +17,6 @@ class AttendanceListCreateView(APIView):
         serializer = AttendanceSerializer(attendances, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # def post(self, request):
-    #     """Create a new attendance record"""
-    #     serializer = AttendanceSerializer(data=request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 class AttendanceDetailUpdateDeleteView(APIView):
     def get_object(self, pk):
         """Helper method to get an object or return 404"""
@@ -68,62 +60,71 @@ class UserAttendanceView(APIView):
         attendances = Attendance.objects.filter(user_id=user_id, deleted_at__isnull=True)
         serializer = AttendanceSerializer(attendances, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
-# class UserClockInView(APIView):
-#     def post(self, request):
-#         """Create a new clock-in record"""
-#         # attendances = Attendance.objects.filter(deleted_at__isnull=True)
-#         # serializer = ClockInSerializer(attendances, data=request.data, partial=True)
-#         # serializer = ClockOutSerializer(attendances, data=request.data, partial=True)
-#         serializer = ClockInSerializer(data=request.data, partial=True)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-#         print("Validation Errors:", serializer.errors)  # Log validation errors
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserClockInView(APIView):
     def get(self, request, pk):
-        """Check if the user has clocked in today and return clock-out status."""
-        try:
-            today = now().date()
+            """Check if the user can clock in today."""
+            try:
+                today = now().date()
+                print(f"Checking clock-in status for user {pk} on {today}")
+                attendance = Attendance.objects.filter(
+                    user_id=pk,
+                    clock_in__date=today,
+                    clock_in__isnull=False,
+                    deleted_at__isnull=True
+                ).first()
 
-            attendance = Attendance.objects.filter(
-                user_id=pk,
-                clock_in__date=today,
-                clock_in__isnull=False,
-                deleted_at__isnull=True
-            ).first()
+                # Check for approved and UNUSED overtime request
+                has_approved_overtime = OvertimeRequest.objects.filter(
+                    user_id=pk,
+                    date=today,
+                    status='approved',
+                    used=False  # ← Only consider requests that haven't been used
+                ).exists()
 
-            if attendance:
+                if attendance:
+                    # If user has clocked out and has NO unused approved overtime → prevent new clock-in
+                    if attendance.is_clockOut and not has_approved_overtime:
+                        return Response({
+                            "has_clocked_in": True,
+                            "is_clockOut": attendance.is_clockOut,
+                            "clock_in": attendance.clock_in,
+                            "clock_out": attendance.clock_out
+                        }, status=status.HTTP_200_OK)
+
+                    # If user has clocked out BUT has an unused approved overtime → allow clock-in
+                    elif attendance.is_clockOut and has_approved_overtime:
+                        return Response({
+                            "has_clocked_in": False,
+                            "is_clockOut": True,
+                            "reason": "Approved overtime found. Clock-in allowed."
+                        }, status=status.HTTP_200_OK)
+
+                    # If user hasn't clocked out yet
+                    else:
+                        return Response({
+                            "has_clocked_in": True,
+                            "is_clockOut": False,
+                            "clock_in": attendance.clock_in
+                        }, status=status.HTTP_200_OK)
+
+                else:
+                    # No attendance record today → user can clock in
+                    return Response({
+                        "has_clocked_in": False,
+                        "is_clockOut": False
+                    }, status=status.HTTP_200_OK)
+
+            except Exception as e:
+                print(f"Unexpected Error: {str(e)}")
                 return Response({
-                    "has_clocked_in": True,
-                    "is_clockOut": attendance.is_clockOut,
-                    "clock_in": attendance.clock_in,
-                    "clock_out": attendance.clock_out
-                }, status=status.HTTP_200_OK)
-            else:
-                return Response({
-                    "has_clocked_in": False,
-                    "is_clockOut": False
-                }, status=status.HTTP_200_OK)
+                    "error": "An unexpected error occurred.",
+                    "is_clockOut": None,
+                    "has_clocked_in": False
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        except Exception as e:
-            print(f"Unexpected Error: {str(e)}")
-            return Response({
-                "error": "An unexpected error occurred.",
-                "is_clockOut": None,
-                "has_clocked_in": False
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        except Exception as e:
-            print(f"Unexpected Error: {str(e)}")
-            return Response({
-                "error": "An unexpected error occurred.",
-                "is_clockOut": None
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+    #TODO This code is bloated need to refactor this
+    # Note: May be we could continue the time if update the clock out to null when clock in again in overtime.
     def post(self, request):
         """Create a new clock-in record and link to AttendanceSummary"""
 
@@ -131,9 +132,6 @@ class UserClockInView(APIView):
             user_id = request.data.get("user_id")
             now = timezone.localtime()
             today = now.date()
-
-            print("user_id:", user_id)
-            print("Incoming request data:", request.data)
 
             # Check for existing open attendance
             existing = Attendance.objects.filter(
@@ -170,10 +168,53 @@ class UserClockInView(APIView):
             else:
                 print("Today is not a holiday.")
 
+            # Check for approved OvertimeRequest AFTER determining today
+            has_approved_overtime = OvertimeRequest.objects.filter(
+                user_id=user_id,
+                date=today,  # Now we can safely use today instead of attendance.clock_in.date()
+                status='approved'
+            ).exists()
+
+            clock_in_time = now  # Default to current time
+
+            if has_approved_overtime:
+                # Get the latest clock_out time for the day
+                latest_clock_out = Attendance.objects.filter(
+                    user_id=user_id,
+                    clock_out__isnull=False,
+                    clock_in__date=today
+                ).order_by('-clock_out').values_list('clock_out', flat=True).first()
+
+                if latest_clock_out:
+                    clock_in_time = latest_clock_out
+                    print(f"Approved overtime found. Continuing from last clock-out: {clock_in_time}")
+                else:
+                    print("Approved overtime found, but no previous clock-out. Using current time.")
+
+            # Inject clock_in_time into data
+            data['clock_in'] = clock_in_time
+            data['date'] = today
+
             # Serialize and save the Attendance
             serializer = ClockInSerializer(data=data)
             if serializer.is_valid():
-                attendance = serializer.save()  # Save returns the Attendance instance
+                attendance = serializer.save(clock_in=clock_in_time)
+
+                # If there's an approved OvertimeRequest and not yet used, mark it as used
+                if has_approved_overtime:
+                    overtime_request = OvertimeRequest.objects.filter(
+                        user=attendance.user,
+                        date=today,
+                        status='approved',
+                        used=False
+                    ).first()
+
+                    if overtime_request:
+                        overtime_request.used = True
+                        overtime_request.save()
+                        print("Marked OvertimeRequest as used.")
+                    else:
+                        print("No unused approved OvertimeRequest found.")
 
                 # Now create or update the AttendanceSummary with this attendance
                 AttendanceSummary.objects.update_or_create(
@@ -194,14 +235,16 @@ class UserClockInView(APIView):
             return Response({"error": "An unexpected error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class UserClockOutView(APIView):
+    #TODO This code is bloated need to refactor this
     def put(self, request):
-        """Update clock out and create/update attendance summary with precise overtime calculation"""
+        """Update clock out and update attendance summary with total working hours"""
         
-        today = now().date()
-        user_id = request.data["user_id"]
-        REGULAR_HOURS = 8
-        MIN_OVERTIME_MINUTES = 30
-        
+        today = timezone.localtime().date()
+        user_id = request.data.get("user_id")
+
+        if not user_id:
+            return Response({"error": "user_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+
         attendance = Attendance.objects.filter(
             user_id=user_id,
             clock_in__date=today,
@@ -220,18 +263,32 @@ class UserClockOutView(APIView):
                 duration = attendance.clock_out - attendance.clock_in
                 total_seconds = duration.total_seconds()
                 total_hours = round(total_seconds / 3600, 2)
-                
-                # ---- Calculate overtime ----
-                overtime_hours = 0.0
-                if total_hours > REGULAR_HOURS:
-                    overtime_minutes = (total_hours - REGULAR_HOURS) * 60
-                    
-                    # Only count if overtime meets minimum threshold (30 mins)
-                    if overtime_minutes >= MIN_OVERTIME_MINUTES:
-                        overtime_hours = round((total_seconds - (REGULAR_HOURS * 3600)) / 3600, 2)
-                
-                # ---- Save working hours and overtime ----
+
+                # ---- Base working hours ----
                 attendance.working_hours = total_hours
+
+                overtime_hours = 0.0
+
+                # ---- Overtime Calculation (only if is_overtime_clock_in is True) ----
+                if attendance.is_overtime_clock_in:
+                    base_regular_hours = 8.0
+                    if total_hours > base_regular_hours:
+                        potential_overtime = total_hours - base_regular_hours
+                        minimum_overtime_threshold = 0.5
+
+                        if potential_overtime >= minimum_overtime_threshold:
+                            overtime_hours = round(potential_overtime, 2)
+                            attendance.overtime_hours = overtime_hours
+                            print(f"Overtime recorded: {overtime_hours} hours")
+                        else:
+                            attendance.overtime_hours = 0.0
+                            print("No overtime recorded: less than 30 minutes.")
+                    else:
+                        attendance.overtime_hours = 0.0
+                        print("No overtime recorded: under 8 hours.")
+                else:
+                    print("Not an overtime session. No overtime recorded.")
+
                 attendance.save()
 
                 # ---- Create/update summary ----
@@ -240,24 +297,17 @@ class UserClockOutView(APIView):
                     date=today,
                     defaults={
                         "total_working_hours": total_hours,
+                        "total_overtime_hours": overtime_hours,
                         "total_leave_hours": 0,
                         "total_absences": 0,
                     }
                 )
                 if not created:
                     summary.total_working_hours = total_hours
+                    summary.total_overtime_hours = overtime_hours
                     summary.save()
 
-                # ---- Create Pending Overtime Request if applicable ----
-                if overtime_hours > 0:
-                    OvertimeRequest.objects.create(
-                        user=attendance.user,
-                        date=today,
-                        requested_hours=overtime_hours,
-                        status='pending'
-                    )
-
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
