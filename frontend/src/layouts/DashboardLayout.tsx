@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { ReactNode } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { sidebarMenu, sidebarMenuUser } from "@/data/dashboard-data.tsx";
-// import { LogoutCurve, DocumentUpload } from "iconsax-react";
-// import { HiMiniChevronDoubleLeft } from "react-icons/hi2";
 import { usePositionStore } from "@/store/positionStore";
 import { useImageUploadStore } from "@/store/imageUploadStore";
 import { useUpdateUserStore } from "@/store/userStore";
@@ -29,7 +27,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const isAdmin = user?.role === "admin";
   const { userPosition, fetchUserPosition } = usePositionStore();
   const { uploadImage } = useImageUploadStore();
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [_selectedFile, setSelectedFile] = useState<File | undefined>();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { leaveRequest  } = leaveRequestStore();
   const menuItems = isAdmin ? sidebarMenu : sidebarMenuUser;
@@ -43,7 +41,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      console.log(selectedFile);
       
       setSelectedFile(file);
       if (user && typeof user.userId === "number") {
@@ -184,17 +181,17 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                     <span className="flex-shrink-0">
                         {item.icon}
                       {item.name === "Leave Request" && leaveRequestCount > 0 &&(
-                        <span className="absolute top-[277px] right-[190px] bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-md">
+                        <span className="absolute top-[332px] right-[190px] bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-md">
                           {leaveRequestCount}
                         </span>
                       )}
                       {item.name === "Overtime" && count > 0 &&(
-                        <span className="absolute top-[382px] right-[190px] bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-md">
+                        <span className="absolute top-[436px] right-[190px] bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-md">
                           {count}
                         </span>
                       )}
                       {item.name === "Users" && UnapprovedUsersCount > 0 && (
-                        <span className="absolute top-[486px] right-[190px] bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-md">
+                        <span className="absolute top-[540px] right-[190px] bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-md">
                           {UnapprovedUsersCount}
                         </span>
                       )}

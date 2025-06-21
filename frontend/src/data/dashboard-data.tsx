@@ -9,6 +9,7 @@ import {
   Building2,
   UserCheck,
   Activity as LucideActivity,
+  CalendarRange,
 } from "lucide-react";
 
 import dummyPic from "@/assets/dummy person.jpg";
@@ -30,8 +31,9 @@ export interface SidebarProfile {
 // Sidebar Menu Array (Admin)
 export const sidebarMenu: SidebarMenuItem[] = [
   { name: "Dashboard", icon: <LayoutDashboard />, path: "/dashboard" },
+  { name: "Timesheet", icon: <CalendarRange />, path: "/timesheet" },
   { name: "Leave Request", icon: <FileText />, path: "/leave-request" },
-    { name: "Payroll", icon: <PhilippinePeso />, path: "/payroll" },
+  { name: "Payroll", icon: <PhilippinePeso />, path: "/payroll" },
   { name: "Overtime", icon: <Clock />, path: "/overtime" },
   { name: "Reports", icon: <BarChart3 />, path: "/reports" },
   { name: "Users", icon: <Users />, path: "/users" },
