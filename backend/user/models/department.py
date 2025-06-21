@@ -1,9 +1,7 @@
 from django.db import models
-from django.contrib.auth import get_user_model
 from django.utils.timezone import now
 from django.conf import settings
 
-User = get_user_model()
 
 class Department(models.Model):
     department_name = models.CharField(max_length=255)
@@ -34,4 +32,4 @@ class DepartmentUser(models.Model):  # Pivot table
         unique_together = ('department', 'user')  # Prevent duplicate assignments
 
     def __str__(self):
-        return f"{self.user.username} in {self.department.department_name}"
+        return f"{self.user.username} in {self.department.department_name}" if self.user else f"Unassigned in {self.department.department_name}"
