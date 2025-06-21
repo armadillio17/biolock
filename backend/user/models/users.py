@@ -18,7 +18,7 @@ class CustomUser(AbstractUser):
     role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True, blank=True, db_column='role_id')
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True, db_column='department_id')
     position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, blank=True, db_column='position_id')
-    username = models.CharField(max_length=150)
+    username = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=255)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
