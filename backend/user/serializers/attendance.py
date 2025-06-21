@@ -7,10 +7,12 @@ import pytz
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from user.models.request_overtime import OvertimeRequest  # Adjust based on your app structure
+from .users import CustomUserProfileSerializer
 
 User = get_user_model()
 
 class AttendanceSerializer(serializers.ModelSerializer):
+    user = CustomUserProfileSerializer(read_only=True) 
     class Meta:
         model = Attendance
         fields = '__all__'

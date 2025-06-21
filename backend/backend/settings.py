@@ -192,7 +192,16 @@ REST_FRAMEWORK = {
     #     'anon': '100/hour',  # Set rate for anonymous users
     #     'user': '1000/day',  # Set rate for authenticated users
     #     'login': '5/min'  # Limit 5 login attempts per minute
-    }
+    },
+    
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+
+    'DEFAULT_FILTER_BACKENDS': [
+        'rest_framework.filters.SearchFilter',
+    ],
+    
+    
 }
 
 # Session expires after 30 minutes of inactivity

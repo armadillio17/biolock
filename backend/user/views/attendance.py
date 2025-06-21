@@ -9,13 +9,23 @@ from user.models.holiday.custom_holiday import CustomHoliday
 from user.serializers import AttendanceSerializer, ClockInSerializer, ClockOutSerializer
 from user.models.request_overtime import OvertimeRequest
 from django.utils import timezone
+from rest_framework import generics, filters
 
-class AttendanceListCreateView(APIView):
-    def get(self, request):
-        """Retrieve all non-deleted attendance records"""
-        attendances = Attendance.objects.filter(deleted_at__isnull=True)
-        serializer = AttendanceSerializer(attendances, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+# class AttendanceListCreateView(APIView):
+#     def get(self, request):
+#         """Retrieve all non-deleted attendance records"""
+#         attendances = Attendance.objects.filter(deleted_at__isnull=True)
+#         serializer = AttendanceSerializer(attendances, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class AttendanceListCreateView(generics.ListCreateAPIView):
+    queryset = Attendance.objects.filter(deleted_at__isnull=True)
+    serializer_class = AttendanceSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['user__first_name', 'user__last_name', 'date', 'status']
+    ordering_fields = ['date', 'created_at']
+    ordering = ['-date']
+
 
 class AttendanceDetailUpdateDeleteView(APIView):
     def get_object(self, pk):

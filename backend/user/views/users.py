@@ -18,7 +18,9 @@ import re
 import secrets
 from django.utils.crypto import get_random_string
 from django.core.mail import send_mail
-from django.utils import timezone
+from django.db import transaction
+from django.utils.timezone import now
+
 
 
 
@@ -61,37 +63,38 @@ class UserCreateView(APIView):
     def post(self, request):
         """Create a new user record"""
         request.data.setdefault("role_id", 2)
-        
+
         token = request.data.get("registration_token")
         if not token:
             return Response({'error': 'Registration token is required.'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Validate token
-        try:
-            registration_link = RegistrationLink.objects.get(registration_token=token, is_token_used=False, deleted_at__isnull=True)
-        except RegistrationLink.DoesNotExist:
-            return Response({'error': 'Invalid or already used registration token.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Check if token expired
-        token_age = timezone.now() - registration_link.created_at
-        if token_age > registration_link.is_alive_hours:
-            return Response({'error': 'Registration token has expired.'}, status=status.HTTP_400_BAD_REQUEST)
-        
-
+        # Validate user registration data
         serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            password = serializer.validated_data.get('password')
-            
-            if password:  # Only validate if password exists
-                if not re.match(r'^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$', password):
-                    return Response(
-                        {"password": ["Password must contain at least 1 uppercase letter, 1 number, and 1 special character."]},
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-                
-                serializer.validated_data['password'] = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+        password = serializer.validated_data.get('password')
+        if password and not re.match(r'^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$', password):
+            return Response(
+                {"password": ["Password must contain at least 1 uppercase letter, 1 number, and 1 special character."]},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer.validated_data['password'] = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+
+        # Begin atomic transaction
+        with transaction.atomic():
+            # Save the user
             serializer.save()
+
+            # Mark the token as used
+            try:
+                reg_link = RegistrationLink.objects.get(registration_token=token, deleted_at__isnull=True)
+                reg_link.is_token_used = True
+                reg_link.updated_at = now()
+                reg_link.save()
+            except RegistrationLink.DoesNotExist:
+                return Response({'error': 'Invalid registration token.'}, status=status.HTTP_400_BAD_REQUEST)
 
             log_notification(
                 user_id=request.user.id,
@@ -102,9 +105,8 @@ class UserCreateView(APIView):
                 }
             )
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
 class UserUpdateDeleteView(APIView):
     def get_object(self, pk):
         """Helper method to get an object or return 404"""
