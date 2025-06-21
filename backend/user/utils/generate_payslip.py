@@ -3,7 +3,14 @@ from user.models import UserSalary, Payslip, PayrollPeriod
 from .payslip_calculations import PayslipCalculator
 
 def generate_payslip(user, payroll_period):
-    salary = UserSalary.objects.get(user=user)
+    try:
+        salary = UserSalary.objects.get(user=user)
+    except UserSalary.DoesNotExist:
+        print(f"Skipping payslip generation for {user.username}: No salary record found.")
+        return None  # or return early instead of raising an error
+
+    print(f"Generating payslip for {user.username} for period {payroll_period.start_date} to {payroll_period.end_date}")
+
     hours_data = PayslipCalculator.calculate_working_hours(user, payroll_period)
 
     gross_pay_details = PayslipCalculator.calculate_gross_pay(salary, payroll_period, hours_data)
