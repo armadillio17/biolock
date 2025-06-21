@@ -2,7 +2,7 @@
 from .attendance import AttendanceSerializer, UserAttendanceSerializer, ClockInSerializer, ClockOutSerializer
 from .users import UserSerializer, UserProfileSerializer, CustomUserProfileSerializer
 from .department import DepartmentSerializer, AssignUserDepartmentSerializer
-from .position import PositionSerializer, AssignUserPositionSerializer
+from .position import PositionSerializer, AssignUserPositionSerializer, CustomUserPosition
 from .leave_request import LeaveRequestSerializer
 from .notification_history import NotificationHistorySerializer
 from .report import ReportSerializer
@@ -47,5 +47,6 @@ __all__ = [
     "HolidayConfigSerializer",
     "CustomHolidaySerializer",
     "RegistrationLinkSerializer",
-    "CustomUserProfileSerializer"
+    "CustomUserProfileSerializer",
+    "CustomUserPosition"
     ]

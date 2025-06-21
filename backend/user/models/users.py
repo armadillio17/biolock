@@ -3,6 +3,8 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.timezone import now
 from user.models.roles import Role
+from user.models.position import Position
+from user.models.department import Department
 
 
 def get_profile_picture_path(instance, filename):
@@ -38,8 +40,8 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractUser):
     role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True, blank=True, db_column='role_id')
-    department_id = models.IntegerField(null=True, blank=True)
-    position_id = models.IntegerField(null=True, blank=True)
+    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True, db_column='department_id')
+    position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, blank=True, db_column='position_id')
     username = models.CharField(max_length=150)
     password = models.CharField(max_length=255)
     first_name = models.CharField(max_length=255)
