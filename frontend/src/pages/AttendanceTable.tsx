@@ -14,7 +14,7 @@ import { useAttendanceStore } from '../store/adminAttendanceStore';
 import { SearchBar } from '../components/SearchBar';
 import { Pagination } from '../components/Pagination';
 import DashboardLayout from '@/layouts/DashboardLayout';
-import LoadingComponent from '@/components/LoadingUI'
+// import LoadingComponent from '@/components/LoadingUI'
 export const AttendanceTable: React.FC = () => {
   const {
     filteredRecords,
@@ -59,13 +59,13 @@ export const AttendanceTable: React.FC = () => {
     fetchAttendance();
   }, [fetchAttendance]);
 
-  if (loading && filteredRecords.length === 0) {
-    return (
-      <DashboardLayout>
-        <LoadingComponent />
-      </DashboardLayout>
-    );
-  }
+  // if (loading && filteredRecords.length === 0) {
+  //   return (
+  //     <DashboardLayout>
+  //       <LoadingComponent />
+  //     </DashboardLayout>
+  //   );
+  // }
 
   if (error) {
     return (
@@ -128,7 +128,7 @@ export const AttendanceTable: React.FC = () => {
         )}
 
         {/* Table */}
-        <div className="">
+          <div className="text-gray-800">
           <Table>
             <TableHeader>
               <TableRow>
