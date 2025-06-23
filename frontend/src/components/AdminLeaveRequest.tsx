@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Search, Calendar, Clock, Users, Filter } from "lucide-react";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import { Button } from "./ui/button";
-import { Calendar as CalendarComponent } from "@/components/LeaveRequestCalendarComponent";
+// import { Calendar as CalendarComponent } from "@/components/LeaveRequestCalendarComponent";
 import LeaveRequestModal from "./UserPrompt/LeaveRequestPrompt";
 import { leaveRequestStore } from '@/store/leaveRequestStore';
 import { useAuthStore } from '@/store/authStore';
@@ -14,7 +14,7 @@ export default function LeaveRequest() {
   const { user } = useAuthStore();
 
   // State management
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  // const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('all');
@@ -30,7 +30,7 @@ export default function LeaveRequest() {
     fetchLeaveRequest();
   };
 
-  const handleDateSelect = (date: string) => setSelectedDate(date);
+  // const handleDateSelect = (date: string) => setSelectedDate(date);
 
   // Enhanced update function with optimistic updates
   const handleUpdateLeaveRequest = async (status: string, id: any) => {
@@ -85,27 +85,27 @@ export default function LeaveRequest() {
   }, [leaveRequest, searchQuery, viewMode]);
 
   // Calendar data preparation
-  const leaveRequestsByDate: Record<string, { status: string | null }[]> = useMemo(() => {
-    const dateMap: Record<string, { status: string | null }[]> = {};
+  // const leaveRequestsByDate: Record<string, { status: string | null }[]> = useMemo(() => {
+  //   const dateMap: Record<string, { status: string | null }[]> = {};
 
-    if (Array.isArray(leaveRequest)) {
-      leaveRequest.forEach((leave) => {
-        const start = new Date(leave.start_date);
-        const end = new Date(leave.end_date);
+  //   if (Array.isArray(leaveRequest)) {
+  //     leaveRequest.forEach((leave) => {
+  //       const start = new Date(leave.start_date);
+  //       const end = new Date(leave.end_date);
 
-        // Add status for each date in the range
-        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-          const dateStr = d.toISOString().split('T')[0];
-          if (!dateMap[dateStr]) {
-            dateMap[dateStr] = [];
-          }
-          dateMap[dateStr].push({ status: leave.status });
-        }
-      });
-    }
+  //       // Add status for each date in the range
+  //       for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+  //         const dateStr = d.toISOString().split('T')[0];
+  //         if (!dateMap[dateStr]) {
+  //           dateMap[dateStr] = [];
+  //         }
+  //         dateMap[dateStr].push({ status: leave.status });
+  //       }
+  //     });
+  //   }
 
-    return dateMap;
-  }, [leaveRequest]);
+  //   return dateMap;
+  // }, [leaveRequest]);
 
   // Stats calculation
   const stats = useMemo(() => {

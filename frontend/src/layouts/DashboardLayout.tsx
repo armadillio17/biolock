@@ -39,7 +39,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
   const isAdmin = user?.role === "admin";
-  const { userPosition, fetchUserPosition } = usePositionStore();
+  const { fetchUserPosition } = usePositionStore();
   const { uploadImage } = useImageUploadStore();
   const [_selectedFile, setSelectedFile] = useState<File | undefined>();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
