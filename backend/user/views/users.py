@@ -270,17 +270,6 @@ class UserAuthenticationView(APIView):
                         "details": f"User '{user.first_name} {user.last_name}'",
                     }
                 )
-                
-            print(f"response", user.id)
-                
-            send_notification(
-                user_id=user.id,
-                notification_type="User Login",
-                data={
-                    "status": "Completed",
-                    "details": f"User '{user.first_name} {user.last_name}'",
-                }
-            )
 
             return response
             

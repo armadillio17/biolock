@@ -8,6 +8,8 @@ import { useUpdateUserStore } from "@/store/userStore";
 import { leaveRequestStore } from '@/store/leaveRequestStore';
 import { useOvertimeRequestStore } from '@/store/overtimeRequestStore.ts';
 import { useUserStore } from '@/store/userlistStore.ts';
+import { Toaster, toast } from 'react-hot-toast';
+import { base_url } from '../config';
 // Lucide Icons
 import {
   LogOut,
@@ -19,7 +21,19 @@ interface DashboardLayoutProps {
   children: ReactNode;
 }
 
+interface SystemNotification {
+  type: string;
+  data: {
+    status?: string;
+    details?: string;
+  };
+  created_at: string;
+}
+
+
+
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
+  const lastNotificationRef = useRef<string | null>(null);
   const { user, logout: handleLogout } = useAuthStore();
   const { profile_picture, position,  fetchUserProfile } = useUpdateUserStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -37,6 +51,37 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const UnapprovedUsersCount = Userstore.newRegisteredUserCount;
   const capitalize = (str: string): string =>
     str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  
+  
+
+  const fetchLatestNotification = async () => {
+    try {
+      const response = await fetch(`${base_url}/get-system-logs/`);
+      if (response.status === 204) return;
+
+      if (!response.ok) return;
+
+      const data: SystemNotification = await response.json();
+
+      const identifier = `${data.type}-${data.created_at}`;
+      if (identifier !== lastNotificationRef.current) {
+        lastNotificationRef.current = identifier;
+
+        console.log("testing Notification");
+        
+
+        const message = `${data.type.replace('_', ' ')} - ${data.data.status || ''} ${data.data.details || ''}`;
+
+        toast(message);
+
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification('System Notification', { body: message });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch latest notification:', error);
+    }
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -85,6 +130,24 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const user = useAuthStore.getState().user;
+    if (user?.role !== "admin") return;
+
+    let isFirst = true;
+  
+    const interval = setInterval(() => {
+      if (isFirst) {
+        isFirst = false; // Skip the first immediate run after mount
+        return;
+      }
+  
+      fetchLatestNotification(); // Fetch the latest notification every 5 seconds
+    }, 5000);
+  
+    return () => clearInterval(interval); // Clear on component unmount
   }, []);
 
   return (
@@ -233,6 +296,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 {children}
             </div>
         </main>
+
+        <Toaster position="top-right" />
+
     </div>
   );
 };

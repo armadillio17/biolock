@@ -34,7 +34,7 @@ from user.views.position import (
     AssignUserToPositionView, RemoveUserFromPositionView
 )
 from user.views.system_history import (
-    GeneratePDFReportView, SystemHistoryListCreateView, SystemHistoryDetailView
+    GeneratePDFReportView, SystemHistoryListCreateView, SystemHistoryDetailView, LatestSystemNotificationView
 )
 from user.views.report.report import (
     ReportListCreateView, ReportDetailView, GenerateDailyReport, GenerateDateRangeReport
@@ -204,6 +204,8 @@ urlpatterns = [
     
     #Send One Time Register
     path('api/register/', SendRegistrationLink.as_view(), name='one_time_registration'),
+    
+    path('api/get-system-logs/', LatestSystemNotificationView.as_view(), name='latest-notification'),
     
 ]
 
