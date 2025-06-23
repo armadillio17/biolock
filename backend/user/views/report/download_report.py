@@ -58,7 +58,7 @@ class DownloadAttendancePDF(APIView):
             for index, (user_id, records) in enumerate(user_attendance_map.items()):
                 user = CustomUser.objects.get(id=user_id)
                 full_name = user.get_full_name()
-                position = getattr(user, 'position', None)
+                position = getattr(user, 'position_name', None)
                 department = getattr(user, 'department', None)
                 position_name = position.name if position else "-"
                 department_name = department.name if department else "-"

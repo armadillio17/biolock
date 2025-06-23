@@ -9,6 +9,7 @@ export interface User {
   last_name: string;
   email: string;
   position_id: number;
+  position?: string;
 }
 
 interface UserViewModalProps {
@@ -25,7 +26,7 @@ const UserViewModal: React.FC<UserViewModalProps> = ({ isOpen, onClose, user }) 
     userPosition,
     isLoading
   } = usePositionStore();
-
+  
   const { updateUserPosition } = useUpdateUserStore();
 
   const [showPositions, setShowPositions] = useState(false);

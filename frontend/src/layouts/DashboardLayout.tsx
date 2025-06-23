@@ -21,7 +21,7 @@ interface DashboardLayoutProps {
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { user, logout: handleLogout } = useAuthStore();
-  const { profile_picture, fetchUserProfile } = useUpdateUserStore();
+  const { profile_picture, position,  fetchUserProfile } = useUpdateUserStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
   const isAdmin = user?.role === "admin";
@@ -147,7 +147,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                         {user?.first_name ? capitalize(user.first_name) : ""}{" "}
                         {user?.last_name ? capitalize(user.last_name) : ""}
                     </h3>
-                    <p className="text-sm text-gray-500">{userPosition?.position_name ?? ""}</p>
+                    <p className="text-sm text-gray-500">{position ?? ""}</p>
                     </div>
                 </div>
 

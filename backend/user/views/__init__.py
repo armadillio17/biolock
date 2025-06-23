@@ -1,10 +1,9 @@
-from .users import UserCreateView, UserUpdateDeleteView, UserAuthenticationView, GetUserRoleView, LogoutView, UserCountView, NewRegistrationRegisteredList, AcceptedUserList, UploadProfilePictureView, RemoveProfilePictureView
+from .users import UserCreateView, UserUpdateDeleteView, UserAuthenticationView, GetUserRoleView, LogoutView, UserCountView, NewRegistrationRegisteredList, AcceptedUserList, UploadProfilePictureView, RemoveProfilePictureView, SendRegistrationLink
 from .attendance import AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView, DailyAttendanceCountView
 from .department import DepartmentListCreateView, DepartmentDetailView, AssignUserToDepartmentView, RemoveUserFromDepartmentView
 from .leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView, LeaveRequestSearchListView
-from .notification_history import NotificationHistoryListCreateView, NotificationHistoryDetailView
 from .report.report import ReportListCreateView, ReportDetailView, GenerateDailyReport
-from .holiday import HolidayListCreateView, HolidayDetailView
+from .holiday.custom_holiday import CustomHolidayListCreateView, CustomHolidayDetailView
 from .attendance_adjustments import AttendanceAdjustmentsListCreateView, AttendanceAdjustmentsDetailView
 from .position import PositionListCreateView, PositionDetailView, AssignUserToPositionView, RemoveUserFromPositionView
 from .logs import LogsListCreateView, LogsDetailView
@@ -34,8 +33,8 @@ __all__ = [
     "NotificationHistoryDetailView",
     "ReportListCreateView",
     "ReportDetailView",
-    "HolidayListCreateView",
-    "HolidayDetailView",
+    "CustomHolidayListCreateView",
+    "CustomHolidayDetailView",
     "AttendanceAdjustmentsListCreateView",
     "AttendanceAdjustmentsDetailView",
     "PositionListCreateView",

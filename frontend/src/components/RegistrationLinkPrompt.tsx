@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 interface SendLinkModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSend: (email: string) => void;
 }
 
 const SendRegistrationLinkModal: React.FC<SendLinkModalProps> = ({ isOpen, onClose }) => {

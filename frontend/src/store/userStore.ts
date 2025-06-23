@@ -26,6 +26,7 @@ interface AttendanceState {
 interface UserState {
   user: UserData[];
   profile_picture: string;
+  position: string;
   isLoading: boolean;
   error: string | null;
   
@@ -76,6 +77,7 @@ export const useAttendanceStore = create<AttendanceState>((set) => ({
 export const useUpdateUserStore = create<UserState>((set) => ({
   user: [],
   profile_picture: "",
+  position: "",
   isLoading: false,
   error: null,
 
@@ -89,6 +91,7 @@ export const useUpdateUserStore = create<UserState>((set) => ({
       });
       
       set({ 
+        position: response.data.position.position_name,
         profile_picture: `${storage_url}${response.data.profile_picture}`, // response.data is likely a single object
         isLoading: false 
       });
