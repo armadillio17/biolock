@@ -4,7 +4,6 @@ from django.utils.timezone import now
 from django.contrib.auth.models import AbstractUser
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.base_user import BaseUserManager
-from django.utils.timezone import now
 from user.models.roles import Role
 from user.models.position import Position
 from user.models.department import Department

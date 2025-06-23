@@ -33,7 +33,7 @@ export const useNotificationStore = create<NotificationState>((set) => ({
         throw new Error("User ID not found");
       }
 
-      const response = await axios.get(`${base_url}/notifications/${user.userId}/`, {
+      const response = await axios.get(`${base_url}/systemlogs/${user.userId}/`, {
         headers: {
           "Content-Type": "application/json",
         //   Authorization: `Bearer ${token}`,
@@ -42,7 +42,7 @@ export const useNotificationStore = create<NotificationState>((set) => ({
 
       set({ notification: response.data });
     } catch (error) {
-      console.error("Error fetching notifications:", error);
+      console.error("Error fetching system logs:", error);
     }
   },
 }));

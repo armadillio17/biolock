@@ -3,7 +3,7 @@ from django.contrib.auth.models import User  # Assuming you use Django's built-i
 from django.utils.timezone import now
 from django.conf import settings
 
-class NotificationHistory(models.Model):
+class SystemHistory(models.Model):
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     type = models.CharField(max_length=255)
     data = models.JSONField()

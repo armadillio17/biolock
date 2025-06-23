@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from user.models.leave_request import LeaveRequest
 from user.models.users import CustomUser
 from user.serializers import LeaveRequestSerializer, UserProfileSerializer
-from user.utils.notification_history import log_notification 
+from user.utils.system_history import log_notification 
 from datetime import datetime
 from rest_framework import generics, filters
 

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
-from user.models import Role
+from user.models import Role, CustomUser
 import random
 from faker import Faker
 import bcrypt
@@ -35,10 +35,11 @@ class Command(BaseCommand):
     def create_admin(self):
         admin_role = Role.objects.get(role_name='admin')
 
-        # Hash password with bcrypt
-        hashed_password = bcrypt.hashpw('adminpassword123'.encode(), bcrypt.gensalt()).decode()
+        # Generate salt and hash with bcrypt
+        salt = bcrypt.gensalt(rounds=12)
+        hashed_password = bcrypt.hashpw('adminpassword123'.encode(), salt).decode()
 
-        User.objects.create_user(
+        CustomUser.objects.create(
             email='admin@example.com',
             username='admin',
             password=hashed_password,
@@ -61,9 +62,11 @@ class Command(BaseCommand):
             pagibig = f"PIG{i+1000}"
             philhealth = f"PH{i+1000}"
 
-            hashed_password = bcrypt.hashpw('password123'.encode(), bcrypt.gensalt()).decode()
+            # Hash with bcrypt
+            salt = bcrypt.gensalt(rounds=12)
+            hashed_password = bcrypt.hashpw('password123'.encode(), salt).decode()
 
-            User.objects.create_user(
+            CustomUser.objects.create(
                 email=email,
                 username=f"user{i}",
                 password=hashed_password,

@@ -19,6 +19,7 @@ def generate_payslip(user, payroll_period):
 
     employee_contributions = sum(benefits[benefit]['employee'] for benefit in benefits)
     total_deductions = absence_deductions + employee_contributions
+    print(f"Total deductions for {user.username}: {total_deductions}")
 
     payslip = Payslip.objects.create(
         user=user,
@@ -27,6 +28,9 @@ def generate_payslip(user, payroll_period):
         total_overtime_hours=hours_data['overtime_hours'],
         total_leave_hours=hours_data['leave_hours'],
         total_absences=hours_data['absences'],
+
+        # Pay components
+        basic_salary= gross_pay_details['regular_pay'],
         gross_pay=gross_pay_details['gross_pay'],
         deductions=total_deductions,
         net_pay=gross_pay_details['gross_pay'] - total_deductions,

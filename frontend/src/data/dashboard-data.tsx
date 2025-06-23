@@ -39,7 +39,7 @@ export const sidebarMenu: SidebarMenuItem[] = [
   { name: "Users", icon: <Users />, path: "/users" },
   { name: "Departments", icon: <Building2 />, path: "/department" },
   { name: "Position", icon: <UserCheck />, path: "/position" },
-  { name: "Activity Logs", icon: <LucideActivity />, path: "/activity-logs" },
+  { name: "System Logs", icon: <LucideActivity />, path: "/activity-logs" },
 ];
 
 export const sidebarMenuUser: SidebarMenuItem[] = [
