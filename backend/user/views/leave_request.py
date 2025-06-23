@@ -6,7 +6,29 @@ from user.models.users import CustomUser
 from user.serializers import LeaveRequestSerializer, UserProfileSerializer
 from user.utils.notification_history import log_notification 
 from datetime import datetime
+from rest_framework import generics, filters
 
+
+class LeaveRequestSearchListView(generics.ListAPIView):
+    """Searchable and orderable leave request list view"""
+    queryset = LeaveRequest.objects.filter(deleted_at__isnull=True)
+    serializer_class = LeaveRequestSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+
+    # Searchable fields
+    search_fields = [
+        'user__first_name',
+        'user__last_name',
+        'type',
+        'status',
+        'start_date',
+        'end_date',
+    ]
+
+    # Ordering
+    ordering_fields = ['start_date', 'end_date', 'created_at']
+    ordering = ['-start_date']
+    
 class LeaveRequestListCreateView(APIView):
     """List all leave requests or create a new one"""
 
@@ -75,7 +97,7 @@ class LeaveRequestListCreateView(APIView):
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
 class LeaveRequestDetailView(APIView):
     """Retrieve, update, or delete a specific leave request"""
 

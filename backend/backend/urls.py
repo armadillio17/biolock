@@ -24,7 +24,7 @@ from user.views import (
     AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView, GetUserRoleView, LogoutView, UserCountView, DailyAttendanceCountView,
     NewRegistrationRegisteredList, AcceptedUserList, UploadProfilePictureView, RemoveProfilePictureView, SendRegistrationLink
 ) 
-from user.views.leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView, LeaveRequestListView
+from user.views.leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView, LeaveRequestListView, LeaveRequestSearchListView
 from user.views.department import (
     DepartmentListCreateView, DepartmentDetailView, 
     AssignUserToDepartmentView, RemoveUserFromDepartmentView
@@ -115,6 +115,7 @@ urlpatterns = [
 
     # Leave Request Endpoints
     path('api/leave-requests/', LeaveRequestListCreateView.as_view(), name='leave-request-list'),
+    path('api/leave-requests/search', LeaveRequestSearchListView.as_view(), name='leave-request-search-list'),
     path('api/leave-requests/<int:pk>/<str:date>', LeaveRequestDetailView.as_view(), name='leave-request-detail'),
     path('api/leave-requests/<int:pk>/', LeaveRequestDetailView.as_view(), name='leave-request-update-delete'),
     path('api/leave-requests/<int:pk>/list', LeaveRequestListView.as_view(), name='leave-request-list'),
