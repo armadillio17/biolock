@@ -13,7 +13,6 @@ import {
   Plane,
   Calendar
 } from 'lucide-react';
-import NotificationToast from "./NotificationToast";
 
 
 const FormattedDate = () => {
@@ -173,7 +172,6 @@ function AdminDashboard() {
           }
         `}
       </style>
-      <NotificationToast />
     </DashboardLayout>
   );
 }
