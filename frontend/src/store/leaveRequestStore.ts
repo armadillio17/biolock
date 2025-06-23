@@ -108,8 +108,12 @@ export const leaveRequestStore = create<LeaveRequestState>()(
             }
           );
 
-          // Re-fetch all leave requests to keep things consistent
-          await get().fetchLeaveRequest();
+          // Add the new request to the current state instead of refetching
+          const newRequest = response.data;
+          set((state) => ({
+            leaveRequest: [...state.leaveRequest, newRequest],
+            isLoading: false,
+          }));
         } catch (error: any) {
           console.error("Error creating leave request:", error);
           set({
@@ -120,8 +124,15 @@ export const leaveRequestStore = create<LeaveRequestState>()(
       },
 
       updateLeaveRequest: async (status, id) => {
-        set({ isLoading: true, error: null });
         try {
+          // Optimistically update the UI immediately
+          set((state) => ({
+            leaveRequest: state.leaveRequest.map((request) =>
+              request.id === id ? { ...request, status } : request
+            ),
+          }));
+
+          // Make the API call
           await axios.put(
             `${base_url}/leave-requests/${id}/`,
             { status },
@@ -130,14 +141,21 @@ export const leaveRequestStore = create<LeaveRequestState>()(
             }
           );
 
-          // Re-fetch to update local and persisted state
-          await get().fetchLeaveRequest();
+          // If successful, the optimistic update is already applied
+          // If failed, we could revert the change here
         } catch (error: any) {
           console.error("Error updating leave request:", error);
+
+          // Revert the optimistic update on error
+          const currentState = get();
+          await currentState.fetchLeaveRequest();
+
           set({
             error: error instanceof Error ? error.message : "Failed to update request",
-            isLoading: false,
           });
+
+          // Re-throw the error so the component can handle it
+          throw error;
         }
       },
 
