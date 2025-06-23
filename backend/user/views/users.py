@@ -20,6 +20,7 @@ from django.utils.crypto import get_random_string
 from django.core.mail import send_mail
 from django.db import transaction
 from django.utils.timezone import now
+from user.utils.notification import send_notification
 
 
 
@@ -63,6 +64,8 @@ class UserCreateView(APIView):
     def post(self, request):
         """Create a new user record"""
         request.data.setdefault("role_id", 2)
+        
+        
 
         token = request.data.get("registration_token")
         if not token:
@@ -267,6 +270,17 @@ class UserAuthenticationView(APIView):
                         "details": f"User '{user.first_name} {user.last_name}'",
                     }
                 )
+                
+            print(f"response", user.id)
+                
+            send_notification(
+                user_id=user.id,
+                notification_type="User Login",
+                data={
+                    "status": "Completed",
+                    "details": f"User '{user.first_name} {user.last_name}'",
+                }
+            )
 
             return response
             
