@@ -5,7 +5,7 @@ from user.models.report import Report
 from user.serializers import ReportSerializer, AttendanceSerializer
 from django.utils.timezone import now
 from user.models.attendance import Attendance
-from user.utils.notification_history import log_notification 
+from user.utils.system_history import log_notification 
 from django.utils.dateparse import parse_date
 
 class ReportListCreateView(APIView):

@@ -1,10 +1,10 @@
-from .users import UserCreateView, UserUpdateDeleteView, UserAuthenticationView, GetUserRoleView, LogoutView, UserCountView, NewRegistrationRegisteredList, AcceptedUserList, UploadProfilePictureView, RemoveProfilePictureView, SendRegistrationLink
+from .users import UserCreateView, UserUpdateDeleteView, UserAuthenticationView, GetUserRoleView, LogoutView, UserCountView, NewRegistrationRegisteredList, AcceptedUserList, UploadProfilePictureView, RemoveProfilePictureView
 from .attendance import AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView, DailyAttendanceCountView
 from .department import DepartmentListCreateView, DepartmentDetailView, AssignUserToDepartmentView, RemoveUserFromDepartmentView
-from .leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView, LeaveRequestDetailView, LeaveRequestSearchListView
+from .leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView, LeaveRequestSearchListView
 from .notification_history import NotificationHistoryListCreateView, NotificationHistoryDetailView
-from .report.report import ReportListCreateView, ReportDetailView, GenerateDailyReport, GenerateDateRangeReport
-from .holiday.holiday import HolidayListCreateView, HolidayDetailView
+from .report.report import ReportListCreateView, ReportDetailView, GenerateDailyReport
+from .holiday import HolidayListCreateView, HolidayDetailView
 from .attendance_adjustments import AttendanceAdjustmentsListCreateView, AttendanceAdjustmentsDetailView
 from .position import PositionListCreateView, PositionDetailView, AssignUserToPositionView, RemoveUserFromPositionView
 from .logs import LogsListCreateView, LogsDetailView
@@ -12,7 +12,6 @@ from .attendance_summary import AttendanceSummaryListCreateView, AttendanceSumma
 from .payroll.payslip import PayslipView
 from .company import CompanyListView,CompanyUpdateDeleteView
 from .request_overtime import ApproveOvertimeView
-from .ping_company import PingCompany
 
 __all__ = [
     "UserCreateView",

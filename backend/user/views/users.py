@@ -8,7 +8,7 @@ from user.models.roles import Role
 from user.models.registration_link import RegistrationLink
 from user.serializers import UserSerializer, UserProfileSerializer, RegistrationLinkSerializer
 from rest_framework.authtoken.models import Token
-from user.utils.notification_history import log_notification
+from user.utils.system_history import log_notification
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -254,17 +254,58 @@ class UserAuthenticationView(APIView):
                 httponly=True,
                 max_age=86400 * 30
             )
-            
+
+            role_name = user.role.role_name.lower() if user.role else 'unknown'
+            if role_name not in ['admin', 'superadmin']:
+                ip_address = request.META.get('REMOTE_ADDR')
+                
+                log_notification(
+                    user_id=user.id,
+                    notification_type="User Login",
+                    data={
+                        "status": "Success",
+                        "details": f"User '{user.first_name} {user.last_name}'",
+                    }
+                )
+
             return response
             
         except CustomUser.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class LogoutView(APIView):
-            def post(self, request):
-                response = Response({"success": True})
-                response.delete_cookie('auth_token')
-                return response
+    def post(self, request):
+        # Get token from cookie
+        token_key = request.COOKIES.get('auth_token')
+        
+        if not token_key:
+            return Response({"error": "Authentication token not found"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            token = Token.objects.get(key=token_key)
+            user = token.user
+        except Token.DoesNotExist:
+            return Response({"error": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # Build response
+        response = Response({"success": True})
+        response.delete_cookie('auth_token')
+
+        # Log only for non-admin / superadmin users
+        role_name = user.role.role_name.lower() if user.role else 'unknown'
+        if role_name not in ['admin', 'superadmin']:
+            ip_address = request.META.get('REMOTE_ADDR')
+
+            log_notification(
+                user_id=user.id,
+                notification_type="User Logout",
+                data={
+                    "status": "Success",
+                    "details": f"User '{user.first_name} {user.last_name}'",
+                }
+            )
+
+        return response
             
             
 class GetUserRoleView(APIView):

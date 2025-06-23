@@ -1,5 +1,5 @@
 import DashboardLayout from "@/layouts/DashboardLayout";
-import ActivityLog from "./ActivityLog";
+import SystemLogs from "./SystemLogs";
 import { useDashboardStore } from "@/store/dashboardStore";
 import { useEffect } from "react";
 
@@ -79,7 +79,7 @@ function SuperAdmin() {
 
             {/* Activity Log Section */}
             <div className="w-1/2 min-h-[250px] rounded-2xl bg-[#A4DDED] p-5 border border-black shadow-lg">
-                <ActivityLog />
+                <SystemLogs />
             </div>
           </div>
         </div>

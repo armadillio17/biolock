@@ -16,27 +16,17 @@ class Payslip(models.Model):
     total_working_hours = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     total_overtime_hours = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     total_leave_hours = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
-    total_absences = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     total_absences = models.IntegerField(default=0)
     total_overtime_pay = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_holidays_worked = models.PositiveIntegerField(default=0)
     total_holiday_pay = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
+    basic_salary = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     gross_pay = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     deductions = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     net_pay = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     # Employee contributions
-    sss_employee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    philhealth_employee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    pagibig_employee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
-    # Employer contributions
-    sss_employer = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    philhealth_employer = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    pagibig_employer = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
-    # Government contributions - Employee Share
     sss_employee = models.DecimalField(
         max_digits=10, 
         decimal_places=2, 
@@ -56,7 +46,7 @@ class Payslip(models.Model):
         verbose_name="Pag-IBIG (Employee Share)"
     )
     
-    # Government contributions - Employer Share
+    # Employer contributions
     sss_employer = models.DecimalField(
         max_digits=10, 
         decimal_places=2, 
@@ -78,41 +68,6 @@ class Payslip(models.Model):
     
     generated_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Payslip: {self.user} ({self.payroll_period})"
-
-    @property
-    def total_government_contributions(self):
-        """Calculate total of all government contributions (both employee and employer)"""
-        return sum([
-            self.sss_employee,
-            self.philhealth_employee,
-            self.pagibig_employee,
-            self.sss_employer,
-            self.philhealth_employer,
-            self.pagibig_employer
-        ])
-
-    @property
-    def employee_contributions(self):
-        """Calculate total employee contributions only"""
-        return sum([
-            self.sss_employee,
-            self.philhealth_employee,
-            self.pagibig_employee
-        ])
-
-    @property
-    def employer_contributions(self):
-        """Calculate total employer contributions only"""
-        return sum([
-            self.sss_employer,
-            self.philhealth_employer,
-            self.pagibig_employer
-        ])
-
     class Meta:
-        verbose_name = "Payslip"
-        verbose_name_plural = "Payslips"
-        unique_together = ('user', 'payroll_period')  # Prevent duplicate payslips
+        unique_together = ('user', 'payroll_period')
 

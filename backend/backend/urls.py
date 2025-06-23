@@ -33,8 +33,8 @@ from user.views.position import (
     PositionListCreateView, PositionDetailView, 
     AssignUserToPositionView, RemoveUserFromPositionView
 )
-from user.views.notification_history import (
-    NotificationHistoryListCreateView, NotificationHistoryDetailView
+from user.views.system_history import (
+    GeneratePDFReportView, SystemHistoryListCreateView, SystemHistoryDetailView
 )
 from user.views.report.report import (
     ReportListCreateView, ReportDetailView, GenerateDailyReport, GenerateDateRangeReport
@@ -135,9 +135,10 @@ urlpatterns = [
     path('api/departments/<int:department_id>/positions/<int:position_id>/assign-user/', AssignUserToPositionView.as_view(), name='assign-user-to-position'),
     path('api/departments/<int:department_id>/positions/<int:position_id>/remove-user/', RemoveUserFromPositionView.as_view(), name='remove-user-from-position'),
 
-    # Notification History Endpoints
-    path('api/notifications/', NotificationHistoryListCreateView.as_view(), name='notification-list'),
-    path('api/notifications/<int:pk>/', NotificationHistoryDetailView.as_view(), name='notification-detail'),
+    # System Logs Endpoints
+    path('api/systemlogs/', SystemHistoryListCreateView.as_view(), name='system-log-list'),
+    path('api/systemlogs/<int:pk>/', SystemHistoryDetailView.as_view(), name='system-log-detail'),
+    path('api/systemlogs/generate-report/', GeneratePDFReportView.as_view(), name='generate_pdf_report'),
 
     # Report Endpoints
     path('api/reports/', ReportListCreateView.as_view(), name='report-list'),
