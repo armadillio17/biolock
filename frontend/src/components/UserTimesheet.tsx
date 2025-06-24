@@ -60,6 +60,14 @@ export default function TimesheetReport() {
     }
   };
 
+  const formatDate = (dateStr: string): string => {
+    return new Date(dateStr).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
   return (
     <DashboardLayout>
       <div className="p-4 md:p-6 space-y-6">
@@ -77,7 +85,7 @@ export default function TimesheetReport() {
         {/* Attendance Table Card */}
         <div className="overflow-hidden rounded-xl border border-gray-200 bg-white/80 backdrop-blur-sm shadow-md">
           <div className="px-6 py-4 border-b border-gray-200 font-semibold text-lg text-gray-800">
-            Attendance Records for {new Date(selectedDate).toLocaleDateString()}
+            Attendance Records for {formatDate(selectedDate)}
           </div>
           <div className="p-6 overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
