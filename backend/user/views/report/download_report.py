@@ -1,111 +1,3 @@
-from io import BytesIO from rest_framework.views import APIView from django.http import HttpResponse from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, PageBreak, Spacer from reportlab.lib.pagesizes import A4 from reportlab.lib.styles import getSampleStyleSheet, Paragrap
-
-pasted
-
-in my aws ec2 I get an error TypeError: unhashable type: 'dict'
-
-Edit
-Looking at your code, the error "TypeError: unhashable type: 'dict'" is most likely occurring in this line:
-
-python
-user_attendance_map[attendance['user']].append(attendance)
-The issue is that attendance['user'] is probably a dictionary object rather than a simple value like an integer or string. In Python, you can't use dictionaries as dictionary keys because they're not hashable.
-
-Here are the most common solutions:
-
-Solution 1: Use user ID if it's nested in the user dict
-python
-# Replace this line:
-user_attendance_map[attendance['user']].append(attendance)
-
-# With this:
-user_id = attendance['user']['id'] if isinstance(attendance['user'], dict) else attendance['user']
-user_attendance_map[user_id].append(attendance)
-Solution 2: Convert dict to string (if user data is simple)
-python
-# Replace this line:
-user_attendance_map[attendance['user']].append(attendance)
-
-# With this:
-user_key = str(attendance['user']) if isinstance(attendance['user'], dict) else attendance['user']
-user_attendance_map[user_key].append(attendance)
-Solution 3: More robust approach with debugging
-
-Fixed DownloadAttendancePDF with error handling
-Code 
-Quick Debug Steps
-To identify exactly what's happening, add this debug code right after getting the attendances:
-
-python
-# Add this after: attendances = report.data
-print("Sample attendance record:")
-if attendances:
-    print(f"Type of attendance['user']: {type(attendances[0]['user'])}")
-    print(f"Content of attendance['user']: {attendances[0]['user']}")
-This will help you see exactly what format your user data is in.
-
-Most likely scenarios:
-User is a nested dict: attendance['user'] contains {'id': 123, 'name': 'John', ...}
-User is a serialized object: The user field contains a full user object serialized as a dict
-Data structure changed: The data format might have changed between when it was saved and now
-The fixed code above handles these cases more robustly. The key changes are:
-
-Added a get_user_key() method to safely extract a hashable key from user data
-Added better error handling to identify which record is causing the issue
-Made the user lookup more flexible to handle different data formats
-Try the fixed version and let me know if you still get errors!
-
-
-
-
-
-
-from io import BytesIO from rest_framework.views import APIView from django.http import HttpResponse from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, PageBreak, Spacer from reportlab.lib.pagesizes import A4 from reportlab.lib.styles import getSampleStyleSheet, Paragrap
-
-pasted
-
-sorry this is the updated code
-
-Edit
-I see you've fixed the main issue by using the user's full name as the key instead of the user dictionary object. That's a good solution! However, I notice a few potential improvements and edge cases that could still cause issues:
-
-
-Improved DownloadAttendancePDF with better error handling
-Code 
-Key improvements in the updated code:
-1. Robust User Name Extraction
-Added get_user_full_name() method that handles various user data structures
-Fallbacks for missing names (uses ID, email, or "Unknown User")
-Handles edge cases where user data might be malformed
-2. Better Error Handling
-Validates that attendance data exists before processing
-Skips problematic records instead of crashing
-Logs warnings for skipped records
-Handles missing or invalid dates gracefully
-3. Safer Numeric Calculations
-Protected float conversions for working hours and overtime
-Won't crash if hours are stored as strings or are null
-4. Enhanced Data Validation
-Checks for empty user data
-Handles nested objects for position and department
-Validates date parsing before using dates
-5. More Informative Error Messages
-Specific error responses for different failure scenarios
-Better logging for debugging
-Common issues this addresses:
-Empty user objects: Won't crash if user is None or empty
-Malformed dates: Skips invalid dates instead of crashing
-Missing numeric fields: Handles null/empty working hours gracefully
-Inconsistent data structures: Adapts to different user data formats
-Duplicate names: Groups by full name correctly even with edge cases
-Your original fix was good - using the full name as the key instead of the dict object. This improved version just makes it much more robust against real-world data inconsistencies that often happen in production systems.
-
-
-
-
-
-
-
 from io import BytesIO
 from rest_framework.views import APIView
 from django.http import HttpResponse
@@ -133,83 +25,64 @@ class DownloadAttendancePDF(APIView):
                 return dt_str
         return "-"
 
-    def get_user_full_name(self, user_data):
-        """Safely extract full name from user data with fallbacks"""
-        if not user_data:
-            return "Unknown User"
-        
-        try:
-            # Handle different possible user data structures
-            if isinstance(user_data, dict):
-                first_name = user_data.get('first_name', '').strip()
-                last_name = user_data.get('last_name', '').strip()
-                
-                # Try different name field combinations
-                if first_name or last_name:
-                    full_name = f"{last_name} {first_name}".strip()
-                elif user_data.get('full_name'):
-                    full_name = user_data.get('full_name').strip()
-                elif user_data.get('name'):
-                    full_name = user_data.get('name').strip()
-                else:
-                    # Use user ID or email as fallback
-                    full_name = str(user_data.get('id', user_data.get('email', 'Unknown User')))
-                
-                return full_name if full_name else "Unknown User"
-            else:
-                # If user_data is not a dict, convert to string
-                return str(user_data)
-        except Exception as e:
-            print(f"Error extracting user name from {user_data}: {e}")
-            return "Unknown User"
-
     def get(self, request, report_id):
         try:
             report = Report.objects.get(id=report_id)
             attendances = report.data
 
-            # Validate that we have attendance data
-            if not attendances:
-                return Response({"error": "No attendance data found in report"}, status=404)
+            # 🔍 DEBUG: Let's see what the data looks like
+            print("=== DEBUG INFO ===")
+            print(f"Total attendance records: {len(attendances)}")
+            if attendances:
+                print(f"First attendance record: {attendances[0]}")
+                print(f"Keys in first record: {list(attendances[0].keys())}")
+                if 'user' in attendances[0]:
+                    print(f"User data type: {type(attendances[0]['user'])}")
+                    print(f"User data: {attendances[0]['user']}")
 
-            # Group attendance by user full name with better error handling
+            # ✅ FIXED: Correctly group attendance by user full name
             user_attendance_map = defaultdict(list)
-            skipped_records = 0
-            
             for i, attendance in enumerate(attendances):
                 try:
+                    print(f"\n--- Processing record {i} ---")
                     user = attendance.get('user')
-                    if not user:
-                        print(f"Warning: No user data in attendance record {i}")
-                        skipped_records += 1
-                        continue
+                    print(f"User data: {user}")
+                    print(f"User type: {type(user)}")
                     
-                    full_name = self.get_user_full_name(user)
-                    user_attendance_map[full_name].append(attendance)
-                    
+                    if user:
+                        if isinstance(user, dict):
+                            first_name = user.get('first_name', '')
+                            last_name = user.get('last_name', '')
+                            full_name = f"{last_name} {first_name}".strip()
+                            print(f"Generated full_name: '{full_name}'")
+                            print(f"Full name type: {type(full_name)}")
+                            
+                            if not full_name:
+                                full_name = f"User_{user.get('id', i)}"
+                                print(f"Using fallback name: '{full_name}'")
+                            
+                            user_attendance_map[full_name].append(attendance)
+                            print(f"Successfully added to map with key: '{full_name}'")
+                        else:
+                            print(f"User is not a dict, it's: {type(user)}")
+                            user_attendance_map[str(user)].append(attendance)
+                    else:
+                        print("No user data found")
+                        user_attendance_map[f"Unknown_User_{i}"].append(attendance)
+                        
                 except Exception as e:
-                    print(f"Error processing attendance record {i}: {e}")
-                    print(f"Problematic record: {attendance}")
-                    skipped_records += 1
-                    continue
+                    print(f"Error processing record {i}: {e}")
+                    print(f"Problematic attendance: {attendance}")
+                    traceback.print_exc()
+                    raise e
 
-            if skipped_records > 0:
-                print(f"Warning: Skipped {skipped_records} attendance records due to missing/invalid user data")
-
-            if not user_attendance_map:
-                return Response({"error": "No valid attendance records found"}, status=404)
+            print(f"\n=== GROUPING RESULTS ===")
+            print(f"Number of users: {len(user_attendance_map)}")
+            for user_name, records in user_attendance_map.items():
+                print(f"User: '{user_name}' ({type(user_name)}) has {len(records)} records")
 
             # Determine the full date range of the report
-            all_report_dates = []
-            for r in attendances:
-                if 'date' in r and r['date']:
-                    try:
-                        date_obj = parser.parse(r['date']).date()
-                        all_report_dates.append(date_obj)
-                    except Exception as e:
-                        print(f"Error parsing date {r['date']}: {e}")
-                        continue
-
+            all_report_dates = [parser.parse(r['date']).date() for r in attendances if 'date' in r]
             if all_report_dates:
                 min_date = min(all_report_dates)
                 max_date = max(all_report_dates)
@@ -227,54 +100,20 @@ class DownloadAttendancePDF(APIView):
             bold = ParagraphStyle('Bold', parent=normal, fontName='Helvetica-Bold')
             section_label = ParagraphStyle('Label', parent=normal, fontName='Helvetica-Bold', textColor=colors.darkblue, fontSize=11)
 
-            # Process each user's attendance
+            # ✅ UPDATED: Loop by full_name now instead of user_id
             for index, (full_name, records) in enumerate(user_attendance_map.items()):
-                # Get additional user info from first record if available
-                first_record = records[0] if records else {}
-                user_data = first_record.get('user', {})
+                print(f"\n--- Generating PDF for user: '{full_name}' ---")
                 
-                # Try to get position and department from user data
+                # ⛔ REMOVED: CustomUser.objects.get() — we use attendance data directly now
+                # Simulated dummy values (could be added to attendance later)
                 position_name = "-"
                 department_name = "-"
-                
-                if isinstance(user_data, dict):
-                    position_name = user_data.get('position', user_data.get('position_name', '-'))
-                    department_name = user_data.get('department', user_data.get('department_name', '-'))
-                    
-                    # Handle nested objects
-                    if isinstance(position_name, dict):
-                        position_name = position_name.get('name', '-')
-                    if isinstance(department_name, dict):
-                        department_name = department_name.get('name', '-')
 
-                # Calculate totals with better error handling
                 total_days = len(records)
-                total_absences = 0
-                total_lates = 0
-                total_working_hours = 0
-                total_overtime_hours = 0
-                
-                for r in records:
-                    if r.get('status') == 'Absent':
-                        total_absences += 1
-                    elif r.get('status') == 'Late':
-                        total_lates += 1
-                    
-                    # Handle working hours safely
-                    try:
-                        working_hrs = r.get('working_hours', 0)
-                        if working_hrs:
-                            total_working_hours += float(working_hrs)
-                    except (ValueError, TypeError):
-                        pass
-                    
-                    # Handle overtime hours safely
-                    try:
-                        overtime_hrs = r.get('overtime_hours', 0)
-                        if overtime_hrs:
-                            total_overtime_hours += float(overtime_hrs)
-                    except (ValueError, TypeError):
-                        pass
+                total_absences = sum(1 for r in records if r.get('status') == 'Absent')
+                total_lates = sum(1 for r in records if r.get('status') == 'Late')
+                total_working_hours = sum(float(r.get('working_hours', 0) or 0) for r in records)
+                total_overtime_hours = sum(float(r.get('overtime_hours', 0) or 0) for r in records)
 
                 # Header
                 elements.append(Paragraph("Attendance Report", styles['Title']))
@@ -286,7 +125,7 @@ class DownloadAttendancePDF(APIView):
                 # User Info Table
                 user_info_data = [
                     [Paragraph("<b>Name:</b>", section_label), full_name,
-                     Paragraph("<b>Position:</b>", section_label), str(position_name)],
+                     Paragraph("<b>Position:</b>", section_label), position_name],
 
                     [Paragraph("<b>Total Hours:</b>", section_label), f"{total_working_hours:.2f} hrs",
                      Paragraph("<b>Overtime Hours:</b>", section_label), f"{total_overtime_hours:.2f} hrs"],
@@ -311,43 +150,22 @@ class DownloadAttendancePDF(APIView):
                 elements.append(user_info_table)
                 elements.append(Spacer(1, 20))
 
-                # Attendance Table with better date handling
-                records_by_date = {}
-                for r in records:
-                    if 'date' in r and r['date']:
-                        try:
-                            date_key = parser.parse(r['date']).date()
-                            records_by_date[date_key] = r
-                        except Exception as e:
-                            print(f"Error parsing date {r['date']} for user {full_name}: {e}")
+                # Attendance Table
+                records_by_date = {
+                    parser.parse(r['date']).date(): r for r in records if 'date' in r
+                }
 
                 attendance_data = [["Date", "Status", "Clock In", "Clock Out", "Working Hours", "Overtime"]]
                 for current_date in date_range:
                     record = records_by_date.get(current_date)
                     if record:
-                        # Format working hours and overtime hours
-                        working_hours = record.get('working_hours', '-')
-                        overtime_hours = record.get('overtime_hours', '-')
-                        
-                        if working_hours and working_hours != '-':
-                            try:
-                                working_hours = f"{float(working_hours):.2f}"
-                            except (ValueError, TypeError):
-                                working_hours = str(working_hours)
-                        
-                        if overtime_hours and overtime_hours != '-':
-                            try:
-                                overtime_hours = f"{float(overtime_hours):.2f}"
-                            except (ValueError, TypeError):
-                                overtime_hours = str(overtime_hours)
-                        
                         attendance_data.append([
                             current_date.strftime('%m-%d-%y'),
                             record.get('status', '-'),
                             self.format_datetime(record.get('clock_in')),
                             self.format_datetime(record.get('clock_out')),
-                            working_hours,
-                            overtime_hours
+                            record.get('working_hours', '-'),
+                            record.get('overtime_hours', '-')
                         ])
                     else:
                         attendance_data.append([
@@ -373,6 +191,7 @@ class DownloadAttendancePDF(APIView):
                 if index < len(user_attendance_map) - 1:
                     elements.append(PageBreak())
 
+            print("=== Building PDF ===")
             doc.build(elements)
             buffer.seek(0)
 
@@ -380,9 +199,7 @@ class DownloadAttendancePDF(APIView):
             response['Content-Disposition'] = f'attachment; filename="attendance_report_{report.created_at.date()}.pdf"'
             return response
 
-        except Report.DoesNotExist:
-            return Response({"error": "Report not found"}, status=404)
         except Exception as e:
             print("Error generating PDF:", str(e))
             traceback.print_exc()
-            return Response({"error": f"Failed to generate PDF: {str(e)}"}, status=500)
+            return Response({"error": str(e)}, status=500)
