@@ -25,7 +25,7 @@ interface AttendanceActions {
 
 type AttendanceStore = AttendanceState & AttendanceActions;
 
-const API_BASE_URL = base_url + '/api/attendance/'
+const API_BASE_URL = base_url + '/attendance/'
 
 export const useAttendanceStore = create<AttendanceStore>((set, get) => ({
     // State
