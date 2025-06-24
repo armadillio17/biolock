@@ -20,3 +20,4 @@ from .request_overtime import OvertimeRequest
 from .holiday.holiday_config import HolidayConfig
 from .holiday.custom_holiday import CustomHoliday
 from .registration_link import RegistrationLink
+from .notification import Notifications
