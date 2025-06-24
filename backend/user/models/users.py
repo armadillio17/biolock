@@ -55,7 +55,7 @@ class CustomUser(AbstractUser):
     # Profile Picture
     profile_picture = models.ImageField(
         upload_to=get_profile_picture_path,
-        storage=FileSystemStorage(location='media/'),
+        storage=FileSystemStorage(location='media/profile_pictures'),
         null=True,
         blank=True,
         default='default_profile.png'
