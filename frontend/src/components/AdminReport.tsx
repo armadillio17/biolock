@@ -7,7 +7,8 @@ export default function AdminReport() {
   const typeMapping: Record<string, string> = {
     daily_attendance: 'Daily Attendance Report',
     monthly_attendance: 'Monthly Attendance Report',
-    custom_report: 'Custom Report'
+    custom_report: 'Custom Report',
+    attendance_report: 'Attendace Report',
   };
 
   const [showDatePicker, setShowDatePicker] = useState(false);
