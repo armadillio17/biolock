@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { AttendanceRecord, AttendanceResponse } from '../types/attendance';
-
+import { base_url } from '@/config';
 interface AttendanceState {
     records: AttendanceRecord[];
     loading: boolean;
@@ -25,7 +25,7 @@ interface AttendanceActions {
 
 type AttendanceStore = AttendanceState & AttendanceActions;
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api/attendance/';
+const API_BASE_URL = base_url + '/api/attendance/'
 
 export const useAttendanceStore = create<AttendanceStore>((set, get) => ({
     // State
