@@ -34,7 +34,7 @@ class DownloadAttendancePDF(APIView):
             # Group attendance by user
             user_attendance_map = defaultdict(list)
             for attendance in attendances:
-                user_attendance_map[attendance['user']].append(attendance)
+                user_attendance_map[attendance['user']['id']].append(attendance)
 
             # Determine the full date range of the report
             all_report_dates = [parser.parse(r['date']).date() for r in attendances if 'date' in r]
