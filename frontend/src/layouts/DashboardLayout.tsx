@@ -171,7 +171,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <div className="flex flex-col h-full">
             {/* Logo Section */}
             <div className="flex items-center justify-center gap-3 p-6 border-b border-gray-200/50">
-                <img src="./src/assets/logo.webp" alt="" className="max-w-[62px] max-h-[62px]" />
+                <img src="logo.webp" alt="" className="max-w-[62px] max-h-[62px]" />
                 <button
                     onClick={() => setSidebarOpen(false)}
                     className="p-1 ml-auto transition-colors rounded-lg lg:hidden hover:bg-gray-100"
