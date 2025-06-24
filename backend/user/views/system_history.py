@@ -173,3 +173,17 @@ class GeneratePDFReportView(APIView):
                 'Content-Disposition': f'attachment; filename="{filename}"'
             }
         )
+        
+
+class LatestSystemNotificationView(APIView):
+    def get(self, request):
+        latest = SystemHistory.objects.filter(deleted_at__isnull=True).order_by('-created_at').first()
+
+        if latest:
+            return Response({
+                'type': latest.type,
+                'data': latest.data,
+                'created_at': latest.created_at,
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'No notifications yet'}, status=status.HTTP_204_NO_CONTENT)
