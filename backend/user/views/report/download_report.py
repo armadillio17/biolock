@@ -7,7 +7,6 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 from rest_framework.response import Response
 from user.models.report import Report
-from user.models.users import CustomUser
 from datetime import datetime, timedelta
 from dateutil import parser
 from collections import defaultdict
@@ -31,10 +30,13 @@ class DownloadAttendancePDF(APIView):
             report = Report.objects.get(id=report_id)
             attendances = report.data
 
-            # Group attendance by user
+            # ✅ FIXED: Correctly group attendance by user full name (was bugged previously)
             user_attendance_map = defaultdict(list)
             for attendance in attendances:
-                user_attendance_map[attendances['user']].append(attendance)
+                user = attendance.get('user')
+                if user:
+                    full_name = f"{user.get('last_name', '')} {user.get('first_name', '')}".strip()
+                    user_attendance_map[full_name].append(attendance)
 
             # Determine the full date range of the report
             all_report_dates = [parser.parse(r['date']).date() for r in attendances if 'date' in r]
@@ -55,13 +57,12 @@ class DownloadAttendancePDF(APIView):
             bold = ParagraphStyle('Bold', parent=normal, fontName='Helvetica-Bold')
             section_label = ParagraphStyle('Label', parent=normal, fontName='Helvetica-Bold', textColor=colors.darkblue, fontSize=11)
 
-            for index, (user_id, records) in enumerate(user_attendance_map.items()):
-                user = CustomUser.objects.get(id=user_id)
-                full_name = user.get_full_name()
-                position = getattr(user, 'position_name', None)
-                department = getattr(user, 'department', None)
-                position_name = position.name if position else "-"
-                department_name = department.name if department else "-"
+            # ✅ UPDATED: Loop by full_name now instead of user_id
+            for index, (full_name, records) in enumerate(user_attendance_map.items()):
+                # ⛔ REMOVED: CustomUser.objects.get() — we use attendance data directly now
+                # Simulated dummy values (could be added to attendance later)
+                position_name = "-"
+                department_name = "-"
 
                 total_days = len(records)
                 total_absences = sum(1 for r in records if r.get('status') == 'Absent')
@@ -76,7 +77,7 @@ class DownloadAttendancePDF(APIView):
                 elements.append(Paragraph(f"Date Coverage: {date_coverage}", normal))
                 elements.append(Spacer(1, 6))
 
-                # Side-by-side layout (2 columns, 4 rows)
+                # User Info Table
                 user_info_data = [
                     [Paragraph("<b>Name:</b>", section_label), full_name,
                      Paragraph("<b>Position:</b>", section_label), position_name],
@@ -104,7 +105,7 @@ class DownloadAttendancePDF(APIView):
                 elements.append(user_info_table)
                 elements.append(Spacer(1, 20))
 
-                # Map records by date for easy lookup
+                # Attendance Table
                 records_by_date = {
                     parser.parse(r['date']).date(): r for r in records if 'date' in r
                 }
@@ -154,5 +155,5 @@ class DownloadAttendancePDF(APIView):
 
         except Exception as e:
             print("Error generating PDF:", str(e))
-            traceback.print_exc()  # This will log the full traceback in your terminal
+            traceback.print_exc()
             return Response({"error": str(e)}, status=500)
