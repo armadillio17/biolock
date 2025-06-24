@@ -35,7 +35,9 @@ interface SystemNotification {
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const lastNotificationRef = useRef<string | null>(null);
   const { user, logout: handleLogout } = useAuthStore();
-  const { profile_picture, position,  fetchUserProfile } = useUpdateUserStore();
+  const profile_picture = useUpdateUserStore(state => state.profile_picture);
+  const position = useUpdateUserStore(state => state.position);
+  const fetchUserProfile = useUpdateUserStore(state => state.fetchUserProfile);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
   const isAdmin = user?.role === "admin";
@@ -49,6 +51,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const count = useOvertimeRequestStore((state) => state.getPendingCount());
   const Userstore = useUserStore();
   const UnapprovedUsersCount = Userstore.newRegisteredUserCount;
+  
   const capitalize = (str: string): string =>
     str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   
@@ -67,7 +70,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       if (identifier !== lastNotificationRef.current) {
         lastNotificationRef.current = identifier;
 
-        console.log("testing Notification");
+        
         
 
         const message = `${data.type.replace('_', ' ')} - ${data.data.status || ''} ${data.data.details || ''}`;
@@ -187,14 +190,19 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                     className="relative flex items-center justify-center w-12 h-12 overflow-hidden rounded-full cursor-pointer bg-gradient-to-r from-pink-400 to-purple-500 group"
                     onClick={() => fileInputRef.current?.click()}
                     >
-                    {profile_picture ? (
-                        <img src={profile_picture ?? ''} alt="Profile" className="object-cover w-full h-full" />
-                    ) : (
-                        <span className="text-sm font-semibold text-white">
-                        {user?.first_name?.charAt(0) || "U"}
-                        {user?.last_name?.charAt(0) || ""}
-                        </span>
-                    )}
+                {profile_picture ? (
+                  <img
+                    src={profile_picture}
+                    onError={() => console.error("Failed to load image:", profile_picture)}
+                    alt="Profile"
+                    className="object-cover w-full h-full"
+                  />
+                ) : (
+                  <span className="text-sm font-semibold text-white">
+                    {user?.first_name?.charAt(0) || "U"}
+                    {user?.last_name?.charAt(0) || ""}
+                  </span>
+                )}
                     
                     {/* Pen Overlay on Hover */}
                     <div className="absolute inset-0 flex items-center justify-center transition-opacity duration-200 opacity-0 bg-black/40 group-hover:opacity-100">
