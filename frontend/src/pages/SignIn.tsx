@@ -2,7 +2,6 @@ import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import '@/assets/css/SignIn.css';
 import { motion } from 'framer-motion';
-import Logo from '@/assets/logo.webp';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
@@ -56,7 +55,7 @@ function SignIn() {
                 animate="visible"
                 variants={containerVariants}
             >
-                <img src={Logo} alt="Logo" className="max-h-[62px] max-w-[61px]" />
+                <img src='logo.webp' alt="Logo" className="max-h-[62px] max-w-[61px]" />
                 <div>
                     <h1 className="flex justify-center mb-5 text-2xl font-bold">Sign In</h1>
                     <form onSubmit={handleSubmit} className="min-w-[300px] flex flex-col gap-4">
