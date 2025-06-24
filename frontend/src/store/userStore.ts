@@ -91,7 +91,7 @@ export const useUpdateUserStore = create<UserState>((set) => ({
       });
       
       set({ 
-        position: response.data.position.position_name,
+        position: response.data.position?.position_name,
         profile_picture: `${storage_url}${response.data.profile_picture}`, // response.data is likely a single object
         isLoading: false 
       });
