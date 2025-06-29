@@ -97,8 +97,8 @@ export default function UserLists() {
           <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
             <span className="font-semibold text-lg text-gray-800">Registration Requests</span>
             <Button
-              variant="default"
-              className="bg-blue-600 text-white hover:bg-blue-700"
+              variant="outline"
+              className="border bg-gradient-to-r from-blue-500 to-teal-500 text-white"
               onClick={handleOpenSendLinkModal}
             >
               Send Registration Link

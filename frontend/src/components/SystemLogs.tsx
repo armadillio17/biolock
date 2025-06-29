@@ -4,6 +4,7 @@ import { base_url } from "../config";
 import { authAxios } from "@/lib/secured-axios-instance";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Button } from "./ui/button";
 
 interface ActivityData {
   status?: string;
@@ -121,7 +122,8 @@ export default function SystemLog() {
             Filter by Date
           </button>
           
-          <button
+          <Button
+            variant="outline"
             onClick={handleGenerateReport}
             className={`flex items-center gap-2 px-6 py-2 text-white rounded-lg shadow-md transition-colors duration-200
               ${(!startDate || !endDate) 
@@ -136,10 +138,10 @@ export default function SystemLog() {
             ) : (
               <>
                 <Download className="w-4 h-4" />
-                Generate Report
+                Generate System Logs
               </>
             )}
-          </button>
+          </Button>
         </div>
       </div>
 

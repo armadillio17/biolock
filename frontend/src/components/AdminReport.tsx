@@ -58,6 +58,7 @@ export default function AdminReport() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-gray-200">
           <h1 className="text-xl font-bold text-gray-800">Reports</h1>
           <Button
+            variant="outline"
             className="px-5 py-2 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg shadow hover:shadow-md transition-shadow"
             onClick={() => setShowDatePicker(true)}
             disabled={isLoading}
@@ -165,9 +166,9 @@ export default function AdminReport() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-right space-x-2">
                           <Button
-                            variant="default"
+                            variant="outline"
                             size="sm"
-                            className="bg-green-600 hover:bg-green-700 text-white"
+                            className="bg-green-600 hover:bg-green-500 text-white"
                             onClick={(e) => {
                               e.stopPropagation(); // prevent row click
                               handleDownloadReport(report.id);

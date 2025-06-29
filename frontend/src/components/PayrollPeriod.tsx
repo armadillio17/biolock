@@ -163,7 +163,8 @@ const handleGeneratePayslip = async (period: PayrollPeriod) => {
 
           <Button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
+            variant="outline"
+            className="w-full text-white py-2 px-4 rounded-md border bg-gradient-to-r from-blue-500 to-teal-500"
             disabled={isLoading}
           >
             {isLoading ? 'Saving...' : 'Save Payroll Period'}

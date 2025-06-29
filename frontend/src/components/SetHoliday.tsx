@@ -184,13 +184,14 @@ const closeSettings = () => {
       <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200 p-6 shadow-md">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Configure Holidays</h2>
-          <button
+          <Button
+            variant="outline"
             onClick={() => setShowSettings(true)}
-            className="flex items-center bg-gray-500 text-white px-3 py-2 rounded-md bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
+            className="flex items-center text-white px-3 py-2 rounded-md border bg-gradient-to-r from-blue-500 to-teal-500"
           >
             <Settings className="w-4 h-4 mr-1" />
             Settings
-          </button>
+          </Button>
         </div>
 
         {/* Error Message */}
@@ -266,8 +267,9 @@ const closeSettings = () => {
           {/* Submit Button */}
           <Button
             type="submit"
+            variant="outline"
             disabled={selectedHolidays.length === 0 || isLoading}
-            className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white flex items-center justify-center gap-2"
+            className="w-full border bg-gradient-to-r from-blue-500 to-teal-500 text-white flex items-center justify-center gap-2"
           >
             <CheckCircle className="w-4 h-4" />
             {isLoading ? "Saving..." : "Save Holiday Configuration"}

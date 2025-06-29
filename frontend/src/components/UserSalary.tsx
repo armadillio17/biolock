@@ -246,8 +246,9 @@ export default function UserSalary() {
 
           <div className="flex justify-end pt-2">
             <Button
+              variant="outline"
               type="submit"
-              className="flex items-center gap-2 text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
+              className="flex items-center gap-2 border bg-gradient-to-r from-blue-500 to-teal-500 text-white"
               disabled={isLoading}
             >
               <Plus className="w-4 h-4" />
