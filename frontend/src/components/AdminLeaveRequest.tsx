@@ -154,7 +154,8 @@ export default function LeaveRequest() {
             </div>
           </div>
           <Button
-            className="px-6 py-3 text-white transition-all duration-200 transform rounded-lg shadow-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-xl hover:scale-105"
+            variant="outline"
+            className="inline-flex items-center justify-center h-10 px-5 py-2 overflow-hidden text-sm font-medium text-white border rounded-lg bg-gradient-to-r from-blue-500 to-teal-500"
             onClick={handleOpenModal}
           >
             Request Leave
