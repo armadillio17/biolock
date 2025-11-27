@@ -51,7 +51,13 @@ backend/user/biolock.json
 
 # Google OAuth credentials
 backend/google_credentials/credentials.json
+backend/google_credentials/credentials_for_smtp.json
 **/credentials.json
+**/credentials_for_smtp.json
+
+# Gmail API token (contains refresh token - sensitive)
+backend/google_credentials/token.json
+**/token.json
 
 # Media files
 backend/media/profile_pictures
