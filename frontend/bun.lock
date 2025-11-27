@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "frontend",
@@ -15,6 +16,7 @@
         "date-fns": "^2.29.3",
         "dayjs": "^1.11.13",
         "iconsax-react": "^0.0.8",
+        "inspirational-quotes": "^2.0.1",
         "lucide-react": "^0.473.0",
         "motion": "^11.18.1",
         "react": "^18.3.1",
@@ -666,6 +668,8 @@
     "import-fresh": ["import-fresh@3.3.0", "", { "dependencies": { "parent-module": "^1.0.0", "resolve-from": "^4.0.0" } }, "sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw=="],
 
     "imurmurhash": ["imurmurhash@0.1.4", "", {}, "sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA=="],
+
+    "inspirational-quotes": ["inspirational-quotes@2.0.1", "", {}, "sha512-IYJEdSUphF4HOoOiABua2l7aUZ2OBTc/NpihPuENF3ieXEBuywOTtYle7zzvZfEJKouG9utOwQpMQtm0GIB2BQ=="],
 
     "internal-slot": ["internal-slot@1.1.0", "", { "dependencies": { "es-errors": "^1.3.0", "hasown": "^2.0.2", "side-channel": "^1.1.0" } }, "sha512-4gd7VpWNQNB4UKKCFFVcp1AVv+FMOgs9NKzjHKusc8jTMhd5eL1NqQqOpE0KzMds804/yHlglp3uxgluOqAPLw=="],
 
