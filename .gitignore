@@ -45,7 +45,13 @@ backend/db.sqlite3
 backend/djangoenv/
 backend/.env
 
-# Firebase
-./backend/user/biolock.json
+# Firebase credentials
+backend/user/biolock.json
+**/biolock.json
 
+# Google OAuth credentials
+backend/google_credentials/credentials.json
+**/credentials.json
+
+# Media files
 backend/media/profile_pictures

@@ -91,21 +91,6 @@ load_dotenv()
 supabase_db_url = os.getenv("SUPABASE_DB_URL")
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'biolockdatabase',
-    #     'USER': 'root',
-    #     'PASSWORD': 'Latayada!233',
-    #     'HOST': '127.0.0.1',
-    #     'PORT': '3306',
-    # },
-
-    #Previosly used database configuration for local development with SQLite
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',  # or a different path if needed
-    # }
-
     #NEW DATABASE CONFIGURATION SUPABASE
     'default': dj_database_url.parse(
         os.getenv('SUPABASE_DB_URL'),
