@@ -17,11 +17,10 @@ class ApproveOvertimeView(APIView):
         """
         Submit a new overtime request.
         No requested_hours needed.
-        Uses today's attendance to determine eligibility (optional).
+        Uses today's attendance to determine eligibility.
         """
 
-        # Assume user is passed in the request data or session
-        user_id = request.data.get('user_id')  # Or use another method to get the user
+        user_id = request.data.get('user_id')
         date = request.data.get("date", now().date())
 
         if not user_id:
@@ -32,7 +31,7 @@ class ApproveOvertimeView(APIView):
         except CustomUser.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Optional: Check if user has valid attendance for that day
+        # Get attendance for the day
         attendance = Attendance.objects.filter(
             user=user,
             clock_in__date=date
@@ -41,6 +40,13 @@ class ApproveOvertimeView(APIView):
         if not attendance or not attendance.clock_out:
             return Response(
                 {"error": "No valid attendance record for this date"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Check if the user worked at least 8 hours
+        if attendance.working_hours < 8:
+            return Response(
+                {"error": "You must work at least 8 hours before requesting overtime"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 

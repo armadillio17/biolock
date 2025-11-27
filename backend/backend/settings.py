@@ -25,12 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-3b-vu&@5w2+fh=+0+#5e42&idta+*%ud+wf*aqra!1hintr(97'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key-change-this-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '::1', 'biolock.astrosail.site', 'api.astrosail.site', '10.0.2.2']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
 # Application definition
@@ -49,8 +49,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware', 
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -108,10 +109,14 @@ DATABASES = {
     #NEW DATABASE CONFIGURATION SUPABASE
     'default': dj_database_url.parse(
         os.getenv('SUPABASE_DB_URL'),
-        conn_max_age=600,
+        conn_max_age=0,  # Don't persist connections with pooler
+        conn_health_checks=True,  # Check connection health before using
         ssl_require=True
     )
 }
+
+# Enable connection health checks
+CONN_HEALTH_CHECKS = True
 
 SUPABASE_DB_URL = os.environ.get("SUPABASE_DB_URL")
 
@@ -149,7 +154,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/api/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -161,6 +167,13 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://10.0.2.2",
+    "https://biolock.astrosail.site",
+    "http://biolock.astrosail.site",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://biolock.astrosail.site",
+    "http://biolock.astrosail.site",
 ]
 
 CORS_ALLOW_HEADERS = [
@@ -192,7 +205,16 @@ REST_FRAMEWORK = {
     #     'anon': '100/hour',  # Set rate for anonymous users
     #     'user': '1000/day',  # Set rate for authenticated users
     #     'login': '5/min'  # Limit 5 login attempts per minute
-    }
+    },
+    
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+
+    'DEFAULT_FILTER_BACKENDS': [
+        'rest_framework.filters.SearchFilter',
+    ],
+    
+    
 }
 
 # Session expires after 30 minutes of inactivity
@@ -205,3 +227,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 GOOGLE_CALENDAR_CREDENTIALS_JSON_PATH = os.path.join(BASE_DIR, 'google_credentials', 'credentials.json')
 PHILIPPINE_HOLIDAY_CALENDAR_ID = 'en.philippines#holiday@group.v.calendar.google.com'
+
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() in ('true', '1', 'yes')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+
+BASE_DIR_FIREBASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FIREBASE_CREDENTIALS_PATH = os.path.join(BASE_DIR, 'user', 'biolock.json')

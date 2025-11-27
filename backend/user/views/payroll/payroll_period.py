@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from user.models import PayrollPeriod
 from user.serializers import PayrollPeriodSerializer
-from user.utils.notification_history import log_notification
+from user.utils.system_history import log_notification
 
 class PayrollPeriodListCreateView(APIView):
     def get(self, request, *args, **kwargs):

@@ -1,17 +1,10 @@
 import TimesheetReport from "@/components/UserTimesheet";
+import { AttendanceTable } from "./AttendanceTable";
+import { useAuthStore } from "@/store/authStore";
 
 export default function Timesheet() {
-  // const admin = true;
-  // const [isAdmin, setIsAdmin] = useState(false);
+  const { user } = useAuthStore();
+  const isAdmin = user?.role === "admin";
 
-  // useEffect(() => {
-
-  //   const userRole = localStorage.getItem("userRole");
-  //   setIsAdmin(userRole === "admin")
-
-  // }, []);
-
-  // return isAdmin ? <AdminEvent /> : <UserEvent />
-  // return admin ? <AdminDashboard /> : <UserDashboard />;
-  return <TimesheetReport />
+  return isAdmin ? <AttendanceTable /> : <TimesheetReport />
 }

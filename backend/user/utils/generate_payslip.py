@@ -3,7 +3,14 @@ from user.models import UserSalary, Payslip, PayrollPeriod
 from .payslip_calculations import PayslipCalculator
 
 def generate_payslip(user, payroll_period):
-    salary = UserSalary.objects.get(user=user)
+    try:
+        salary = UserSalary.objects.get(user=user)
+    except UserSalary.DoesNotExist:
+        print(f"Skipping payslip generation for {user.username}: No salary record found.")
+        return None  # or return early instead of raising an error
+
+    print(f"Generating payslip for {user.username} for period {payroll_period.start_date} to {payroll_period.end_date}")
+
     hours_data = PayslipCalculator.calculate_working_hours(user, payroll_period)
 
     gross_pay_details = PayslipCalculator.calculate_gross_pay(salary, payroll_period, hours_data)
@@ -12,6 +19,7 @@ def generate_payslip(user, payroll_period):
 
     employee_contributions = sum(benefits[benefit]['employee'] for benefit in benefits)
     total_deductions = absence_deductions + employee_contributions
+    print(f"Total deductions for {user.username}: {total_deductions}")
 
     payslip = Payslip.objects.create(
         user=user,
@@ -20,6 +28,9 @@ def generate_payslip(user, payroll_period):
         total_overtime_hours=hours_data['overtime_hours'],
         total_leave_hours=hours_data['leave_hours'],
         total_absences=hours_data['absences'],
+
+        # Pay components
+        basic_salary= gross_pay_details['regular_pay'],
         gross_pay=gross_pay_details['gross_pay'],
         deductions=total_deductions,
         net_pay=gross_pay_details['gross_pay'] - total_deductions,

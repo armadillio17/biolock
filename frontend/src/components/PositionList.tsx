@@ -142,8 +142,9 @@ const PositionsView = () => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-gray-200">
           <h1 className="text-2xl font-bold text-gray-800">Positions</h1>
           <Button
+            variant="outline"
             onClick={() => setShowInput(true)}
-            className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg shadow hover:shadow-md transition-shadow"
+            className="px-4 py-2 border bg-gradient-to-r from-blue-500 to-teal-500 text-white rounded-lg shadow hover:shadow-md transition-shadow"
           >
             <Plus className="w-4 h-4 mr-1" />
             Add Position

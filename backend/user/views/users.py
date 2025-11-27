@@ -5,15 +5,24 @@ from rest_framework import status
 from django.utils.timezone import now
 from user.models.users import CustomUser
 from user.models.roles import Role
-from user.serializers import UserSerializer, UserProfileSerializer
+from user.models.registration_link import RegistrationLink
+from user.serializers import UserSerializer, UserProfileSerializer, RegistrationLinkSerializer
 from rest_framework.authtoken.models import Token
-from user.utils.notification_history import log_notification
+from user.utils.system_history import log_notification
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from rest_framework.parsers import MultiPartParser, FormParser
 import os
 from django.conf import settings
 import re
+import secrets
+from django.utils.crypto import get_random_string
+from django.core.mail import send_mail
+from django.db import transaction
+from django.utils.timezone import now
+from user.utils.notification import send_notification
+
+
 
 
 # from django.contrib.auth.models import User
@@ -55,21 +64,40 @@ class UserCreateView(APIView):
     def post(self, request):
         """Create a new user record"""
         request.data.setdefault("role_id", 2)
+        
+        
 
+        token = request.data.get("registration_token")
+        if not token:
+            return Response({'error': 'Registration token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validate user registration data
         serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            password = serializer.validated_data.get('password')
-            
-            if password:  # Only validate if password exists
-                if not re.match(r'^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$', password):
-                    return Response(
-                        {"password": ["Password must contain at least 1 uppercase letter, 1 number, and 1 special character."]},
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-                
-                serializer.validated_data['password'] = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+        password = serializer.validated_data.get('password')
+        if password and not re.match(r'^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$', password):
+            return Response(
+                {"password": ["Password must contain at least 1 uppercase letter, 1 number, and 1 special character."]},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer.validated_data['password'] = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+
+        # Begin atomic transaction
+        with transaction.atomic():
+            # Save the user
             serializer.save()
+
+            # Mark the token as used
+            try:
+                reg_link = RegistrationLink.objects.get(registration_token=token, deleted_at__isnull=True)
+                reg_link.is_token_used = True
+                reg_link.updated_at = now()
+                reg_link.save()
+            except RegistrationLink.DoesNotExist:
+                return Response({'error': 'Invalid registration token.'}, status=status.HTTP_400_BAD_REQUEST)
 
             log_notification(
                 user_id=request.user.id,
@@ -80,9 +108,8 @@ class UserCreateView(APIView):
                 }
             )
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
 class UserUpdateDeleteView(APIView):
     def get_object(self, pk):
         """Helper method to get an object or return 404"""
@@ -230,17 +257,58 @@ class UserAuthenticationView(APIView):
                 httponly=True,
                 max_age=86400 * 30
             )
-            
+
+            role_name = user.role.role_name.lower() if user.role else 'unknown'
+            if role_name not in ['admin', 'superadmin']:
+                ip_address = request.META.get('REMOTE_ADDR')
+                
+                log_notification(
+                    user_id=user.id,
+                    notification_type="User Login",
+                    data={
+                        "status": "Success",
+                        "details": f"User '{user.first_name} {user.last_name}'",
+                    }
+                )
+
             return response
             
         except CustomUser.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class LogoutView(APIView):
-            def post(self, request):
-                response = Response({"success": True})
-                response.delete_cookie('auth_token')
-                return response
+    def post(self, request):
+        # Get token from cookie
+        token_key = request.COOKIES.get('auth_token')
+        
+        if not token_key:
+            return Response({"error": "Authentication token not found"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            token = Token.objects.get(key=token_key)
+            user = token.user
+        except Token.DoesNotExist:
+            return Response({"error": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # Build response
+        response = Response({"success": True})
+        response.delete_cookie('auth_token')
+
+        # Log only for non-admin / superadmin users
+        role_name = user.role.role_name.lower() if user.role else 'unknown'
+        if role_name not in ['admin', 'superadmin']:
+            ip_address = request.META.get('REMOTE_ADDR')
+
+            log_notification(
+                user_id=user.id,
+                notification_type="User Logout",
+                data={
+                    "status": "Success",
+                    "details": f"User '{user.first_name} {user.last_name}'",
+                }
+            )
+
+        return response
             
             
 class GetUserRoleView(APIView):
@@ -342,3 +410,35 @@ class RemoveProfilePictureView(APIView):
         user.save()
 
         return Response({"message": "Profile picture removed successfully."}, status=200)
+    
+class SendRegistrationLink(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        base_url = os.getenv("APP_URL")
+
+        if not email:
+            return Response({'error': 'Email is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        token = get_random_string(32)
+        registration_url = f"{base_url}sign-up?token={token}"
+        
+        serializer = RegistrationLinkSerializer(data={
+            'email': email,  # you need to add this field in your serializer + model
+            'registration_token': token
+        })
+        
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        send_mail(
+            subject="Your Registration Link",
+            message=f"Click here to register: {registration_url}",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
+        )
+
+        # Optional: Save token in DB or cache with an expiration time
+
+        return Response({'message': 'Registration link sent successfully.'}, status=status.HTTP_200_OK)

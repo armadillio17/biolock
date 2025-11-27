@@ -4,7 +4,7 @@ from .attendance import Attendance
 from .department import Department
 from .position import Position, PositionUser, DepartmentPosition
 from .leave_request import LeaveRequest
-from .notification_history import NotificationHistory
+from .system_history import SystemHistory
 from .report import Report
 from .holiday.holiday import Holiday
 from .attendance_adjustments import AttendanceAdjustments
@@ -19,3 +19,5 @@ from .company import Company
 from .request_overtime import OvertimeRequest
 from .holiday.holiday_config import HolidayConfig
 from .holiday.custom_holiday import CustomHoliday
+from .registration_link import RegistrationLink
+from .notification import Notifications

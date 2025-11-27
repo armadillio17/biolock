@@ -1,7 +1,8 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import axios from "axios";
-import { base_url } from '../config.ts';
-import { useAuthStore } from './authStore.ts';
+import { base_url } from "../config.ts";
+import { useAuthStore } from "./authStore.ts";
 
 interface UserData {
   id: number;
@@ -22,7 +23,7 @@ interface LeaveRequestData {
   type: string;
   details: string;
   status: string;
-  date: string; 
+  date: string;
   clock_in: string | null;
   clock_out: string | null;
   user_id: number;
@@ -36,7 +37,7 @@ interface UserLeaveRequestData {
   type: string;
   details: string;
   status: string;
-  date: string; 
+  date: string;
   user_id: number;
 }
 
@@ -48,182 +49,144 @@ interface LeaveRequestState {
 
   fetchLeaveRequest: () => Promise<void>;
   createLeaveRequest: (
-    start_date: string, 
+    start_date: string,
     end_date: string,
     type: string,
     details: string,
-    status: string,
+    status: string
   ) => Promise<void>;
-  updateLeaveRequest: (
-    status: string,
-    id: BigInteger,
-  ) => Promise<void>;
+  updateLeaveRequest: (status: string, id: BigInteger) => Promise<void>;
+  fetchUserLeaveRequest: (userId: string, date: string) => Promise<void>;
 
-  fetchUserLeaveRequest: (userId: string, date:string) => Promise<void>;
+  resyncStore: () => void;
 }
 
-export const leaveRequestStore = create<LeaveRequestState>((set) => ({
-  leaveRequest: [],
-  isLoading: false,
-  error: null,
-  userLeaveRequest: [],
+export const leaveRequestStore = create<LeaveRequestState>()(
+  persist(
+    (set, get) => ({
+      leaveRequest: [],
+      isLoading: false,
+      error: null,
+      userLeaveRequest: [],
 
-  fetchLeaveRequest: async () => {
-    set({ isLoading: true, error: null });
+      fetchLeaveRequest: async () => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await axios.get(`${base_url}/leave-requests/`);
+          set({ leaveRequest: response.data, isLoading: false });
+        } catch (error: any) {
+          console.error("Error fetching leave requests:", error);
+          set({
+            error: error instanceof Error ? error.message : "Failed to fetch data",
+            isLoading: false,
+          });
+        }
+      },
 
-    try {
-      
-      // const userId = useAuthStore.getState().user.userId;
-      // // const token = useAuthStore.getState().getAuthToken();
-
-      // console.log("userss", userId);
-      
-      // if (!token) {
-      //   throw new Error("Authentication token not found");
-      // }
-
-      const response = await axios.get(`${base_url}/leave-requests/`, {
-        headers: {
-          "Content-Type": "application/json",
-          // "Authorization": `Bearer ${token}`,
-        },
-      });
-
-      const leaveRequest = response.data;
-  
-      set({ 
-        leaveRequest: leaveRequest, 
-        isLoading: false 
-      });
-    } catch (error: unknown) {
-      console.error("Error fetching attendance:", error);
-      set({ 
-        error: error instanceof Error ? error.message : "Failed to fetch attendance data",
-        isLoading: false 
-      });
-    }
-  },
-
-  createLeaveRequest: async (    
-    start_date: string, 
-    end_date: string,
-    type: string,
-    details: string,
-    status: string,
-  ) => {
-    set({ isLoading: true, error: null });
-
-    try {
-      
-      const userId = useAuthStore.getState().user.userId;
-      // const token = useAuthStore.getState().getAuthToken();
-      
-      // if (!token) {
-      //   throw new Error("Authentication token not found");
-      // }
-
-      const response = await axios.post(`${base_url}/leave-requests/`, {
+      createLeaveRequest: async (
         start_date,
         end_date,
         type,
         details,
-        status,
-        user_id: userId, 
-      },{
-        headers: {
-          "Content-Type": "application/json",
-          // "Authorization": `Bearer ${token}`,
-        },
-      });
+        status
+      ) => {
+        set({ isLoading: true, error: null });
+        try {
+          const userId = useAuthStore.getState().user.userId;
+          const response = await axios.post(
+            `${base_url}/leave-requests/`,
+            {
+              start_date,
+              end_date,
+              type,
+              details,
+              status,
+              user_id: userId,
+            },
+            {
+              headers: { "Content-Type": "application/json" },
+            }
+          );
 
-      const leaveRequest = response.data;
+          // Add the new request to the current state instead of refetching
+          const newRequest = response.data;
+          set((state) => ({
+            leaveRequest: [...state.leaveRequest, newRequest],
+            isLoading: false,
+          }));
+        } catch (error: any) {
+          console.error("Error creating leave request:", error);
+          set({
+            error: error instanceof Error ? error.message : "Failed to create request",
+            isLoading: false,
+          });
+        }
+      },
 
-      
+      updateLeaveRequest: async (status, id) => {
+        try {
+          // Optimistically update the UI immediately
+          set((state) => ({
+            leaveRequest: state.leaveRequest.map((request) =>
+              request.id === id ? { ...request, status } : request
+            ),
+          }));
 
-      set({ 
-        leaveRequest: leaveRequest, 
-        isLoading: false 
-      });
-    } catch (error: unknown) {
-      console.error("Error fetching attendance:", error);
-      set({ 
-        error: error instanceof Error ? error.message : "Failed to fetch attendance data",
-        isLoading: false 
-      });
+          // Make the API call
+          await axios.put(
+            `${base_url}/leave-requests/${id}/`,
+            { status },
+            {
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+
+          // If successful, the optimistic update is already applied
+          // If failed, we could revert the change here
+        } catch (error: any) {
+          console.error("Error updating leave request:", error);
+
+          // Revert the optimistic update on error
+          const currentState = get();
+          await currentState.fetchLeaveRequest();
+
+          set({
+            error: error instanceof Error ? error.message : "Failed to update request",
+          });
+
+          // Re-throw the error so the component can handle it
+          throw error;
+        }
+      },
+
+      fetchUserLeaveRequest: async (userId, date) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await axios.get(`${base_url}/leave-requests/${userId}/${date}`);
+          set({ userLeaveRequest: response.data, isLoading: false });
+        } catch (error: any) {
+          console.error("Error fetching user leave request:", error);
+          set({
+            error: error instanceof Error ? error.message : "Failed to fetch data",
+            isLoading: false,
+          });
+        }
+      },
+
+      resyncStore: () => {
+        const { leaveRequest, userLeaveRequest } = get();
+        set({
+          leaveRequest: [...leaveRequest],
+          userLeaveRequest: [...userLeaveRequest],
+        });
+      },
+    }),
+    {
+      name: "leave-request-storage", // LocalStorage key
+      partialize: (state) => ({
+        leaveRequest: state.leaveRequest,
+        userLeaveRequest: state.userLeaveRequest,
+      }),
     }
-  },
-
-  updateLeaveRequest: async (    
-    status: string,
-    id: BigInteger ,
-  ) => {
-    set({ isLoading: true, error: null });
-
-    try {
-
-      
-
-      // const token = useAuthStore.getState().getAuthToken();
-      
-      // if (!token) {
-      //   throw new Error("Authentication token not found");
-      // }
-
-      const response = await axios.put(`${base_url}/leave-requests/${id}/`, {
-        status,
-      },{
-        headers: {
-          "Content-Type": "application/json",
-          // "Authorization": `Bearer ${token}`,
-        },
-      });
-
-      const leaveRequest = response.data;
-
-      set({ 
-        leaveRequest: leaveRequest, 
-        isLoading: false 
-      });
-    } catch (error: unknown) {
-      console.error("Error fetching attendance:", error);
-      set({ 
-        error: error instanceof Error ? error.message : "Failed to fetch attendance data",
-        isLoading: false 
-      });
-    }
-  },
-
-  fetchUserLeaveRequest: async (userId: string, date:string) => {
-    set({ isLoading: true, error: null });
-
-    try {
-      
-      // const userId = useAuthStore.getState().user.userId;
-      // const token = useAuthStore.getState().getAuthToken();
-      
-      // if (!token) {
-      //   throw new Error("Authentication token not found");
-      // }
-
-      const response = await axios.get(`${base_url}/leave-requests/${userId}/${date}`, {
-        headers: {
-          "Content-Type": "application/json",
-          // "Authorization": `Bearer ${token}`,
-        },
-      });
-
-      const userLeaveRequest = response.data;
-
-      set({ 
-        userLeaveRequest: userLeaveRequest, 
-        isLoading: false 
-      });
-    } catch (error: unknown) {
-      console.error("Error fetching attendance:", error);
-      set({ 
-        error: error instanceof Error ? error.message : "Failed to fetch attendance data",
-        isLoading: false 
-      });
-    }
-  },
-}));
+  )
+);

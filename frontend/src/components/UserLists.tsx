@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { useUserStore } from "@/store/userlistStore";
 import { Pencil } from "lucide-react";
 import UserViewModal from "./ViewUserPrompt";
+import SendRegistrationLinkModal from "./RegistrationLinkPrompt";
 import { User } from "./ViewUserPrompt";
 
 export default function UserLists() {
@@ -17,7 +18,7 @@ export default function UserLists() {
   } = useUserStore();
 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<"viewUser" | "sendLink" | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -52,7 +53,7 @@ export default function UserLists() {
     try {
       await declineRegisteredUser(userId);
       await fetchNewUserList();
-      await fetchApprovedUserList(); // Also refresh approved list in case something changed
+      await fetchApprovedUserList();
     } catch (err) {
       console.error("Error declining user:", err);
     } finally {
@@ -61,61 +62,69 @@ export default function UserLists() {
   };
 
   const formatDate = (dateStr: string): string => {
-    // return new Date(dateStr).toLocaleDateString();
     return new Date(dateStr).toLocaleDateString(undefined, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     });
-  
   };
 
-  const handleOpenModal = (user: User) => {
+  const handleOpenUserModal = (user: User) => {
     setSelectedUser(user);
-    setIsModalOpen(true);
+    setModalType("viewUser");
+  };
+
+  const handleOpenSendLinkModal = () => {
+    setModalType("sendLink");
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
+    setModalType(null);
   };
-  
+
+  const handleSendLink = (email: string) => {
+    console.log("Send link to:", email);
+    handleCloseModal();
+  };
 
   return (
     <DashboardLayout>
       <div className="p-4 md:p-6 space-y-6">
-        {/* Page Title */}
         <h1 className="text-2xl font-bold text-gray-800">Users</h1>
 
-        {/* Registration Request Table */}
+        {/* Registration Requests */}
         <div className="overflow-hidden rounded-xl border border-gray-200 bg-white/70 backdrop-blur-sm shadow-md">
-          <div className="px-6 py-4 border-b border-gray-200 font-semibold text-lg text-gray-800">
-            Registration Requests
+          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+            <span className="font-semibold text-lg text-gray-800">Registration Requests</span>
+            <Button
+              variant="outline"
+              className="border bg-gradient-to-r from-blue-500 to-teal-500 text-white"
+              onClick={handleOpenSendLinkModal}
+            >
+              Send Registration Link
+            </Button>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-3 py-3 text-left text-sm font-semibold text-gray-700"></th>
-                  <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Date</th>
-                  <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
-                  <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Username</th>
-                  <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
-                  <th scope="col" className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Actions</th>
+                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700"></th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Date</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Username</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
+                  <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {loading ? (
                   [...Array(3)].map((_, index) => (
                     <tr key={index}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="h-4 bg-gray-200 rounded w-32 animate-pulse"></div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="h-4 bg-gray-200 rounded w-36 animate-pulse"></div>
-                      </td>
+                      {[...Array(5)].map((__, i) => (
+                        <td key={i} className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-4 bg-gray-200 rounded w-full animate-pulse"></div>
+                        </td>
+                      ))}
                       <td className="px-6 py-4 whitespace-nowrap text-right">
                         <div className="flex justify-end gap-2">
                           <div className="h-8 bg-green-200 rounded w-16 animate-pulse"></div>
@@ -127,14 +136,12 @@ export default function UserLists() {
                 ) : newRegisteredUser.length > 0 ? (
                   newRegisteredUser.map((request) => (
                     <tr key={request.id} className="hover:bg-gray-50 transition-colors duration-150">
-                      <td className="flex justify-center px-3 py-4 whitespace-nowrap text-sm text-gray-600">{request.id}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{formatDate(request.created_at)}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {request.first_name} {request.last_name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{request.username}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{request.email}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right space-x-2 flex justify-end">
+                      <td className="flex justify-center px-3 py-4 text-sm text-gray-600">{request.id}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{formatDate(request.created_at)}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{request.first_name} {request.last_name}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{request.username}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{request.email}</td>
+                      <td className="px-6 py-4 text-right space-x-2 flex justify-end">
                         <Button
                           variant="outline"
                           size="sm"
@@ -156,7 +163,7 @@ export default function UserLists() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={4} className="px-6 py-8 text-left text-gray-500">
+                    <td colSpan={6} className="px-6 py-8 text-left text-gray-500">
                       No pending registration requests.
                     </td>
                   </tr>
@@ -175,27 +182,23 @@ export default function UserLists() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-3  py-3 text-left text-sm font-semibold text-gray-700"></th>
-                  <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Date</th>
-                  <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
-                  <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Username</th>
-                  <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
-                  <th scope="col" className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Actions</th>
+                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700"></th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Date</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Username</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
+                  <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {loading ? (
                   [...Array(3)].map((_, index) => (
                     <tr key={index}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="h-4 bg-gray-200 rounded w-32 animate-pulse"></div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="h-4 bg-gray-200 rounded w-36 animate-pulse"></div>
-                      </td>
+                      {[...Array(5)].map((__, i) => (
+                        <td key={i} className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-4 bg-gray-200 rounded w-full animate-pulse"></div>
+                        </td>
+                      ))}
                       <td className="px-6 py-4 whitespace-nowrap text-right">
                         <div className="inline-block h-8 bg-gray-200 rounded w-8 animate-pulse"></div>
                       </td>
@@ -204,19 +207,17 @@ export default function UserLists() {
                 ) : approvedUser.length > 0 ? (
                   approvedUser.map((user) => (
                     <tr key={user.id} className="hover:bg-gray-50 transition-colors duration-150">
-                      <td className="flex justify-center px-3 py-4 whitespace-nowrap text-sm text-gray-600">{user.id}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{formatDate(user.created_at)}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {user.first_name} {user.last_name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{user.username}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{user.email}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <td className="flex justify-center px-3 py-4 text-sm text-gray-600">{user.id}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{formatDate(user.created_at)}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{user.first_name} {user.last_name}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{user.username}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{user.email}</td>
+                      <td className="px-6 py-4 text-right">
                         <Button
                           variant="outline"
                           size="sm"
                           className="text-blue-600 border-blue-300 hover:bg-blue-50"
-                          onClick={() => handleOpenModal(user)}
+                          onClick={() => handleOpenUserModal(user)}
                         >
                           <Pencil className="w-4 h-4" />
                         </Button>
@@ -225,7 +226,7 @@ export default function UserLists() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={4} className="px-6 py-8 text-left text-gray-500">
+                    <td colSpan={6} className="px-6 py-8 text-left text-gray-500">
                       No approved users found.
                     </td>
                   </tr>
@@ -236,8 +237,22 @@ export default function UserLists() {
         </div>
       </div>
 
-      {/* Modal */}
-      <UserViewModal isOpen={isModalOpen} onClose={handleCloseModal} user={selectedUser} />
+      {/* Modals */}
+      {modalType === "viewUser" && (
+        <UserViewModal
+          isOpen={true}
+          onClose={handleCloseModal}
+          user={selectedUser}
+        />
+      )}
+
+      {modalType === "sendLink" && (
+        <SendRegistrationLinkModal
+          isOpen={true}
+          onClose={handleCloseModal}
+          onSend={handleSendLink}
+        />
+      )}
     </DashboardLayout>
   );
 }

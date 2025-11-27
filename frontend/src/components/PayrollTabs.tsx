@@ -6,6 +6,7 @@ import PayrollRelease from '@/components/PayrollRelease';
 import DashboardLayout from "@/layouts/DashboardLayout";
 import BenefitsConfig from '@/components/BenefitsConfig';
 import SetHoliday from '@/components/SetHoliday';
+import { Button } from "./ui/button";
 
 export default function PayrollTabs() {
   const [activeTab, setActiveTab] = useState<'salary' | 'period' | 'release' | 'setHoliday'>('salary');
@@ -18,13 +19,14 @@ export default function PayrollTabs() {
           {/* Header */}
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold text-gray-800">Payroll Management</h1>
-            <button
+            <Button
+              variant="outline"
               onClick={() => setShowBenefits(!showBenefits)}
-              className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white px-4 py-2 rounded-md flex items-center gap-2 transition-colors"
+              className="border bg-gradient-to-r from-blue-500 to-teal-500 text-white px-4 py-2 rounded-md flex items-center gap-2 transition-colors"
             >
               <Users className="w-5 h-5" />
               Benefits
-            </button>
+            </Button>
           </div>
 
           {/* Slide-out Benefits Panel */}
@@ -38,50 +40,54 @@ export default function PayrollTabs() {
 
           {/* Tabs */}
           <nav className="bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200 shadow-md p-4 flex space-x-2 overflow-x-auto">
-            <button
+            <Button
+              variant="outline"
               onClick={() => setActiveTab('salary')}
               className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
                 activeTab === 'salary'
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white'
+                  ? 'border bg-gradient-to-r from-blue-500 to-teal-500 text-white'
                   : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
               <Users className="w-5 h-5 mr-2" />
               User Salary
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
               onClick={() => setActiveTab('period')}
               className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
                 activeTab === 'period'
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white'
+                  ? 'border bg-gradient-to-r from-blue-500 to-teal-500 text-white'
                   : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
               <Calendar className="w-5 h-5 mr-2" />
               Payroll Period
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
               onClick={() => setActiveTab('release')}
               className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
                 activeTab === 'release'
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white'
+                  ? 'border bg-gradient-to-r from-blue-500 to-teal-500 text-white'
                   : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
               <Users className="w-5 h-5 mr-2" />
               Payroll Release
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
               onClick={() => setActiveTab('setHoliday')}
               className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
                 activeTab === 'setHoliday'
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white'
+                  ? 'border bg-gradient-to-r from-blue-500 to-teal-500 text-white'
                   : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
               <Calendar className="w-5 h-5 mr-2" />
               Holiday Config
-            </button>
+            </Button>
           </nav>
 
           {/* Content */}

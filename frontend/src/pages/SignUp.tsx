@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import '@/assets/css/SignIn.css';
 import { motion } from 'framer-motion';
-import Logo from '@/assets/logo.webp';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { User, Lock1, Sms, UserEdit, Calendar } from 'iconsax-react';
@@ -11,6 +10,9 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useRef } from 'react';
 
 function SignUp() {
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const registrationToken = urlParams.get("token");
 
     const navigate =  useNavigate();
     const dateInputRef = useRef(null);
@@ -46,6 +48,7 @@ function SignUp() {
                     username: formData.username,
                     email: formData.email,
                     password: formData.password,
+                    registration_token: registrationToken 
                 }),
             });
 
@@ -110,9 +113,9 @@ function SignUp() {
                 animate="visible"
                 variants={containerVariants}
             >
-                <img src={Logo} alt="Logo" className="max-h-[62px] max-w-[61px]" />
+                <img src='logo.webp' alt="Logo" className="max-h-[62px] max-w-[61px]" />
                 <div>
-                    <h1 className="flex mb-5 text-2xl font-bold justify-center">Register</h1>
+                    <h1 className="flex justify-center mb-5 text-2xl font-bold">Register</h1>
                     <form onSubmit={handleSubmit} className="min-w-[300px] flex flex-col gap-4">
                         <div className="relative w-full">
                             <UserEdit
@@ -154,7 +157,7 @@ function SignUp() {
                             <Calendar
                                 size="18"
                                 color="#7582FA"
-                                className="absolute transform -translate-y-1/2 left-3 top-1/2 cursor-pointer"
+                                className="absolute transform -translate-y-1/2 cursor-pointer left-3 top-1/2"
                             />
                             <input
                                 ref={dateInputRef}

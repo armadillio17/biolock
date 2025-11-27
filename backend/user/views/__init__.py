@@ -1,10 +1,9 @@
-from .users import UserCreateView, UserUpdateDeleteView, UserAuthenticationView, GetUserRoleView, LogoutView, UserCountView, NewRegistrationRegisteredList, AcceptedUserList, UploadProfilePictureView, RemoveProfilePictureView
+from .users import UserCreateView, UserUpdateDeleteView, UserAuthenticationView, GetUserRoleView, LogoutView, UserCountView, NewRegistrationRegisteredList, AcceptedUserList, UploadProfilePictureView, RemoveProfilePictureView, SendRegistrationLink
 from .attendance import AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView, DailyAttendanceCountView
 from .department import DepartmentListCreateView, DepartmentDetailView, AssignUserToDepartmentView, RemoveUserFromDepartmentView
-from .leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView, LeaveRequestDetailView
-from .notification_history import NotificationHistoryListCreateView, NotificationHistoryDetailView
+from .leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView, LeaveRequestSearchListView
 from .report.report import ReportListCreateView, ReportDetailView, GenerateDailyReport
-from .holiday.holiday import HolidayListCreateView, HolidayDetailView
+from .holiday.custom_holiday import CustomHolidayListCreateView, CustomHolidayDetailView
 from .attendance_adjustments import AttendanceAdjustmentsListCreateView, AttendanceAdjustmentsDetailView
 from .position import PositionListCreateView, PositionDetailView, AssignUserToPositionView, RemoveUserFromPositionView
 from .logs import LogsListCreateView, LogsDetailView
@@ -12,7 +11,6 @@ from .attendance_summary import AttendanceSummaryListCreateView, AttendanceSumma
 from .payroll.payslip import PayslipView
 from .company import CompanyListView,CompanyUpdateDeleteView
 from .request_overtime import ApproveOvertimeView
-from .ping_company import PingCompany
 
 __all__ = [
     "UserCreateView",
@@ -35,8 +33,8 @@ __all__ = [
     "NotificationHistoryDetailView",
     "ReportListCreateView",
     "ReportDetailView",
-    "HolidayListCreateView",
-    "HolidayDetailView",
+    "CustomHolidayListCreateView",
+    "CustomHolidayDetailView",
     "AttendanceAdjustmentsListCreateView",
     "AttendanceAdjustmentsDetailView",
     "PositionListCreateView",
@@ -60,5 +58,8 @@ __all__ = [
     "UploadProfilePictureView",
     "RemoveProfilePictureView",
     "PingCompany",
-    "LeaveRequestDetailView"
+    "LeaveRequestDetailView",
+    "SendRegistrationLink",
+    "GenerateDateRangeReport",
+    "LeaveRequestSearchListView"
     ]

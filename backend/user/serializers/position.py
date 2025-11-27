@@ -44,3 +44,8 @@ class DepartmentPositionSerializer(serializers.ModelSerializer):
     class Meta:
         model = DepartmentPosition
         fields = ['id', 'department', 'position', 'assigned_at']
+        
+class CustomUserPosition(serializers.ModelSerializer):
+    class Meta:
+        model = Position
+        fields = ['id', 'position_name']

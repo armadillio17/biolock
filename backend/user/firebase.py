@@ -1,9 +1,13 @@
 import firebase_admin
-from firebase_admin import credentials
-import os
+from firebase_admin import auth, messaging
 
-if not firebase_admin._apps:
-    cred = credentials.Certificate(
-        os.path.join(os.path.dirname(__file__), './biolock.json')
+def get_firebase_user(uid):
+    return firebase_admin.auth.get_user(uid)
+
+def send_push_notification(token, title, body):
+    message = messaging.Message(
+        notification=messaging.Notification(title=title, body=body),
+        token=token,
     )
-    firebase_admin.initialize_app(cred)
+    response = messaging.send(message)
+    return response

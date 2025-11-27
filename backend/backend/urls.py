@@ -22,9 +22,9 @@ from django.urls import path
 from user.views import (
     UserCreateView, UserUpdateDeleteView, UserAuthenticationView,
     AttendanceListCreateView, AttendanceDetailUpdateDeleteView, UserAttendanceView, UserClockInView, UserClockOutView, GetUserRoleView, LogoutView, UserCountView, DailyAttendanceCountView,
-    NewRegistrationRegisteredList, AcceptedUserList, UploadProfilePictureView, RemoveProfilePictureView
+    NewRegistrationRegisteredList, AcceptedUserList, UploadProfilePictureView, RemoveProfilePictureView, SendRegistrationLink
 ) 
-from user.views.leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView, LeaveRequestListView
+from user.views.leave_request import LeaveRequestListCreateView, LeaveRequestDetailView, LeaveRequestCountView, LeaveRequestListView, LeaveRequestSearchListView
 from user.views.department import (
     DepartmentListCreateView, DepartmentDetailView, 
     AssignUserToDepartmentView, RemoveUserFromDepartmentView
@@ -33,11 +33,11 @@ from user.views.position import (
     PositionListCreateView, PositionDetailView, 
     AssignUserToPositionView, RemoveUserFromPositionView
 )
-from user.views.notification_history import (
-    NotificationHistoryListCreateView, NotificationHistoryDetailView
+from user.views.system_history import (
+    GeneratePDFReportView, SystemHistoryListCreateView, SystemHistoryDetailView, LatestSystemNotificationView
 )
 from user.views.report.report import (
-    ReportListCreateView, ReportDetailView, GenerateDailyReport
+    ReportListCreateView, ReportDetailView, GenerateDailyReport, GenerateDateRangeReport
 )
 from user.views.report.download_report import (
     DownloadAttendancePDF
@@ -87,9 +87,9 @@ from user.views.ping_company import (
 )
 
 urlpatterns = [
-    
-    path('admin/', admin.site.urls),
-    
+
+    path('api/admin/', admin.site.urls),
+
     # Auth
     path('api/login/', UserAuthenticationView.as_view(), name='login'),
     path('api/logout/', LogoutView.as_view(), name='logout'),
@@ -115,6 +115,7 @@ urlpatterns = [
 
     # Leave Request Endpoints
     path('api/leave-requests/', LeaveRequestListCreateView.as_view(), name='leave-request-list'),
+    path('api/leave-requests/search', LeaveRequestSearchListView.as_view(), name='leave-request-search-list'),
     path('api/leave-requests/<int:pk>/<str:date>', LeaveRequestDetailView.as_view(), name='leave-request-detail'),
     path('api/leave-requests/<int:pk>/', LeaveRequestDetailView.as_view(), name='leave-request-update-delete'),
     path('api/leave-requests/<int:pk>/list', LeaveRequestListView.as_view(), name='leave-request-list'),
@@ -134,14 +135,16 @@ urlpatterns = [
     path('api/departments/<int:department_id>/positions/<int:position_id>/assign-user/', AssignUserToPositionView.as_view(), name='assign-user-to-position'),
     path('api/departments/<int:department_id>/positions/<int:position_id>/remove-user/', RemoveUserFromPositionView.as_view(), name='remove-user-from-position'),
 
-    # Notification History Endpoints
-    path('api/notifications/', NotificationHistoryListCreateView.as_view(), name='notification-list'),
-    path('api/notifications/<int:pk>/', NotificationHistoryDetailView.as_view(), name='notification-detail'),
+    # System Logs Endpoints
+    path('api/systemlogs/', SystemHistoryListCreateView.as_view(), name='system-log-list'),
+    path('api/systemlogs/<int:pk>/', SystemHistoryDetailView.as_view(), name='system-log-detail'),
+    path('api/systemlogs/generate-report/', GeneratePDFReportView.as_view(), name='generate_pdf_report'),
 
     # Report Endpoints
     path('api/reports/', ReportListCreateView.as_view(), name='report-list'),
     path('api/reports/<int:pk>/', ReportDetailView.as_view(), name='report-detail'),
     path('api/reports/daily-report/', GenerateDailyReport.as_view(), name='report-detail'),
+    path('api/reports/date-range-report/', GenerateDateRangeReport.as_view(), name='report-detail'),
     path('api/reports/download-pdf/<int:report_id>/', DownloadAttendancePDF.as_view(), name='download-report'),
 
     # Holiday Endpoints
@@ -198,6 +201,11 @@ urlpatterns = [
     
     #Ping Company Ip
     path('api/ping/company/', PingCompany.as_view(), name='ping_company'),
+    
+    #Send One Time Register
+    path('api/register/', SendRegistrationLink.as_view(), name='one_time_registration'),
+    
+    path('api/get-system-logs/', LatestSystemNotificationView.as_view(), name='latest-notification'),
     
 ]
 
