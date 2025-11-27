@@ -87,9 +87,9 @@ from user.views.ping_company import (
 )
 
 urlpatterns = [
-    
-    path('admin/', admin.site.urls),
-    
+
+    path('api/admin/', admin.site.urls),
+
     # Auth
     path('api/login/', UserAuthenticationView.as_view(), name='login'),
     path('api/logout/', LogoutView.as_view(), name='logout'),
