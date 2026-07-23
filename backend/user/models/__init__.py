@@ -21,3 +21,4 @@ from .holiday.holiday_config import HolidayConfig
 from .holiday.custom_holiday import CustomHoliday
 from .registration_link import RegistrationLink
 from .notification import Notifications
+from .device_token import DeviceToken

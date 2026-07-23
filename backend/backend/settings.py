@@ -90,14 +90,21 @@ load_dotenv()
 
 supabase_db_url = os.getenv("SUPABASE_DB_URL")
 
+# DATABASES = {
+#     #NEW DATABASE CONFIGURATION SUPABASE
+#     'default': dj_database_url.parse(
+#         os.getenv('SUPABASE_DB_URL'),
+#         conn_max_age=0,  # Don't persist connections with pooler
+#         conn_health_checks=True,  # Check connection health before using
+#         ssl_require=True
+#     )
+# }
+
 DATABASES = {
-    #NEW DATABASE CONFIGURATION SUPABASE
-    'default': dj_database_url.parse(
-        os.getenv('SUPABASE_DB_URL'),
-        conn_max_age=0,  # Don't persist connections with pooler
-        conn_health_checks=True,  # Check connection health before using
-        ssl_require=True
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite',
+    }
 }
 
 # Enable connection health checks
@@ -225,4 +232,4 @@ GMAIL_CREDENTIALS_PATH = os.path.join(BASE_DIR, 'google_credentials', 'credentia
 GMAIL_TOKEN_PATH = os.path.join(BASE_DIR, 'google_credentials', 'token.json')
 
 BASE_DIR_FIREBASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FIREBASE_CREDENTIALS_PATH = os.path.join(BASE_DIR, 'user', 'biolock.json')
+# FIREBASE_CREDENTIALS_PATH = os.path.join(BASE_DIR, 'user', 'biolock.json')

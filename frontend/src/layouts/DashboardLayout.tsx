@@ -153,6 +153,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     return () => clearInterval(interval); // Clear on component unmount
   }, []);
 
+  console.log("profile_picture", profile_picture);
+  
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50">
       {/* Mobile sidebar backdrop */}

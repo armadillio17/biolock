@@ -19,6 +19,7 @@ from .request_overtime import OvertimeRequestSerializer
 from .holiday.holiday_config import HolidayConfigSerializer
 from .holiday.custom_holiday import CustomHolidaySerializer
 from .registration_link import RegistrationLinkSerializer
+from .device_token import DeviceTokenSerializer
 
 __all__ = [
     "AttendanceSerializer",
@@ -48,5 +49,6 @@ __all__ = [
     "CustomHolidaySerializer",
     "RegistrationLinkSerializer",
     "CustomUserProfileSerializer",
-    "CustomUserPosition"
+    "CustomUserPosition",
+    "DeviceTokenSerializer"
     ]

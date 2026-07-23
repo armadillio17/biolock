@@ -20,6 +20,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^2.29.3",
     "dayjs": "^1.11.13",
+    "firebase": "^12.6.0",
     "iconsax-react": "^0.0.8",
     "inspirational-quotes": "^2.0.1",
     "jspdf": "^3.0.1",

@@ -85,6 +85,7 @@ from user.views.company import (
 from user.views.ping_company import (
     PingCompany
 )
+from user.views.device_token import DeviceTokenView
 
 urlpatterns = [
 
@@ -206,7 +207,9 @@ urlpatterns = [
     path('api/register/', SendRegistrationLink.as_view(), name='one_time_registration'),
     
     path('api/get-system-logs/', LatestSystemNotificationView.as_view(), name='latest-notification'),
-    
+
+    # FCM Device Tokens
+    path('api/device-tokens/', DeviceTokenView.as_view(), name='device-tokens'),
 ]
 
 if settings.DEBUG:
