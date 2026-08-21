@@ -1,15 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
-import { requestNotificationPermission, onMessageListener } from "../lib/firebase";
+import { requestNotificationPermission, onForegroundMessage } from "../lib/firebase";
 import { authAxios } from "../lib/secured-axios-instance";
 import toast from "react-hot-toast";
-
-interface FCMPayload {
-  notification?: {
-    title?: string;
-    body?: string;
-  };
-  data?: Record<string, string>;
-}
 
 export const useFCM = (userId: number | null) => {
   const [token, setToken] = useState<string | null>(null);
@@ -18,24 +10,26 @@ export const useFCM = (userId: number | null) => {
   const registerServiceWorker = useCallback(async () => {
     if ("serviceWorker" in navigator) {
       try {
-        const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+        // Pass the Firebase config in the SW registration URL rather than via
+        // postMessage. A service worker is ephemeral — its in-memory state is
+        // wiped on every restart (including when a background push wakes it),
+        // so a posted config never survives. The query string is part of the
+        // script URL, which the browser persists and replays on every restart,
+        // so the SW can always re-initialize Firebase.
+        const config = {
+          apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+          authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+          projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+          storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+          messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+          appId: import.meta.env.VITE_FIREBASE_APP_ID,
+        };
+        const swUrl = `/firebase-messaging-sw.js?config=${encodeURIComponent(
+          JSON.stringify(config)
+        )}`;
+        const registration = await navigator.serviceWorker.register(swUrl);
+        await navigator.serviceWorker.ready;
         console.log("Service Worker registered:", registration);
-
-        // Pass Firebase config to service worker
-        if (registration.active) {
-          registration.active.postMessage({
-            type: "FIREBASE_CONFIG",
-            config: {
-              apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-              authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-              projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-              storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-              messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-              appId: import.meta.env.VITE_FIREBASE_APP_ID,
-            },
-          });
-        }
-
         return registration;
       } catch (error) {
         console.error("Service Worker registration failed:", error);
@@ -46,8 +40,8 @@ export const useFCM = (userId: number | null) => {
   }, []);
 
   const requestPermission = useCallback(async () => {
-    await registerServiceWorker();
-    const fcmToken = await requestNotificationPermission();
+    const registration = await registerServiceWorker();
+    const fcmToken = await requestNotificationPermission(registration ?? undefined);
     if (fcmToken) {
       setToken(fcmToken);
       setIsPermissionGranted(true);
@@ -69,23 +63,21 @@ export const useFCM = (userId: number | null) => {
     return fcmToken;
   }, [userId, registerServiceWorker]);
 
+  // Register the service worker and FCM token once we know who the user is.
   useEffect(() => {
-    // Listen for foreground messages
-    const unsubscribe = onMessageListener()
-      .then((payload) => {
-        const message = payload as FCMPayload;
-        if (message.notification) {
-          toast(message.notification.body || "New notification", {
-            icon: "🔔",
-          });
-        }
-      })
-      .catch((err) => console.error("Message listener error:", err));
+    if (userId) {
+      requestPermission();
+    }
+  }, [userId, requestPermission]);
 
-    return () => {
-      // Cleanup if needed
-      void unsubscribe;
-    };
+  // Listen for foreground messages (keeps firing for every message).
+  useEffect(() => {
+    const unsubscribe = onForegroundMessage((payload) => {
+      const body = payload.notification?.body ?? payload.data?.body;
+      toast(body || "New notification", { icon: "🔔" });
+    });
+
+    return () => unsubscribe();
   }, []);
 
   return {

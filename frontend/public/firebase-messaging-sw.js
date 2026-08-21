@@ -2,18 +2,25 @@
 importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js");
 
-// Firebase config will be passed via postMessage from the main app
+// The Firebase config is read from this worker's own registration URL query
+// string. Unlike an in-memory value set via postMessage, the script URL is
+// persisted by the browser and replayed on every SW restart — including when
+// a background push wakes the worker — so Firebase can always re-initialize.
 let firebaseConfig = null;
+try {
+  const raw = new URL(self.location).searchParams.get("config");
+  if (raw) firebaseConfig = JSON.parse(raw);
+} catch (e) {
+  console.error("[firebase-messaging-sw.js] Failed to parse config:", e);
+}
 
-self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "FIREBASE_CONFIG") {
-    firebaseConfig = event.data.config;
-    initializeFirebase();
-  }
-});
+initializeFirebase();
 
 function initializeFirebase() {
-  if (!firebaseConfig) return;
+  if (!firebaseConfig || !firebaseConfig.apiKey) {
+    console.warn("[firebase-messaging-sw.js] No Firebase config in SW URL");
+    return;
+  }
 
   firebase.initializeApp(firebaseConfig);
   const messaging = firebase.messaging();

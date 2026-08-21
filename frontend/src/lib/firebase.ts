@@ -1,5 +1,11 @@
 import { initializeApp } from "firebase/app";
-import { getMessaging, getToken, onMessage, Messaging } from "firebase/messaging";
+import {
+  getMessaging,
+  getToken,
+  onMessage,
+  Messaging,
+  MessagePayload,
+} from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -19,7 +25,9 @@ if (typeof window !== "undefined" && "serviceWorker" in navigator) {
   messaging = getMessaging(app);
 }
 
-export const requestNotificationPermission = async (): Promise<string | null> => {
+export const requestNotificationPermission = async (
+  serviceWorkerRegistration?: ServiceWorkerRegistration
+): Promise<string | null> => {
   try {
     if (!messaging) {
       console.warn("Firebase Messaging is not supported in this browser");
@@ -30,6 +38,9 @@ export const requestNotificationPermission = async (): Promise<string | null> =>
     if (permission === "granted") {
       const token = await getToken(messaging, {
         vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
+        // Reuse the SW we registered (with config in its URL) so getToken
+        // doesn't register its own config-less /firebase-messaging-sw.js.
+        serviceWorkerRegistration,
       });
       return token;
     } else {
@@ -42,16 +53,16 @@ export const requestNotificationPermission = async (): Promise<string | null> =>
   }
 };
 
-export const onMessageListener = (): Promise<unknown> => {
-  return new Promise((resolve) => {
-    if (!messaging) {
-      console.warn("Firebase Messaging is not supported in this browser");
-      return;
-    }
-    onMessage(messaging, (payload) => {
-      resolve(payload);
-    });
-  });
+// Registers a foreground-message handler and returns an unsubscribe function.
+// Unlike a one-shot Promise, this keeps firing for every message received.
+export const onForegroundMessage = (
+  callback: (payload: MessagePayload) => void
+): (() => void) => {
+  if (!messaging) {
+    console.warn("Firebase Messaging is not supported in this browser");
+    return () => {};
+  }
+  return onMessage(messaging, callback);
 };
 
 export { messaging };

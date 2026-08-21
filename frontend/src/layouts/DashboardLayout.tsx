@@ -8,6 +8,7 @@ import { useUpdateUserStore } from "@/store/userStore";
 import { leaveRequestStore } from '@/store/leaveRequestStore';
 import { useOvertimeRequestStore } from '@/store/overtimeRequestStore.ts';
 import { useUserStore } from '@/store/userlistStore.ts';
+import { useFCM } from '@/hooks/useFCM';
 import { Toaster, toast } from 'react-hot-toast';
 import { base_url } from '../config';
 // Lucide Icons
@@ -51,6 +52,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const count = useOvertimeRequestStore((state) => state.getPendingCount());
   const Userstore = useUserStore();
   const UnapprovedUsersCount = Userstore.newRegisteredUserCount;
+
+  // Register this browser for FCM push notifications once authenticated.
+  const fcmUserId =
+    user?.userId != null && !isNaN(Number(user.userId)) ? Number(user.userId) : null;
+  useFCM(fcmUserId);
   
   const capitalize = (str: string): string =>
     str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
