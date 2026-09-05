@@ -88,30 +88,15 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Load environment variables from .env file
 load_dotenv()
 
-supabase_db_url = os.getenv("SUPABASE_DB_URL")
+# Use DATABASE_URL (e.g. a local Postgres) if set, otherwise fall back to Supabase.
+db_url = os.getenv('DATABASE_URL') or os.getenv('SUPABASE_DB_URL')
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'biolockdatabase',
-    #     'USER': 'root',
-    #     'PASSWORD': 'Latayada!233',
-    #     'HOST': '127.0.0.1',
-    #     'PORT': '3306',
-    # },
-
-    #Previosly used database configuration for local development with SQLite
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',  # or a different path if needed
-    # }
-
-    #NEW DATABASE CONFIGURATION SUPABASE
     'default': dj_database_url.parse(
-        os.getenv('SUPABASE_DB_URL'),
+        db_url,
         conn_max_age=0,  # Don't persist connections with pooler
         conn_health_checks=True,  # Check connection health before using
-        ssl_require=True
+        ssl_require=os.getenv('DB_SSL_REQUIRE', 'True').lower() in ('true', '1', 'yes')
     )
 }
 
@@ -169,6 +154,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://10.0.2.2",
     "https://biolock.astrosail.site",
     "http://biolock.astrosail.site",
+    "http://localhost",
+    "http://127.0.0.1",
+    "http://10.0.2.2:8000",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
