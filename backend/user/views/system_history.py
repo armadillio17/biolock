@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from io import BytesIO
 from django.http import HttpResponse
-from django.utils.timezone import make_aware
+from django.utils.timezone import make_aware, localtime
 from django.utils.dateparse import parse_date
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -70,7 +70,7 @@ class SystemHistoryDetailView(APIView):
         if not system_log:
             return Response({"error": "System log not found"}, status=status.HTTP_404_NOT_FOUND)
         system_log.delete()  # Calls the overridden `delete` method in the model
-        return Response({"message": "System log deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 def format_type(type_str: str) -> str:
@@ -164,7 +164,7 @@ class GeneratePDFReportView(APIView):
         pdf = buffer.getvalue()
         buffer.close()
 
-        filename = f"System_Log_Report_{datetime.now().strftime('%Y%m%d')}.pdf"
+        filename = f"System_Log_Report_{localtime().strftime('%Y%m%d')}.pdf"
 
         return HttpResponse(
             pdf,
@@ -186,4 +186,4 @@ class LatestSystemNotificationView(APIView):
                 'created_at': latest.created_at,
             }, status=status.HTTP_200_OK)
         else:
-            return Response({'message': 'No notifications yet'}, status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_204_NO_CONTENT)

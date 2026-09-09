@@ -61,7 +61,7 @@ class DepartmentDetailView(APIView):
         if not department:
             return Response({"error": "Department not found"}, status=status.HTTP_404_NOT_FOUND)
         department.delete()
-        return Response({"message": "Department deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class AssignUserToDepartmentView(APIView):
     """Manually assign a user to a department"""

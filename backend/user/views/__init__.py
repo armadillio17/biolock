@@ -11,6 +11,7 @@ from .attendance_summary import AttendanceSummaryListCreateView, AttendanceSumma
 from .payroll.payslip import PayslipView
 from .company import CompanyListView,CompanyUpdateDeleteView
 from .request_overtime import ApproveOvertimeView
+from .location import LocationListCreateView, LocationDetailView
 
 __all__ = [
     "UserCreateView",
@@ -61,5 +62,7 @@ __all__ = [
     "LeaveRequestDetailView",
     "SendRegistrationLink",
     "GenerateDateRangeReport",
-    "LeaveRequestSearchListView"
+    "LeaveRequestSearchListView",
+    "LocationListCreateView",
+    "LocationDetailView"
     ]

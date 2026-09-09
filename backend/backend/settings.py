@@ -13,12 +13,19 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 import dj_database_url
+from corsheaders.defaults import default_headers as cors_default_headers
 from dotenv import load_dotenv
 
 # from user.models.users import CustomUser
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Must run before anything below calls os.getenv, or that setting silently falls
+# back to its default: load_dotenv() does not retroactively fix a value already
+# read. (runserver used to mask this -- its reloader re-imports settings in a
+# child process that inherits the environment the first pass had populated.)
+load_dotenv(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production
@@ -31,6 +38,14 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key-change-this-i
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+
+# Development escape hatch. With DEV_OPEN_NETWORK=True the API accepts any Host
+# header and any CORS origin, so an ngrok tunnel, a phone on the LAN, or a
+# teammate's machine can reach it without adding each new URL to a list.
+# It is deliberately ANDed with DEBUG: if DEBUG is off the flag does nothing,
+# so switching a deployment to production closes this even if the variable is
+# left set in the environment. Never enable it on a public deployment.
+DEV_OPEN_NETWORK = DEBUG and os.getenv('DEV_OPEN_NETWORK', 'False').lower() in ('true', '1', 'yes')
 
 
 # Application definition
@@ -85,9 +100,6 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# Load environment variables from .env file
-load_dotenv()
-
 # Use DATABASE_URL (e.g. a local Postgres) if set, otherwise fall back to Supabase.
 db_url = os.getenv('DATABASE_URL') or os.getenv('SUPABASE_DB_URL')
 
@@ -129,7 +141,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# The business runs on Manila time. Left at UTC, every localtime() call and
+# every date bucket flipped its day at 08:00 Manila -- mid-morning. Stored
+# timestamps are unaffected (USE_TZ keeps them UTC); only interpretation.
+TIME_ZONE = 'Asia/Manila'
 
 USE_I18N = True
 
@@ -162,11 +177,19 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_TRUSTED_ORIGINS = [
     "https://biolock.astrosail.site",
     "http://biolock.astrosail.site",
+    # ngrok tunnels used for on-device testing
+    "https://*.ngrok-free.app",
+    "https://*.ngrok-free.dev",
+    "https://*.ngrok.app",
+    "https://*.ngrok.io",
 ]
 
-CORS_ALLOW_HEADERS = [
-    'content-type',
-    'authorization',  # Add any other headers you need
+# django-cors-headers' defaults (accept, authorization, content-type, user-agent,
+# x-csrftoken, x-requested-with) plus anything extra we need. Never use ['*'] here:
+# CORS_ALLOW_CREDENTIALS is on, and for credentialed requests the browser matches
+# Access-Control-Allow-Headers literally, so a wildcard blocks every real header.
+CORS_ALLOW_HEADERS = list(cors_default_headers) + [
+    'ngrok-skip-browser-warning',
 ]
 
 CORS_ALLOW_METHODS = [
@@ -175,7 +198,21 @@ CORS_ALLOW_METHODS = [
     'PUT',
     'DELETE',
     'OPTIONS',
+    'PATCH',
 ]
+
+if DEV_OPEN_NETWORK:
+    # Accept every host and echo back whichever origin asks. CORS_ALLOW_CREDENTIALS
+    # stays on, and django-cors-headers echoes the request origin rather than "*"
+    # in that case, so cookies and auth headers keep working through a tunnel.
+    ALLOWED_HOSTS = ['*']
+    CORS_ALLOW_ALL_ORIGINS = True
+    import sys as _sys
+    print(
+        "\n  WARNING: DEV_OPEN_NETWORK is on -- every host and origin is accepted.\n"
+        "  This is for local testing only. Turn it off in .env before deploying.\n",
+        file=_sys.stderr,
+    )
 
 #Custom User Model
 AUTH_USER_MODEL = 'user.CustomUser'

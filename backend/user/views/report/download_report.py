@@ -8,6 +8,7 @@ from reportlab.lib import colors
 from rest_framework.response import Response
 from user.models.report import Report
 from datetime import datetime, timedelta
+from django.utils.timezone import localdate
 from dateutil import parser
 from collections import defaultdict
 import traceback
@@ -87,7 +88,7 @@ class DownloadAttendancePDF(APIView):
                 min_date = min(all_report_dates)
                 max_date = max(all_report_dates)
             else:
-                min_date = max_date = datetime.today().date()
+                min_date = max_date = localdate()
 
             date_range = [(min_date + timedelta(days=i)) for i in range((max_date - min_date).days + 1)]
             date_coverage = f"{min_date.strftime('%m-%d-%y')} to {max_date.strftime('%m-%d-%y')}"

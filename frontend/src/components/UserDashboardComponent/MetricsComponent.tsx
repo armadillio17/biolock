@@ -1,15 +1,19 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { useAttendanceStore } from "@/store/attendanceStore";
-import { MoreVertical, Timer } from "lucide-react";
+import { useAttendanceStore, MIN_OUTSIDE_REASON_LEN } from "@/store/attendanceStore";
+import { MoreVertical, Timer, Smartphone } from "lucide-react";
 import { Button } from "../ui/button";
 import TimeTracker from '@/components/UserDashboardComponent/TimeTracker';
 import useClickOutside from "@/components/hooks/useClickOutside";
+import toast from "react-hot-toast";
 
 export const Metrics = () => {
   const {
     clockInUser,
     clockOutUser,
+    clearOutsideReasonPrompt,
+    clearMobileAppPrompt,
+    useMobileAppDevice,
     fetchUserAttendance,
     checkUserClockIn,
     requestOvertime,
@@ -21,6 +25,11 @@ export const Metrics = () => {
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  // Punching from outside a work location is allowed, but the server asks for
+  // a reason first; "in"/"out" records which action to retry once we have one.
+  const [outsideReasonFor, setOutsideReasonFor] = useState<"in" | "out" | null>(null);
+  const [outsideReason, setOutsideReason] = useState("");
+  const [outsideDistance, setOutsideDistance] = useState<number | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [quote, setQuote] = useState("");
   const dropdownRef = useRef(null);
@@ -67,19 +76,96 @@ export const Metrics = () => {
       // Show confirmation before clocking out
       setShowConfirmModal(true);
     } else {
-      await clockInUser();
-      setIsClockIn(true);
-      setIsClockOut(false);
-      setStartTime(new Date());
+      const clockedIn = await clockInUser();
+      if (!clockedIn) {
+        const { error, outsideReasonRequired, outsideDistanceMeters } =
+          useAttendanceStore.getState();
+
+        // Has a bound phone: the modal explains, there is nothing to retry here.
+        if (useAttendanceStore.getState().useMobileAppDevice) return;
+
+        // Outside a work location is not a denial -- ask why, then retry.
+        if (outsideReasonRequired) {
+          setOutsideDistance(outsideDistanceMeters);
+          setOutsideReason("");
+          setOutsideReasonFor("in");
+          return;
+        }
+
+        toast.error(error ?? "Unable to clock in");
+        return;
+      }
+      applyClockIn();
     }
   };
   
-  const confirmClockOut = async () => {
-    await clockOutUser();
+  const applyClockIn = () => {
+    setIsClockIn(true);
+    setIsClockOut(false);
+    setStartTime(new Date());
+  };
+
+  const applyClockOut = () => {
     setIsClockIn(false);
     setIsClockOut(true);
     setEndTime(new Date());
     setShowConfirmModal(false);
+  };
+
+  const confirmClockOut = async () => {
+    const clockedOut = await clockOutUser();
+    if (!clockedOut) {
+      const { error, outsideReasonRequired, outsideDistanceMeters } =
+        useAttendanceStore.getState();
+
+      if (useAttendanceStore.getState().useMobileAppDevice) {
+        setShowConfirmModal(false);
+        return;
+      }
+
+      if (outsideReasonRequired) {
+        setOutsideDistance(outsideDistanceMeters);
+        setOutsideReason("");
+        setOutsideReasonFor("out");
+        setShowConfirmModal(false);
+        return;
+      }
+
+      toast.error(error ?? "Unable to clock out");
+      setShowConfirmModal(false);
+      return;
+    }
+    applyClockOut();
+  };
+
+  // Retry the punch that was held back, now carrying the typed reason.
+  const submitOutsideReason = async () => {
+    const reason = outsideReason.trim();
+    if (reason.length < MIN_OUTSIDE_REASON_LEN) return;
+
+    const action = outsideReasonFor;
+    const ok = action === "in" ? await clockInUser(reason) : await clockOutUser(reason);
+
+    if (!ok) {
+      toast.error(
+        useAttendanceStore.getState().error ??
+          `Unable to clock ${action === "in" ? "in" : "out"}`,
+      );
+      return;
+    }
+
+    if (action === "in") applyClockIn();
+    else applyClockOut();
+
+    setOutsideReasonFor(null);
+    setOutsideReason("");
+    clearOutsideReasonPrompt();
+  };
+
+  const cancelOutsideReason = () => {
+    setOutsideReasonFor(null);
+    setOutsideReason("");
+    clearOutsideReasonPrompt();
   };
   
   const cancelClockOut = () => {
@@ -195,6 +281,74 @@ export const Metrics = () => {
               </div>
             </div>
           </div>
+
+          {useMobileAppDevice && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-40">
+              <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg">
+                <div className="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-indigo-50">
+                  <Smartphone className="w-6 h-6 text-indigo-600" />
+                </div>
+                <h3 className="mb-2 text-lg font-semibold text-center">
+                  Use the Biolock app
+                </h3>
+                <p className="mb-4 text-sm text-center text-gray-600">
+                  Your attendance is tied to your registered phone
+                  {useMobileAppDevice.device_model
+                    ? ` (${useMobileAppDevice.device_model})`
+                    : ""}
+                  , so please clock in and out from the app.
+                </p>
+                <p className="mb-6 text-xs text-center text-gray-500">
+                  Lost or changed phones? Ask an administrator to release the old one.
+                </p>
+                <Button className="w-full" onClick={clearMobileAppPrompt}>
+                  Got it
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {outsideReasonFor && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-40">
+              <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg">
+                <h3 className="mb-2 text-lg font-semibold">
+                  You&apos;re outside the work area
+                </h3>
+                <p className="mb-4 text-sm text-gray-600">
+                  {outsideDistance !== null
+                    ? `You're about ${outsideDistance.toLocaleString()} m from the nearest work location. `
+                    : ""}
+                  You can still clock {outsideReasonFor === "in" ? "in" : "out"} — just tell us why.
+                </p>
+                <textarea
+                  autoFocus
+                  rows={3}
+                  value={outsideReason}
+                  onChange={(e) => setOutsideReason(e.target.value)}
+                  placeholder="e.g. Buying printer ink for the office"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <p className="mt-1 mb-4 text-xs text-gray-500">
+                  {outsideReason.trim().length < MIN_OUTSIDE_REASON_LEN
+                    ? `At least ${MIN_OUTSIDE_REASON_LEN} characters (${outsideReason.trim().length}/${MIN_OUTSIDE_REASON_LEN}).`
+                    : "This is recorded with your punch for your manager to review."}
+                </p>
+                <div className="flex justify-end gap-3">
+                  <Button variant="ghost" onClick={cancelOutsideReason} disabled={isLoading}>
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={submitOutsideReason}
+                    disabled={isLoading || outsideReason.trim().length < MIN_OUTSIDE_REASON_LEN}
+                  >
+                    {isLoading
+                      ? "Submitting..."
+                      : `Clock ${outsideReasonFor === "in" ? "In" : "Out"}`}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {showConfirmModal && (
             <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">

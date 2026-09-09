@@ -173,7 +173,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     >
         <div className="flex flex-col h-full">
             {/* Logo Section */}
-            <div className="flex items-center justify-center gap-3 p-6 border-b border-gray-200/50">
+            <div className="flex items-center justify-center gap-3 p-6 border-b border-gray-200/50 shrink-0">
                 <img src="logo.webp" alt="" className="max-w-[62px] max-h-[62px]" />
                 <button
                     onClick={() => setSidebarOpen(false)}
@@ -184,7 +184,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             </div>
 
             {/* Profile Upload Section */}
-            <div className="p-6 border-b border-gray-200/50">
+            <div className="p-6 border-b border-gray-200/50 shrink-0">
                 <div className="flex items-center gap-3">
                     <div 
                     className="relative flex items-center justify-center w-12 h-12 overflow-hidden rounded-full cursor-pointer bg-gradient-to-r from-pink-400 to-purple-500 group"
@@ -234,7 +234,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 p-4 space-y-1">
+            <nav className="flex-1 min-h-0 overflow-y-auto p-4 space-y-1">
                 {menuItems.map((item, index) => (
                     <a
                     key={index}
@@ -274,7 +274,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             </nav>
 
             {/* Logout */}
-            <div className="p-4 border-t border-gray-200/50">
+            <div className="p-4 border-t border-gray-200/50 shrink-0">
                 <button
                     onClick={handleLogout}
                     className="flex items-center w-full gap-3 px-4 py-3 text-gray-600 transition-all duration-200 hover:bg-red-50 hover:text-red-600 rounded-xl"

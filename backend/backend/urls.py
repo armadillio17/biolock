@@ -77,6 +77,7 @@ from user.views.request_overtime import (
     ApproveOvertimeView
 )
 from user.views import location
+from user.views import device
 
 from user.views.company import (
     CompanyListView, CompanyUpdateDeleteView
@@ -180,11 +181,20 @@ urlpatterns = [
     path('api/benefits-configuration/<str:benefit_type>/', BenefitsConfigurationAPIView.as_view(), name='benefits-configuration-detail-update'),
 
     # Location
-    path('api/locations/', location.LocationListView.as_view(), name='location_list'),
-    path('api/locations/create/', location.location_create, name='location_create'),
-    path('api/locations/<int:pk>/', location.location_detail, name='location_detail'),
-    path('api/locations/<int:pk>/edit/', location.location_update, name='location_update'),
-    path('api/locations/<int:pk>/delete/', location.location_delete, name='location_delete'),
+    # Device binding: one phone, one person.
+    path('api/devices/', device.DeviceListView.as_view(), name='device-list'),
+    path('api/devices/register/', device.DeviceRegisterView.as_view(), name='device-register'),
+    path('api/devices/<int:pk>/revoke/', device.DeviceRevokeView.as_view(), name='device-revoke'),
+
+    # Punches held for review (browser punches from staff with no bound phone).
+    path('api/attendance-review/', device.AttendanceReviewView.as_view(), name='attendance-review'),
+    path('api/attendance-review/<int:pk>/', device.AttendanceReviewView.as_view(), name='attendance-review-action'),
+
+    # Everything that currently needs someone's attention.
+    path('api/reminders/', device.RemindersView.as_view(), name='reminders'),
+
+    path('api/locations/', location.LocationListCreateView.as_view(), name='location_list_create'),
+    path('api/locations/<int:pk>/', location.LocationDetailView.as_view(), name='location_detail'),
     
     # Overtime Requests
     path('api/approve-overtime/', ApproveOvertimeView.as_view(), name='list-pending-overtime'),

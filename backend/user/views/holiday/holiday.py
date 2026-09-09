@@ -4,13 +4,14 @@ from rest_framework.response import Response
 from user.models import Holiday, HolidayConfig, CustomHoliday
 from user.serializers import HolidaySerializer, HolidayConfigSerializer, CustomHolidaySerializer
 from datetime import datetime
+from django.utils.timezone import localdate
 
 class HolidayListCreateView(APIView):
     """List all holidays or create a new one"""
 
     def get(self, request):
         """Retrieve all holidays for the current year (excluding soft-deleted ones)"""
-        current_year = datetime.now().year
+        current_year = localdate().year
 
         # Filter holidays where holiday_date is in the current year
         holidays = Holiday.objects.filter(

@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from user.models import OvertimeRequest, AttendanceSummary, Attendance
 from user.serializers import OvertimeRequestSerializer
-from django.utils.timezone import now
+from django.utils.timezone import now, localdate
 from user.models.users import CustomUser
 
 
@@ -21,7 +21,7 @@ class ApproveOvertimeView(APIView):
         """
 
         user_id = request.data.get('user_id')
-        date = request.data.get("date", now().date())
+        date = request.data.get("date", localdate())
 
         if not user_id:
             return Response({"error": "Missing user_id"}, status=status.HTTP_400_BAD_REQUEST)

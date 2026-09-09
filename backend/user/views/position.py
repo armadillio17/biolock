@@ -61,7 +61,7 @@ class PositionDetailView(APIView):
 
         try:
             position.delete()
-            return Response({"message": "Position deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({"error": f"Failed to delete position: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

@@ -10,6 +10,8 @@ import {
   UserCheck,
   Activity as LucideActivity,
   CalendarRange,
+  MapPin,
+  BellRing,
 } from "lucide-react";
 
 import dummyPic from "@/assets/dummy person.jpg";
@@ -31,6 +33,7 @@ export interface SidebarProfile {
 // Sidebar Menu Array (Admin)
 export const sidebarMenu: SidebarMenuItem[] = [
   { name: "Dashboard", icon: <LayoutDashboard />, path: "/dashboard" },
+  { name: "Reminders", icon: <BellRing />, path: "/reminders" },
   { name: "Timesheet", icon: <CalendarRange />, path: "/timesheet" },
   { name: "Leave Request", icon: <FileText />, path: "/leave-request" },
   { name: "Payroll", icon: <PhilippinePeso />, path: "/payroll" },
@@ -39,11 +42,13 @@ export const sidebarMenu: SidebarMenuItem[] = [
   { name: "Users", icon: <Users />, path: "/users" },
   { name: "Departments", icon: <Building2 />, path: "/department" },
   { name: "Position", icon: <UserCheck />, path: "/position" },
+  { name: "Work Locations", icon: <MapPin />, path: "/locations" },
   { name: "System Logs", icon: <LucideActivity />, path: "/activity-logs" },
 ];
 
 export const sidebarMenuUser: SidebarMenuItem[] = [
     { name: "Dashboard", icon: <Element4 size="27" color= "#0F217D" />, path: "/dashboard" },
+    { name: "Reminders", icon: <BellRing size="27" color= "#6366F1" />, path: "/reminders" },
     // { name: "Inbox", icon: <Messenger size="27" color= "#6C4AB6" />, path: "/inbox" },
     { name: "Timesheet", icon: <Calendar size="27" color= "#FF9F1C" />, path: "/timesheet" },
     // { name: "Payslip", icon: <Calendar size="27" color= "#FF9F1C" />, path: "/timesheet" },

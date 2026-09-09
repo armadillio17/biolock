@@ -10,6 +10,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from datetime import datetime
+from django.utils.timezone import localtime
 from user.utils.system_history import log_notification
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
 from reportlab.lib.styles import getSampleStyleSheet
@@ -254,7 +255,7 @@ class PayslipView(APIView):
                 elements.append(Spacer(1, 24))
 
                 # Add footer
-                footer_text = f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+                footer_text = f"Generated on: {localtime().strftime('%Y-%m-%d %H:%M')}"
                 elements.append(Paragraph(footer_text, styles["Normal"]))
                 elements.append(Spacer(1, 12))
 

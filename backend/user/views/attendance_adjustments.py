@@ -57,4 +57,4 @@ class AttendanceAdjustmentsDetailView(APIView):
         if not adjustment:
             return Response({"error": "Attendance adjustment not found"}, status=status.HTTP_404_NOT_FOUND)
         adjustment.delete()  # Calls the overridden `delete` method in the model
-        return Response({"message": "Attendance adjustment deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from django.utils.timezone import now
+from django.utils.timezone import now, localdate
 from user.models.attendance import Attendance
 from datetime import datetime
 from django.utils import timezone
@@ -41,7 +41,7 @@ class ClockInSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        today = now().date()
+        today = localdate()
         user = validated_data['user']
 
         # Check if the user already has a clock-in record for today
@@ -95,7 +95,7 @@ class ClockOutSerializer(serializers.ModelSerializer):
         
     def update(self, instance, validated_data):
         try:
-            today = now().date()
+            today = localdate()
             user = instance.user_id  # Get user from instance (attendance record)
             
             tz = pytz.timezone('Asia/Manila')

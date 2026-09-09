@@ -57,4 +57,4 @@ class AttendanceSummaryDetailView(APIView):
         if not summary:
             return Response({"error": "Attendance summary not found"}, status=status.HTTP_404_NOT_FOUND)
         summary.delete()  # Calls the overridden `delete` method in the model
-        return Response({"message": "Attendance summary deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)

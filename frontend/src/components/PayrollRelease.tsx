@@ -97,7 +97,7 @@ export default function PayrollRelease() {
   // Download PDF
   const downloadPayslipsPdf = async (payrollPeriodId: string) => {
     try {
-      const response = await authAxios.get(`/payslip/download-pdf/${payrollPeriodId}/`, {
+      const response = await authAxios.get(`${base_url}/payslip/download-pdf/${payrollPeriodId}/`, {
         responseType: 'blob',
         headers: {
           'Accept': 'application/pdf',

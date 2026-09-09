@@ -155,7 +155,7 @@ class LeaveRequestDetailView(APIView):
 
         leave_request.delete()
 
-        return Response({"message": "Leave request deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
 class LeaveRequestCountView(APIView):
     """Count all Leave Request not approved"""

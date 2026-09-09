@@ -49,5 +49,5 @@ class CompanyUpdateDeleteView(APIView):
             return Response({"error": "Company not found"}, status=status.HTTP_404_NOT_FOUND)
 
         company.delete()
-        return Response({"message": "Company record soft deleted"}, status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
     

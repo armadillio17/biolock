@@ -15,6 +15,8 @@ import { ProtectedRoute } from './ProtectedRoutes';
 import MessagePage from './pages/Messages'
 import Payroll from './pages/Payroll';
 import PositionView from './pages/PositionView';
+import LocationView from './pages/LocationView';
+import Reminders from './pages/Reminders';
 
 export const router = createBrowserRouter([
     {
@@ -28,6 +30,10 @@ export const router = createBrowserRouter([
     {
         path: '/dashboard',
         element: <ProtectedRoute element={<Dashboard />} />,
+    },
+    {
+        path: '/reminders',
+        element: <ProtectedRoute element={<Reminders />} />,
     },
     {
         path: '/events',
@@ -76,5 +82,9 @@ export const router = createBrowserRouter([
     {
         path: '/position',
         element: <ProtectedRoute element={<PositionView />} />,
+    },
+    {
+        path: '/locations',
+        element: <ProtectedRoute element={<LocationView />} requiredRole="admin" />,
     },
 ]);

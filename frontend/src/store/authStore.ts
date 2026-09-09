@@ -80,12 +80,11 @@ export const useAuthStore = create<AuthState>()(
           return { success: true };
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
-          let errorMessage = "Login failed" + " " + error.response.data.error ;
-
-          if (error?.response?.data?.detail) {
-            errorMessage = error.response.data.error;
-            
-          } 
+          const detail =
+            error?.response?.data?.error ??
+            error?.response?.data?.detail ??
+            error?.message;
+          const errorMessage = detail ? "Login failed" + " " + detail : "Login failed";
 
           set({ isLoading: false, loginError: errorMessage });
 

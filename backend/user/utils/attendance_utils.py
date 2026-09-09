@@ -1,3 +1,5 @@
+from django.utils import timezone
+from datetime import timedelta
 from user.models import Attendance, OvertimeRequest
 from django.utils.timezone import now
 
@@ -12,6 +14,33 @@ def get_open_attendance(user_id, today):
         clock_out__isnull=True,
         deleted_at__isnull=True
     ).first()
+
+
+OPEN_SHIFT_MAX_AGE = timedelta(hours=24)
+
+
+def find_open_shift(user_id):
+    """The shift this employee still needs to close, if any.
+
+    Deliberately not scoped to "today": a shift that runs past midnight is
+    still the one being closed, and scoping by date also went wrong whenever
+    the stored UTC date and the business day disagreed -- an 07:46 Manila
+    clock-in lands on the previous UTC date, so the punch became impossible to
+    close. Bounded to 24 hours so a shift someone forgot weeks ago is not
+    silently closed now as an enormous day; that needs an admin.
+    """
+    cutoff = timezone.now() - OPEN_SHIFT_MAX_AGE
+    return (
+        Attendance.objects.filter(
+            user_id=user_id,
+            clock_in__isnull=False,
+            clock_in__gte=cutoff,
+            clock_out__isnull=True,
+            deleted_at__isnull=True,
+        )
+        .order_by("-clock_in")
+        .first()
+    )
 
 
 def has_any_attendance_today(user_id, today):

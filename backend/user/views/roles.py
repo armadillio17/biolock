@@ -42,4 +42,4 @@ class RoleUpdateDeleteView(APIView):
         """Soft delete a role."""
         role = self.get_object(pk)
         role.delete()
-        return Response({"message": "Role deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)

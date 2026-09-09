@@ -57,4 +57,4 @@ class LogsDetailView(APIView):
         if not log:
             return Response({"error": "Log entry not found"}, status=status.HTTP_404_NOT_FOUND)
         log.delete()  # Calls the overridden `delete` method in the model
-        return Response({"message": "Log entry deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -6,6 +6,7 @@ class Location(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
     radius = models.PositiveIntegerField(help_text="Radius in meters")  # or FloatField if you need decimals
+    is_active = models.BooleanField(default=True, help_text="Only active locations allow clock-in")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
